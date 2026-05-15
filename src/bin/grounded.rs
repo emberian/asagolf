@@ -20,6 +20,15 @@ mod kernel;
 mod elaborate;
 #[path = "../number.rs"]
 mod number;
+// Extra postulate modules, one per worktree-isolated derivation.  Each
+// exposes `count()` and `make(idx, &Elab) -> Lemma`, mirroring the
+// per-idx pattern of `make_lemma`, and is staged after the core 57.
+#[path = "../proof_g2.rs"]
+mod proof_g2;
+#[path = "../proof_g3.rs"]
+mod proof_g3;
+#[path = "../proof_g1.rs"]
+mod proof_g1;
 
 use elaborate::{assemble, leaf, Elab, Lemma, Pt};
 use number::ProofSize;
@@ -4692,6 +4701,55 @@ const NAMES: [&str; 57] = [
     "lemul0mono", "sqcong", "mulcposcan", "G4-sas",
 ];
 
+/// Stage one lemma: sound peephole-shrink, show the conclusion, append,
+/// reassemble + reparse, and (only with GROUNDED_VERIFY_EACH) re-verify.
+/// Used identically for the core 57 and the extra postulate modules.
+fn stage(
+    base: &str,
+    db: &mut kernel::Db,
+    lemmas: &mut Vec<Lemma>,
+    concls: &mut Vec<String>,
+    shrinks: &mut Vec<Option<(usize, usize)>>,
+    label_idx: usize,
+    mut lm: Lemma,
+) {
+    {
+        let el = Elab::new(db);
+        let before = elaborate::pt_nodes(&lm.goal);
+        lm.goal = el.shrink(&lm.goal);
+        let after = elaborate::pt_nodes(&lm.goal);
+        if before != after {
+            eprintln!("  shrink[{label_idx}] {}: {before} -> {after} nodes", lm.name);
+            shrinks.push(Some((before, after)));
+        } else {
+            shrinks.push(None);
+        }
+    }
+    let locals: HashMap<String, Vec<String>> = lm.ess.iter().cloned().collect();
+    {
+        let el = Elab::new(db);
+        match el.conclusion_l(&lm.goal, &locals) {
+            Ok(c) => {
+                println!("  [{label_idx}] {:<14} {}", lm.name, c.join(" "));
+                concls.push(c.join(" "));
+            }
+            Err(e) => die(&format!("conclusion({})", lm.name), e),
+        }
+    }
+    let name = lm.name.clone();
+    lemmas.push(lm);
+    let src = assemble(base, db, lemmas)
+        .unwrap_or_else(|e| die(&format!("assemble through {name}"), e));
+    std::fs::write("data/grounded.out.mm", &src).ok();
+    *db = kernel::Db::parse(&src)
+        .unwrap_or_else(|e| die(&format!("reparse through {name}"), e));
+    if std::env::var("GROUNDED_VERIFY_EACH").is_ok() {
+        if let Err(e) = db.verify() {
+            die(&format!("KERNEL REJECTED at {name}"), e);
+        }
+    }
+}
+
 fn main() {
     let base = std::fs::read_to_string("data/grounded.mm").expect("read grounded.mm");
     let mut db = kernel::Db::parse(&base).unwrap_or_else(|e| die("base parse", e));
@@ -4700,54 +4758,43 @@ fn main() {
     let mut shrinks: Vec<Option<(usize, usize)>> = Vec::new();
 
     println!("=== Task #7: staged proofs of geometric postulates over F1 (field + √ + df-*) ===\n");
+    // core 57
     for idx in 0..NAMES.len() {
-        let mut lm = {
+        let lm = {
             let el = Elab::new(&db);
             make_lemma(idx, &el)
         };
-        // sound peephole-shrink the proof tree (kernel still re-checks it):
-        // collapses eqtr/eqid/eqcom identity steps, big win on ring_eq.
-        {
+        stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, idx, lm);
+    }
+    // extra postulate modules (worktree-isolated), staged after the core.
+    let mut next = NAMES.len();
+    for k in 0..proof_g2::count() {
+        let lm = {
             let el = Elab::new(&db);
-            let before = elaborate::pt_nodes(&lm.goal);
-            lm.goal = el.shrink(&lm.goal);
-            let after = elaborate::pt_nodes(&lm.goal);
-            if before != after {
-                eprintln!("  shrink[{idx}] {}: {before} -> {after} nodes", lm.name);
-                shrinks.push(Some((before, after)));
-            } else {
-                shrinks.push(None);
-            }
-        }
-        // show the conclusion the elaborator computed
-        let locals: HashMap<String, Vec<String>> = lm.ess.iter().cloned().collect();
-        {
+            proof_g2::make(k, &el)
+        };
+        stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
+        next += 1;
+    }
+    for k in 0..proof_g3::count() {
+        let lm = {
             let el = Elab::new(&db);
-            match el.conclusion_l(&lm.goal, &locals) {
-                Ok(c) => {
-                    println!("  [{idx}] {:<12} {}", lm.name, c.join(" "));
-                    concls.push(c.join(" "));
-                }
-                Err(e) => die(&format!("conclusion({})", lm.name), e),
-            }
-        }
-        lemmas.push(lm);
-        let src = assemble(&base, &db, &lemmas)
-            .unwrap_or_else(|e| die(&format!("assemble through {}", NAMES[idx]), e));
-        std::fs::write("data/grounded.out.mm", &src).ok();
-        db = kernel::Db::parse(&src)
-            .unwrap_or_else(|e| die(&format!("reparse through {}", NAMES[idx]), e));
-        // The cumulative kernel re-verify is O(whole DB); the giant ring_eq
-        // proofs make that dominate runtime.  We only need the full check
-        // once (it verifies every statement); set GROUNDED_VERIFY_EACH=1 to
-        // re-verify per lemma for fault localization while developing.
-        let verify_each = std::env::var("GROUNDED_VERIFY_EACH").is_ok();
-        if verify_each || idx + 1 == NAMES.len() {
-            match db.verify() {
-                Ok(()) => {}
-                Err(e) => die(&format!("KERNEL REJECTED at {}", NAMES[idx]), e),
-            }
-        }
+            proof_g3::make(k, &el)
+        };
+        stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
+        next += 1;
+    }
+    for k in 0..proof_g1::count() {
+        let lm = {
+            let el = Elab::new(&db);
+            proof_g1::make(k, &el)
+        };
+        stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
+        next += 1;
+    }
+    // single authoritative cumulative kernel verification.
+    if let Err(e) = db.verify() {
+        die("KERNEL REJECTED (final)", e);
     }
 
     println!(
@@ -4882,7 +4929,8 @@ fn emit_json(
         let mut deps: Vec<String> = Vec::new();
         if let Some(s) = st {
             for l in &s.proof {
-                if interesting_dep(l) && !deps.iter().any(|d| d == l) {
+                let is_thm = db.get(l).map_or(false, |s| matches!(s.kind, kernel::Kind::P));
+                if (interesting_dep(l) || is_thm) && !deps.iter().any(|d| d == l) {
                     deps.push(l.clone());
                 }
             }

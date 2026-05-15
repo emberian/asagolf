@@ -68,6 +68,10 @@ cong-le1 $a |- ( a = b -> ( ( a <_ c ) -> ( b <_ c ) ) ) $.
 cong-le2 $a |- ( a = b -> ( ( c <_ a ) -> ( c <_ b ) ) ) $.
 cong-lt1 $a |- ( a = b -> ( ( a < c ) -> ( b < c ) ) ) $.
 cong-lt2 $a |- ( a = b -> ( ( c < a ) -> ( c < b ) ) ) $.
+$( Point extensionality: a point is determined by its coordinates — the
+   faithfulness converse of cong-xc/cong-yc.  Same ax-8/ax-9 equality-logic
+   family (the Pt representation is injective), not a geometric postulate. $)
+ptext $a |- ( ( ( ( Xc a ) = ( Xc b ) ) /\ ( ( Yc a ) = ( Yc b ) ) ) -> a = b ) $.
 
 $( ---- F1 substrate: ordered-field algebra + ONE sqrt axiom ------------- $)
 $( These of-* are field/order axioms — algebra primitives that say nothing

@@ -1,0 +1,9 @@
+target/
+
+# generated proof objects (re-emitted by the binaries; large)
+*.out.mm
+data/birkhoff.out.mm
+data/grounded.out.mm
+
+# vendored third-party corpus, fetched on demand (public domain, ~tens of MB)
+data/set.mm

@@ -1,0 +1,12 @@
+[package]
+name = "birkhoff-asa"
+version = "0.1.0"
+edition = "2021"
+description = "Symbolic estimator for the fully-expanded ZFC proof size of ASA in a Birkhoff formalism"
+
+[dependencies]
+num-bigint = "0.4"
+num-traits = "0.2"
+
+[profile.release]
+opt-level = 3

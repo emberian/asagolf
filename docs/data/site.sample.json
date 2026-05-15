@@ -1,0 +1,44 @@
+{
+  "generated": "2026-05-15T00:00:00Z",
+  "headline": {
+    "f0_asa": 224,
+    "g4_sas_inlined": 7251714,
+    "g4_sas_log10": 6.86,
+    "lemmas": 57,
+    "db_statements": 189,
+    "shared_total": 0
+  },
+  "models": [
+    { "id": "f1", "label": "F1 axiomatic (kernel-exact)", "kind": "geometry", "log10": 6.86, "note": "ordered ring + one sqrt axiom; geometry skeleton, exact" },
+    { "id": "euclid", "label": "Minimal Euclidean-field model", "kind": "substrate", "log10": 37.0, "note": "sqrt a model primitive; algebraic closure tower" },
+    { "id": "realR", "label": "Full ZFC model of R (set.mm)", "kind": "substrate", "log10": 45.7, "note": "set.mm constructed R; dominated by resqrtth (analytic sqrt)" },
+    { "id": "poll", "label": "The poll's estimate", "kind": "claim", "log10": 1000, "note": "off by ~950+ orders of magnitude" }
+  ],
+  "lemmas": [
+    { "idx": 7, "name": "simpl", "kind": "prop", "statement": "|- ( ( ph /\\ ps ) -> ph )", "ess": [], "deps": ["ax-1", "ax-2", "ax-3", "ax-mp", "df-an"], "inlined": 240, "shared": 240, "shrink_before": null, "shrink_after": null, "blurb": "Left conjunction elimination, from the df-an abbreviation." },
+    { "idx": 10, "name": "eqtrd", "kind": "eqlogic", "statement": "|- ( ph -> x = z )", "ess": ["|- ( ph -> x = y )", "|- ( ph -> y = z )"], "deps": ["eqcom", "ax-7", "ax-2", "ax-mp"], "inlined": 61, "shared": 61, "shrink_before": null, "shrink_after": null, "blurb": "Deduction-form transitivity of equality." },
+    { "idx": 11, "name": "G0-congsub", "kind": "postulate", "statement": "|- ( x = y -> ( sqd a x ) = ( sqd a y ) )", "ess": [], "deps": ["df-sqd", "cong-xc", "cong-yc", "cong-mi1", "cong-mu1", "eqtrd"], "inlined": 1035, "shared": 1035, "shrink_before": null, "shrink_after": null, "blurb": "Congruence of squared distance under point equality." },
+    { "idx": 23, "name": "loclink", "kind": "ring", "statement": "|- ( sqd b c ) = ( ( ( sqd a b ) + ( sqd a c ) ) -x ( ( dot a b c ) + ( dot a b c ) ) )", "ess": [], "deps": ["df-sqd", "df-dot", "ring_eq"], "inlined": 3179167, "shared": 4358, "shrink_before": 4365110, "shrink_after": 4357916, "blurb": "Law of cosines as a reusable identity, decided by the ring normalizer." },
+    { "idx": 54, "name": "sqcong", "kind": "order", "statement": "|- u = v", "ess": ["|- ( u * u ) = ( v * v )", "|- ( 0 <_ ( u * v ) )"], "deps": ["sqz", "lemul0mono", "le0add", "subeq0", "ring_eq"], "inlined": 390380, "shared": 6120, "shrink_before": 550132, "shrink_after": 532576, "blurb": "a^2=b^2 and 0<=ab imply a=b, via a d^4 square-squeeze (no zero-divisor axiom)." },
+    { "idx": 55, "name": "mulcposcan", "kind": "order", "statement": "|- u = v", "ess": ["|- ( 0 < w )", "|- ( u * w ) = ( v * w )"], "deps": ["sqz", "lemul2", "lt0ne", "subeq0", "ring_eq"], "inlined": 54316, "shared": 3210, "shrink_before": 29020, "shrink_after": 24986, "blurb": "Cancel a strictly-positive factor, via a (d*w)^2 square-squeeze." },
+    { "idx": 56, "name": "G4-sas", "kind": "postulate", "statement": "|- ( sqd b c ) = ( sqd f g )", "ess": ["|- ( sqd a b ) = ( sqd e f )", "|- ( sqd a c ) = ( sqd e g )", "|- ( ACong a b c e f g )", "|- ( 0 < ( sqd a b ) )", "|- ( 0 < ( sqd a c ) )"], "deps": ["loclink", "sqcong", "mulcposcan", "df-acong", "lemul2"], "inlined": 7251714, "shared": 9930, "shrink_before": null, "shrink_after": null, "blurb": "SAS: unfold df-acong, substitute the two side equalities, cancel S=(sqd a b)(sqd a c)>0, derive dot a b c = dot e f g, then loclink twice plus congruence." }
+  ],
+  "dag": {
+    "nodes": [
+      { "id": "G4-sas", "size": 7251714, "kind": "postulate" },
+      { "id": "loclink", "size": 3179167, "kind": "ring" },
+      { "id": "sqcong", "size": 390380, "kind": "order" },
+      { "id": "mulcposcan", "size": 54316, "kind": "order" },
+      { "id": "sqz", "size": 9000, "kind": "order" },
+      { "id": "df-acong", "size": 1, "kind": "axiom" }
+    ],
+    "edges": [
+      { "from": "G4-sas", "to": "loclink" },
+      { "from": "G4-sas", "to": "sqcong" },
+      { "from": "G4-sas", "to": "mulcposcan" },
+      { "from": "G4-sas", "to": "df-acong" },
+      { "from": "sqcong", "to": "sqz" },
+      { "from": "mulcposcan", "to": "sqz" }
+    ]
+  }
+}

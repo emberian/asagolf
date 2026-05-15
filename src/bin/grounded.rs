@@ -4696,6 +4696,8 @@ fn main() {
     let base = std::fs::read_to_string("data/grounded.mm").expect("read grounded.mm");
     let mut db = kernel::Db::parse(&base).unwrap_or_else(|e| die("base parse", e));
     let mut lemmas: Vec<Lemma> = Vec::new();
+    let mut concls: Vec<String> = Vec::new();
+    let mut shrinks: Vec<Option<(usize, usize)>> = Vec::new();
 
     println!("=== Task #7: staged proofs of geometric postulates over F1 (field + √ + df-*) ===\n");
     for idx in 0..NAMES.len() {
@@ -4712,6 +4714,9 @@ fn main() {
             let after = elaborate::pt_nodes(&lm.goal);
             if before != after {
                 eprintln!("  shrink[{idx}] {}: {before} -> {after} nodes", lm.name);
+                shrinks.push(Some((before, after)));
+            } else {
+                shrinks.push(None);
             }
         }
         // show the conclusion the elaborator computed
@@ -4719,7 +4724,10 @@ fn main() {
         {
             let el = Elab::new(&db);
             match el.conclusion_l(&lm.goal, &locals) {
-                Ok(c) => println!("  [{idx}] {:<12} {}", lm.name, c.join(" ")),
+                Ok(c) => {
+                    println!("  [{idx}] {:<12} {}", lm.name, c.join(" "));
+                    concls.push(c.join(" "));
+                }
                 Err(e) => die(&format!("conclusion({})", lm.name), e),
             }
         }
@@ -4786,4 +4794,204 @@ fn main() {
         mulcpos.pretty(),
         sas.pretty()
     );
+
+    if std::env::args().any(|a| a == "--emit-json") {
+        emit_json(&db, &lemmas, &concls, &shrinks);
+    }
+}
+
+/// Coarse classification of a staged lemma by name, for the explorer.
+fn kind_of(name: &str) -> &'static str {
+    match name {
+        "id" | "a1i" | "syl" | "pm2.21" | "pm2.43" | "notnot2" | "notnot1"
+        | "simpl" | "simpr" | "mpd" | "syld" | "com12" | "con3i" | "con3"
+        | "pm2.18" | "jca" | "orri" | "orli" | "jaoi" | "pm3.2" | "expi"
+        | "mt" => "prop",
+        "eqtrd" | "eqtr" => "eqlogic",
+        "G3c-rayline" | "G0-congsub" | "G4-sas" => "postulate",
+        "ac-demo" | "ac-mul-demo" | "ring-demo" => "demo",
+        "le2sub" | "sub2le" | "lerefl" | "ltle" | "lt0ne" | "lein2" | "ltII"
+        | "lemul2" | "lemul02" | "lecon" | "sqzhalf" | "sqz" | "le0add"
+        | "lemul0mono" | "sqcong" | "mulcposcan" => "order",
+        _ => "ring",
+    }
+}
+
+/// Is `lbl` an "interesting" dependency (a staged lemma or a genuine
+/// axiom/definition), as opposed to a pure syntax constructor?
+fn interesting_dep(lbl: &str) -> bool {
+    NAMES.contains(&lbl)
+        || lbl.starts_with("of-")
+        || lbl.starts_with("ax-")
+        || lbl.starts_with("df-")
+        || lbl.starts_with("cong-")
+        || lbl == "eqcom"
+        || lbl == "eqid"
+}
+
+fn json_str(s: &str) -> String {
+    let mut o = String::with_capacity(s.len() + 2);
+    o.push('"');
+    for c in s.chars() {
+        match c {
+            '"' => o.push_str("\\\""),
+            '\\' => o.push_str("\\\\"),
+            '\n' => o.push_str("\\n"),
+            '\t' => o.push_str("\\t"),
+            c if (c as u32) < 0x20 => o.push_str(&format!("\\u{:04x}", c as u32)),
+            c => o.push(c),
+        }
+    }
+    o.push('"');
+    o
+}
+
+/// Emit docs/data/site.json (schema in docs/SCHEMA.md): per-lemma exact
+/// inlined (cut-free) vs shared (DAG, stored RPN) sizes + the dependency
+/// graph + the model-variation table.  The shared total is the sound
+/// proof-cruncher figure: the same kernel-checked proofs kept as a DAG
+/// with sub-proofs shared once.
+fn emit_json(
+    db: &kernel::Db,
+    lemmas: &[Lemma],
+    concls: &[String],
+    shrinks: &[Option<(usize, usize)>],
+) {
+    let mut memo = HashMap::new();
+    // shared total = sum of stored RPN proof lengths over every $p
+    let shared_total: usize = db
+        .stmts
+        .iter()
+        .filter(|s| matches!(s.kind, kernel::Kind::P))
+        .map(|s| s.proof.len())
+        .sum();
+
+    let mut lem_json: Vec<String> = Vec::new();
+    let mut node_set: Vec<(String, f64, String)> = Vec::new(); // (id, log10 size, kind)
+    let mut edges: Vec<(String, String)> = Vec::new();
+    let mut g4_log = 0.0_f64;
+    let mut g4_pretty = String::new();
+
+    for (idx, lm) in lemmas.iter().enumerate() {
+        let name = &lm.name;
+        let inlined = expand(db, name, &mut memo);
+        let ilog = inlined.log10();
+        let st = db.get(name);
+        let shared = st.map(|s| s.proof.len()).unwrap_or(0);
+        // interesting deps, dedup preserving order
+        let mut deps: Vec<String> = Vec::new();
+        if let Some(s) = st {
+            for l in &s.proof {
+                if interesting_dep(l) && !deps.iter().any(|d| d == l) {
+                    deps.push(l.clone());
+                }
+            }
+        }
+        let kind = kind_of(name);
+        if name == "G4-sas" {
+            g4_log = ilog;
+            g4_pretty = inlined.pretty();
+        }
+        node_set.push((name.clone(), ilog, kind.to_string()));
+        for d in &deps {
+            edges.push((name.clone(), d.clone()));
+        }
+        let ess: Vec<String> = lm
+            .ess
+            .iter()
+            .map(|(_, toks)| json_str(&toks.join(" ")))
+            .collect();
+        let deps_j: Vec<String> = deps.iter().map(|d| json_str(d)).collect();
+        let (sb, sa) = match shrinks.get(idx).and_then(|x| *x) {
+            Some((b, a)) => (b.to_string(), a.to_string()),
+            None => ("null".into(), "null".into()),
+        };
+        let concl = concls.get(idx).cloned().unwrap_or_default();
+        lem_json.push(format!(
+            "{{\"idx\":{idx},\"name\":{},\"kind\":{},\"statement\":{},\"ess\":[{}],\"deps\":[{}],\"inlined\":{},\"inlined_pretty\":{},\"inlined_log10\":{:.4},\"shared\":{},\"shrink_before\":{},\"shrink_after\":{}}}",
+            json_str(name),
+            json_str(kind),
+            json_str(&concl),
+            ess.join(","),
+            deps_j.join(","),
+            // exact integer when it fits a u64-ish range, else log10
+            if ilog < 18.0 { inlined.pretty() } else { format!("{:.4e}", 10f64.powf(ilog)) },
+            json_str(&inlined.pretty()),
+            ilog,
+            shared,
+            sb,
+            sa
+        ));
+    }
+
+    // dependency-graph axiom/def nodes (referenced but not staged)
+    let mut seen: Vec<String> = node_set.iter().map(|(n, _, _)| n.clone()).collect();
+    for (_, d) in &edges {
+        if !seen.iter().any(|s| s == d) {
+            seen.push(d.clone());
+            let k = if d.starts_with("df-") {
+                "def"
+            } else {
+                "axiom"
+            };
+            node_set.push((d.clone(), 0.0, k.to_string()));
+        }
+    }
+
+    let nodes_j: Vec<String> = node_set
+        .iter()
+        .map(|(n, sz, k)| {
+            format!(
+                "{{\"id\":{},\"log10\":{:.4},\"kind\":{}}}",
+                json_str(n),
+                sz,
+                json_str(k)
+            )
+        })
+        .collect();
+    let edges_j: Vec<String> = edges
+        .iter()
+        .map(|(f, t)| format!("{{\"from\":{},\"to\":{}}}", json_str(f), json_str(t)))
+        .collect();
+
+    let models = r#"[
+    {"id":"f1","label":"F1 axiomatic (kernel-exact)","kind":"geometry","log10":G4LOG,"note":"ordered ring + one sqrt axiom; geometry skeleton, exact"},
+    {"id":"euclid","label":"Minimal Euclidean-field model","kind":"substrate","log10":37.0,"note":"sqrt a model primitive; algebraic closure tower"},
+    {"id":"realR","label":"Full ZFC model of R (set.mm)","kind":"substrate","log10":45.7,"note":"set.mm constructed R; dominated by resqrtth (analytic sqrt)"},
+    {"id":"poll","label":"The poll's estimate","kind":"claim","log10":1000.0,"note":"off by ~950+ orders of magnitude"}
+  ]"#
+        .replace("G4LOG", &format!("{:.4}", g4_log));
+
+    let out = format!(
+        "{{\n  \"generated\": {},\n  \"headline\": {{\"f0_asa\": 224, \"g4_sas_inlined\": {}, \"g4_sas_log10\": {:.4}, \"lemmas\": {}, \"db_statements\": {}, \"shared_total\": {}}},\n  \"models\": {},\n  \"lemmas\": [\n    {}\n  ],\n  \"dag\": {{\"nodes\": [{}], \"edges\": [{}]}}\n}}\n",
+        json_str(&chrono_stamp()),
+        g4_pretty,
+        g4_log,
+        lemmas.len(),
+        db.stmts.len(),
+        shared_total,
+        models,
+        lem_json.join(",\n    "),
+        nodes_j.join(","),
+        edges_j.join(",")
+    );
+    std::fs::create_dir_all("docs/data").ok();
+    std::fs::write("docs/data/site.json", &out)
+        .unwrap_or_else(|e| die("write docs/data/site.json", e.to_string()));
+    println!(
+        "\n[emit-json] docs/data/site.json written — inlined G4 SAS = {}, shared total = {} steps (cruncher: {:.1}x smaller than the cut-free total)",
+        g4_pretty,
+        shared_total,
+        10f64.powf(g4_log) / shared_total.max(1) as f64
+    );
+}
+
+/// Best-effort UTC timestamp without pulling a date crate.
+fn chrono_stamp() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let secs = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    format!("unix:{secs}")
 }

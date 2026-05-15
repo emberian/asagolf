@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asagolf — measuring ASA in ZFC</title>
+  <meta name="description"
+        content="Exact step counts for a Birkhoff ASA proof, kernel-verified from ring axioms all the way to ZFC. The poll said 10^1000. It is 10^6.9." />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+<!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
+<header id="hero" role="banner">
+  <div class="container">
+    <h1 class="hero-title">asa<span>golf</span></h1>
+    <p class="hero-tagline">
+      Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof,
+      traced from ring axioms through ZFC — the poll said 10<sup>1000</sup>.
+    </p>
+
+    <div class="hero-stats" role="list" aria-label="Headline statistics">
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" id="stat-f0" aria-label="F0 ASA step count">224</div>
+        <div class="stat-label">F0 ASA (steps, exact)</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" id="stat-g4" aria-label="G4 SAS inlined step count">7,251,714</div>
+        <div class="stat-label">G4 SAS inlined (no-cheating)</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" id="stat-log" aria-label="G4 SAS log10">~10^6.86</div>
+        <div class="stat-label">vs poll's 10<sup>1000</sup></div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" id="stat-lemmas" aria-label="Number of lemmas">57</div>
+        <div class="stat-label">kernel-verified lemmas</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" id="stat-stmts" aria-label="DB statements">189</div>
+        <div class="stat-label">statements in verified DB</div>
+      </div>
+    </div>
+
+    <nav class="hero-nav" aria-label="Page sections">
+      <a href="#results-section">Results</a>
+      <a href="#dag-section">Proof DAG</a>
+      <a href="#lemma-section">Lemmas</a>
+      <a href="#model-section">Model variation</a>
+      <a href="#what-section">What this means</a>
+    </nav>
+
+    <p class="text-muted" style="font-size:.78rem;color:#8b949e">
+      Generated: <span id="generated-date">—</span>
+    </p>
+  </div>
+</header>
+
+<!-- ─── Results: table + log-scale ──────────────────────────────────────── -->
+<section class="section" id="results-section" aria-labelledby="results-heading">
+  <div class="container">
+    <h2 class="section-title" id="results-heading">
+      The claim vs the measurement
+      <small>All sizes kernel-exact; log scale runs from 10<sup>0</sup> to 10<sup>1000</sup></small>
+    </h2>
+
+    <!-- Log-scale bar -->
+    <figure aria-label="Logarithmic scale bar showing proof sizes from 10^0 to 10^1000">
+      <div class="log-scale-container">
+        <div class="log-scale-track" id="log-scale-track" role="img"
+             aria-label="Log-scale marker bar">
+          <!-- Populated by app.js -->
+        </div>
+        <div class="log-scale-axis" id="log-scale-axis"
+             style="position:relative;height:1.6em;"
+             aria-hidden="true">
+          <!-- Axis tick labels populated by app.js -->
+        </div>
+      </div>
+      <figcaption class="text-muted" style="font-size:.8rem;margin-top:.5rem">
+        Each marker shows a model or claim on a log<sub>10</sub> scale.
+        The gap between geometry+substrate and the poll is ~950 orders of magnitude.
+      </figcaption>
+    </figure>
+
+    <!-- Results table -->
+    <div class="results-table-wrap mt-2">
+      <table class="results-table" role="table" aria-label="Proof size models">
+        <thead>
+          <tr>
+            <th scope="col">Model / claim</th>
+            <th scope="col">Kind</th>
+            <th scope="col">log<sub>10</sub>(steps)</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="results-tbody">
+          <!-- Populated by app.js -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Proof DAG ─────────────────────────────────────────────────────────── -->
+<section class="section" id="dag-section" aria-labelledby="dag-heading">
+  <div class="container">
+    <h2 class="section-title" id="dag-heading">
+      Interactive proof DAG
+      <small>
+        Node size and colour by kind and inlined size (log-scaled).
+        Click a node to see lemma details. Pan and scroll to zoom.
+      </small>
+    </h2>
+
+    <!-- Kind legend -->
+    <div class="dag-legend" id="dag-legend" aria-label="Node colour legend">
+      <!-- Populated by app.js -->
+    </div>
+
+    <!-- Graph container -->
+    <div class="dag-wrapper" style="position:relative">
+      <!-- Cytoscape canvas -->
+      <div id="cy" role="img" aria-label="Interactive proof dependency graph"></div>
+
+      <!-- Detail panel, shown on node click -->
+      <aside id="detail-panel" aria-label="Node detail" aria-live="polite">
+        <!-- Populated by app.js -->
+      </aside>
+    </div>
+
+    <!-- Fallback table if Cytoscape unavailable -->
+    <div id="dag-fallback" role="region" aria-label="DAG fallback table">
+      <!-- Populated by app.js if CDN fails -->
+    </div>
+  </div>
+</section>
+
+<!-- ─── Lemma table ───────────────────────────────────────────────────────── -->
+<section class="section" id="lemma-section" aria-labelledby="lemma-heading">
+  <div class="container">
+    <h2 class="section-title" id="lemma-heading">
+      Lemmas
+      <small>Click a column header to sort; click a row to see full detail</small>
+    </h2>
+
+    <div class="table-controls">
+      <label for="lemma-filter">Filter:</label>
+      <input
+        type="search"
+        id="lemma-filter"
+        class="filter-input"
+        placeholder="name, kind, statement…"
+        aria-label="Filter lemmas by name, kind, or statement"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="lemma-table" id="lemma-table" role="table"
+             aria-label="Lemma list, sortable and filterable">
+        <thead>
+          <tr>
+            <th scope="col" data-sort="idx"      >#<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="name"     >Name<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="kind"     >Kind<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="statement">Statement<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="inlined"  >Inlined<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="shared"   >Shared<span class="sort-indicator"> ⇅</span></th>
+          </tr>
+        </thead>
+        <tbody id="lemma-tbody">
+          <!-- Populated by app.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lemma detail pane, shown on row click -->
+    <div id="lemma-detail" role="region" aria-label="Lemma detail" aria-live="polite">
+      <!-- Populated by app.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ─── Model variation ───────────────────────────────────────────────────── -->
+<section class="section" id="model-section" aria-labelledby="model-heading">
+  <div class="container">
+    <h2 class="section-title" id="model-heading">
+      Model variation
+      <small>
+        Select a substrate model to see the combined headline.
+        Total = geometry log<sub>10</sub> + substrate log<sub>10</sub>.
+      </small>
+    </h2>
+
+    <div class="model-variation-layout">
+      <!-- Left: controls -->
+      <div>
+        <div class="segment-group">
+          <label id="geom-label">Geometry</label>
+          <div class="segment-buttons" id="geom-buttons" role="group"
+               aria-labelledby="geom-label">
+            <!-- Populated by app.js -->
+          </div>
+        </div>
+
+        <div class="segment-group">
+          <label id="substrate-label">Substrate</label>
+          <div class="segment-buttons" id="substrate-buttons" role="group"
+               aria-labelledby="substrate-label">
+            <!-- Populated by app.js -->
+          </div>
+        </div>
+
+        <p class="text-muted mt-1" style="font-size:.82rem;max-width:42ch">
+          The geometry cost is the same in every model. Substrate cost depends on
+          how the ordered field with square roots is constructed.
+        </p>
+      </div>
+
+      <!-- Right: live result -->
+      <div class="model-result" aria-live="polite" aria-atomic="true">
+        <div class="total-label">Combined headline (log<sub>10</sub> steps)</div>
+        <div class="total-value" id="model-total" aria-label="Computed combined log10">—</div>
+        <div class="total-note" id="model-note"></div>
+
+        <div class="model-breakdown mt-2" id="model-breakdown">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── What this means ───────────────────────────────────────────────────── -->
+<section class="section" id="what-section" aria-labelledby="what-heading">
+  <div class="container">
+    <h2 class="section-title" id="what-heading">What this means</h2>
+
+    <article class="prose" aria-label="Explanatory prose">
+
+      <h3>The question</h3>
+      <p>
+        A poll estimated that the fully-expanded, machine-checked proof of a basic
+        triangle-congruence theorem, reduced all the way to ZFC set theory, would be
+        more than 10<sup>1000</sup> steps. This project measures it directly with a
+        small trusted proof checker and real, kernel-verified proof objects, reporting
+        exact step counts.
+      </p>
+
+      <h3>Derived, not asserted</h3>
+      <p>
+        The trivial route is to assert the Birkhoff postulates (ruler, protractor,
+        SAS, …) as axioms; then "ASA" is about 200 steps and the question is vacuous.
+        Here the postulates are instead derived. The substrate asserts only an ordered
+        commutative ring with 1, one extra primitive (square roots of non-negatives
+        exist — a Euclidean field), and ordinary logic with equality. Points, lines,
+        distance, dot product and angle congruence are conservative definitions over
+        coordinates, never axioms. Every Birkhoff postulate used is then a
+        kernel-verified theorem proved from that substrate.
+      </p>
+
+      <h3>Why there is no blow-up in the geometry</h3>
+      <p>
+        Euclidean-plane geometry, expressed through these definitions, is just
+        polynomial identities and order facts over the substrate. SAS — the hardest
+        postulate, needing the law of cosines, square-root-free metric reasoning, and
+        integral-domain cancellation — comes out to about 7.25 million primitive steps
+        when fully expanded with no shared sub-proofs at all. That is large only by
+        everyday standards; it is around 10<sup>6.9</sup>, an astronomical distance
+        below 10<sup>1000</sup>. The geometry is cheap.
+      </p>
+
+      <h3>Where the large numbers actually live</h3>
+      <p>
+        The only place a genuinely large number appears is in constructing the real
+        numbers from sets. When the substrate axioms are discharged against set.mm's
+        fully constructed real field, the cost is about 10<sup>45.7</sup>, dominated
+        by the existence of square roots routed through analytic completeness
+        machinery. Completeness itself is never used by the geometry; the expense is
+        the construction of the field, not any deep theorem about it. A leaner model
+        in which square roots are a primitive of the field brings the substrate term
+        down to about 10<sup>37</sup>. Either way the result is nowhere near
+        10<sup>1000</sup>: the poll over-estimates by roughly 950 orders of magnitude.
+      </p>
+
+      <h3>The same theorem is valid in the real reals</h3>
+      <p>
+        The grounded proof never uses any property beyond the substrate axioms — no
+        completeness, no Archimedean property, no particular construction. So it holds
+        in every Euclidean field: the real numbers, the real algebraic numbers,
+        real-closed fields, the computable reals, and so on. Logically, the substrate
+        axioms are all theorems of the real field, so the proof transfers upward to the
+        standard real numbers unchanged; the minimal algebraic model is enough to
+        establish validity, and the expensive real construction inherits exactly the
+        same theorem. The cheap proof is the portable one — a proof that leaned on
+        completeness would not transfer down.
+      </p>
+
+      <h3>Reading the sizes</h3>
+      <p>
+        Two numbers matter. The <em>inlined size</em> is the cut-free count with no
+        sub-proof reuse at all — a deliberately pessimistic metric. The
+        <em>shared size</em> is the same proof kept as a directed acyclic graph with
+        common sub-proofs shared once; it is far smaller and is what a real proof
+        library stores. Both are exact and re-checked by the kernel.
+      </p>
+
+    </article>
+  </div>
+</section>
+
+<!-- ─── Footer ─────────────────────────────────────────────────────────────── -->
+<footer role="contentinfo">
+  <div class="container">
+    <p>
+      asagolf &mdash; kernel-verified proof sizes &mdash;
+      data generated by <code>cargo run --bin grounded -- --emit-json</code>
+    </p>
+  </div>
+</footer>
+
+<!-- ES module entry point -->
+<script type="module" src="assets/app.js"></script>
+
+</body>
+</html>

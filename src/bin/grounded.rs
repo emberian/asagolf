@@ -3445,27 +3445,24 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
             let re_c = eqcomm(el, pl(el, dv(), v()), u(), re);
             let z0 = ring_eq(el, &pl(el, z(), v()), &v());
             let h = eq(dv(), z());
+            // DEMO of the combinator library in src/elaborate.rs:
+            //   * `gen_inst`   instantiates the generic `cong-pl1`
+            //     congruence template at the concrete subterms;
+            //   * `imp_of_ess` lifts the two unconditional ring identities
+            //     (`re_c`, `z0`) under the antecedent `h` — the canonical
+            //     "a1i-lift" (lecpos / g2-posne) pattern.
+            // Both emit the identical kernel proof-terms as the prior
+            // hand-built `app("cong-pl1"…)` / `app("a1i"…)` calls; the
+            // wff scaffolds are now recovered by parsing, not hand-built.
             let cpl1ax = el
-                .app(
+                .gen_inst(
                     "cong-pl1",
                     &[("a", dv()), ("b", z()), ("c", v())],
                     &[],
                 )
                 .unwrap();
-            let a_re = el
-                .app(
-                    "a1i",
-                    &[("ph", eq(u(), pl(el, dv(), v()))), ("ps", h.clone())],
-                    &[re_c],
-                )
-                .unwrap();
-            let a_z0 = el
-                .app(
-                    "a1i",
-                    &[("ph", eq(pl(el, z(), v()), v())), ("ps", h.clone())],
-                    &[z0],
-                )
-                .unwrap();
+            let a_re = el.imp_of_ess(re_c, h.clone()).unwrap();
+            let a_z0 = el.imp_of_ess(z0, h.clone()).unwrap();
             let t1 = el
                 .app(
                     "eqtrd",

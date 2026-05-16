@@ -251,6 +251,148 @@ impl<'a> Elab<'a> {
         self.imp_elim(rev, &[bi, ps])
     }
 
+    // ====================================================================
+    // Deduction-form combinator library.
+    //
+    // The methods below are *untrusted convenience*: they assemble ordinary
+    // `Pt` proof-terms out of the same Hilbert-system lemmas a hand proof
+    // would, so the sound kernel still independently re-checks every emitted
+    // step. They exist because the same patterns were rediscovered by hand
+    // across the G1/G2/G3a derivations; promoting them here lets future
+    // proofs (and a maintainer) compose instead of re-derive. Each carries a
+    // precise in/out judgement; all `wff`/`term` scaffolds are recovered by
+    // parsing the premises' conclusions, never hand-built.
+    // ====================================================================
+
+    /// Parse the `wff` payload of a `|- W` conclusion into its syntax `Pt`.
+    /// (The dual of `assertion`, which goes `wff` → `|-`.)
+    fn wff_of(&self, concl: &[String]) -> Result<Pt, String> {
+        if concl.first().map(|s| s.as_str()) != Some("|-") {
+            return Err(format!("expected `|-`, got `{}`", concl.join(" ")));
+        }
+        self.parse_wff(&concl[1..])
+    }
+
+    /// **`imp_of_ess`** — lift a closed/ess-form fact into composable
+    /// implication form: given `inner : |- C` and an antecedent wff `ant`,
+    /// returns `|- ( ant -> C )` via `a1i`. This is the recurring
+    /// "lecpos / g2-posne" pattern (an unconditional algebraic identity, or
+    /// an ess-hypothesis subproof, lifted under a `H ->` so it threads
+    /// through `syl`/`eqtrd`/`jaoi` branches). Needs `a1i` in the database
+    /// (ess `a1i.1 : |- ph` ⊢ `|- ( ps -> ph )`).
+    ///
+    /// Untrusted convenience; the kernel re-checks the emitted `a1i` node.
+    pub fn imp_of_ess(&self, inner: Pt, ant: Pt) -> Result<Pt, String> {
+        let c = self.wff_of(&self.conclusion(&inner)?)?;
+        self.app("a1i", &[("ph", c), ("ps", ant)], &[inner])
+    }
+
+    /// **`gen_inst`** — instantiate a *proven generic template* lemma named
+    /// `name` (proven once over fresh atoms, e.g. `g3a-plk` / `g2-elim-y` /
+    /// `gsplit`) at concrete big subterms: `binds` maps each template
+    /// variable to the large `Pt` to substitute. Equivalent to
+    /// `app(name, binds, ess)` but a single intention-revealing call site for
+    /// the "instantiate the tiny generic identity with the real terms"
+    /// pattern. `ess`, when non-empty, supplies the template's essential
+    /// premises in order.
+    ///
+    /// Untrusted convenience; substitution + kernel re-check are unchanged.
+    pub fn gen_inst(
+        &self,
+        name: &str,
+        binds: &[(&str, Pt)],
+        ess: &[Pt],
+    ) -> Result<Pt, String> {
+        self.app(name, binds, ess)
+    }
+
+    /// **`and_intro_d`** — deduction-form conjunction introduction:
+    /// `pb : |- ( A -> B )`, `pc : |- ( A -> C )` ⊢ `|- ( A -> ( B /\ C ) )`
+    /// via the `jca` lemma (ess `jca.1 : ( ph -> ps )`,
+    /// `jca.2 : ( ph -> ch )` ⊢ `( ph -> ( ps /\ ch ) )`). `A` and the
+    /// conjuncts are recovered by parsing `pb`/`pc`; the two antecedents
+    /// must be syntactically identical.
+    ///
+    /// Untrusted convenience; the kernel re-checks the emitted `jca` node.
+    pub fn and_intro_d(&self, pb: Pt, pc: Pt) -> Result<Pt, String> {
+        let (a1, b) = self.split_imp(&self.conclusion(&pb)?)?;
+        let (a2, c) = self.split_imp(&self.conclusion(&pc)?)?;
+        if !pt_eq(&a1, &a2) {
+            return Err("and_intro_d: antecedents differ".into());
+        }
+        self.app(
+            "jca",
+            &[("ph", a1), ("ps", b), ("ch", c)],
+            &[pb, pc],
+        )
+    }
+
+    /// **`conj_dup`** — `|- ( P -> ( P /\ P ) )` for an arbitrary wff `p`
+    /// (the "jca(id,id)" pattern used by g2-sqpos-ne). Built as
+    /// `and_intro_d(id(P), id(P))` where `id : |- ( ph -> ph )`.
+    ///
+    /// Untrusted convenience; the kernel re-checks every emitted node.
+    pub fn conj_dup(&self, p: Pt) -> Result<Pt, String> {
+        let idp = self.app("id", &[("ph", p.clone())], &[])?;
+        self.and_intro_d(idp.clone(), idp)
+    }
+
+    /// **`sub0_to_eq`** — the `(L -x R = 0) ⇒ (L = R)` bridge: given
+    /// `prem : |- ( ( L -x R ) = 0 )`, returns `|- ( L = R )` by detaching
+    /// the closed `subeq0 : |- ( ( ( u -x v ) = 0 ) -> ( u = v ) )` lemma
+    /// with `prem`. `L`/`R` are recovered by parsing `prem`.
+    ///
+    /// Untrusted convenience; `imp_elim` emits an ordinary `ax-mp`.
+    pub fn sub0_to_eq(&self, prem: Pt) -> Result<Pt, String> {
+        // prem : |- ( ( L -x R ) = 0 )
+        let (lhs, _rhs0) = self.split_eq(&self.conclusion(&prem)?)?;
+        // lhs is the syntax tree of ( L -x R ): a binary `tmi`.
+        if lhs.kids.len() != 2 {
+            return Err("sub0_to_eq: premise lhs is not a binary subtraction".into());
+        }
+        let l = lhs.kids[0].clone();
+        let r = lhs.kids[1].clone();
+        let imp = self.app("subeq0", &[("u", l), ("v", r)], &[])?;
+        self.imp_elim(imp, &[prem])
+    }
+
+    /// **`cancel_pos`** — cancel a strictly-positive common factor:
+    /// `pos : |- ( 0 < W )`, `eq : |- ( ( X * W ) = ( Y * W ) )` ⊢
+    /// `|- ( X = Y )` via the `mulcposcan` lemma (ess
+    /// `mulcposcan.1 : ( 0 < w )`, `mulcposcan.2 : ( ( u * w ) = ( v * w ) )`
+    /// ⊢ `( u = v )`). `X`/`Y`/`W` are recovered by parsing `eq`.
+    ///
+    /// Untrusted convenience; the kernel re-checks the emitted node.
+    pub fn cancel_pos(&self, pos: Pt, eq: Pt) -> Result<Pt, String> {
+        let (xw, yw) = self.split_eq(&self.conclusion(&eq)?)?;
+        if xw.kids.len() != 2 || yw.kids.len() != 2 {
+            return Err("cancel_pos: equation sides are not binary products".into());
+        }
+        let x = xw.kids[0].clone();
+        let w = xw.kids[1].clone();
+        let y = yw.kids[0].clone();
+        self.app(
+            "mulcposcan",
+            &[("u", x), ("v", y), ("w", w)],
+            &[pos, eq],
+        )
+    }
+
+    /// **`sqz_zero`** — a square that vanishes forces its base to vanish:
+    /// `prem : |- ( ( X * X ) = 0 )` ⊢ `|- ( X = 0 )` via the `sqz` lemma
+    /// (ess `sqz.1 : ( ( u * u ) = 0 )` ⊢ `( u = 0 )`). `X` is recovered by
+    /// parsing `prem`.
+    ///
+    /// Untrusted convenience; the kernel re-checks the emitted `sqz` node.
+    pub fn sqz_zero(&self, prem: Pt) -> Result<Pt, String> {
+        let (sq, _z) = self.split_eq(&self.conclusion(&prem)?)?;
+        if sq.kids.len() != 2 {
+            return Err("sqz_zero: premise lhs is not a binary product".into());
+        }
+        let x = sq.kids[0].clone();
+        self.app("sqz", &[("u", x)], &[prem])
+    }
+
     /// Token sequence this proof-term proves/constructs (with leading typecode).
     pub fn conclusion(&self, p: &Pt) -> Result<Vec<String>, String> {
         self.conclusion_l(p, &HashMap::new())
@@ -698,5 +840,85 @@ mod tests {
             .sum();
         eprintln!("shrink: {before} nodes -> {after} nodes across rule samples");
         assert!(after < before);
+    }
+
+    /// Minimal self-contained Metamath fixture: the propositional core plus
+    /// the `id` / `a1i` / `jca` lemmas the combinator layer detaches against.
+    /// (`a1i`/`jca` are declared `$a` here only so the elaborator can
+    /// assemble + compute conclusions; their *real* `$p` derivations live in
+    /// the full build and are kernel-checked there.)
+    const FIXTURE: &str = r#"
+$c ( ) -> -. /\ wff |- $.
+$v ph ps ch $.
+wph $f wff ph $.  wps $f wff ps $.  wch $f wff ch $.
+wn $a wff -. ph $.
+wi $a wff ( ph -> ps ) $.
+wa $a wff ( ph /\ ps ) $.
+ax-1 $a |- ( ph -> ( ps -> ph ) ) $.
+ax-2 $a |- ( ( ph -> ( ps -> ch ) ) -> ( ( ph -> ps ) -> ( ph -> ch ) ) ) $.
+${ mp.min $e |- ph $.  mp.maj $e |- ( ph -> ps ) $.  ax-mp $a |- ps $. $}
+id $a |- ( ph -> ph ) $.
+${ a1i.1 $e |- ph $.  a1i $a |- ( ps -> ph ) $. $}
+${ jca.1 $e |- ( ph -> ps ) $.  jca.2 $e |- ( ph -> ch ) $.
+   jca $a |- ( ph -> ( ph /\ ps ) ) $. $}
+"#;
+
+    #[test]
+    fn imp_of_ess_lifts_under_antecedent() {
+        // jca's $a body above is only a placeholder; this test exercises
+        // imp_of_ess, which needs only `a1i`.
+        let db = Db::parse(FIXTURE).expect("fixture parses");
+        let el = Elab::new(&db);
+        // inner : |- ( ph -> ph )   (a closed fact, via `id`)
+        let inner = el.app("id", &[("ph", leaf("wph"))], &[]).unwrap();
+        // ant : the wff `ps`
+        let lifted = el.imp_of_ess(inner.clone(), leaf("wps")).unwrap();
+        // imp_of_ess must emit exactly an `a1i` node, kids = [ph-binding,
+        // ps-binding, inner], so the kernel re-checks the standard shape.
+        assert_eq!(lifted.label, "a1i");
+        assert!(
+            pt_eq(lifted.kids.last().unwrap(), &inner),
+            "the lifted node carries the original proof as its $e kid"
+        );
+        // Conclusion is `|- ( ps -> ( ph -> ph ) )`.
+        let c = el.conclusion(&lifted).unwrap();
+        assert_eq!(
+            c.join(" "),
+            "|- ( ps -> ( ph -> ph ) )",
+            "imp_of_ess lifts the fact under the antecedent"
+        );
+        // Idempotent shape: re-parsing the consequent recovers `inner`'s wff.
+        let again = el.imp_of_ess(inner, leaf("wch")).unwrap();
+        assert_eq!(
+            el.conclusion(&again).unwrap().join(" "),
+            "|- ( ch -> ( ph -> ph ) )"
+        );
+    }
+
+    #[test]
+    fn conj_dup_builds_p_to_p_and_p() {
+        let db = Db::parse(FIXTURE).expect("fixture parses");
+        let el = Elab::new(&db);
+        let dup = el.conj_dup(leaf("wph")).unwrap();
+        // Built via and_intro_d(id, id) -> a `jca` node whose two $e kids
+        // are identical `id` proofs.
+        assert_eq!(dup.label, "jca");
+        let n = dup.kids.len();
+        let e1 = &dup.kids[n - 2];
+        let e2 = &dup.kids[n - 1];
+        assert_eq!(e1.label, "id");
+        assert!(pt_eq(e1, e2), "conj_dup uses the same id proof twice");
+        // Conclusion is `|- ( ph -> ( ph /\ ph ) )`.
+        assert_eq!(
+            el.conclusion(&dup).unwrap().join(" "),
+            "|- ( ph -> ( ph /\\ ph ) )"
+        );
+        // and_intro_d rejects mismatched antecedents.
+        let idp = el.app("id", &[("ph", leaf("wph"))], &[]).unwrap();
+        let idq = el.app("id", &[("ph", leaf("wps"))], &[]).unwrap();
+        assert!(
+            el.and_intro_d(idp, idq).is_err(),
+            "and_intro_d requires identical antecedents"
+        );
     }
 }

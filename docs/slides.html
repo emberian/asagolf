@@ -3,283 +3,629 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asagolf — slides — the poll said 10^1000</title>
+  <title>asagolf — how big is a "simple" proof, really?</title>
   <meta name="description"
-        content="How big is a fully-expanded ASA proof in ZFC? The poll said 10^1000. The geometry is 10^6.9; the only big term is constructing R, at 10^45.7." />
+        content="A foundations lightning talk. The poll said the ZFC-grounded proof of ASA exceeds 10^1000 steps. We built the proof object and counted: the geometry is 10^6.9; the only big term is constructing R, at 10^45.7." />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="asagolf" />
-  <meta property="og:title" content="asagolf — slides — the poll said 10^1000" />
+  <meta property="og:title" content="asagolf — slides — how big is a 'simple' proof, really?" />
   <meta property="og:description"
-        content="A micro-kernel, a cut-free metric, and every Birkhoff postulate derived not asserted. The geometry is 10^6.9; constructing R is 10^45.7." />
+        content="Cut-free size made concrete: every Birkhoff postulate derived not asserted, kernel-checked. Geometry 10^6.9; constructing R 10^45.7; the poll said 10^1000." />
   <meta property="og:url" content="https://emberian.github.io/asagolf/slides.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="asagolf — slides" />
   <meta name="twitter:description"
-        content="The poll said 10^1000. The geometry is 10^6.9; the only big term is constructing R, at 10^45.7. Off by ~950 orders of magnitude." />
+        content="The poll said 10^1000. The geometry is 10^6.9; the only big term is constructing R, at 10^45.7. ~950 orders of magnitude off." />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d1117'/%3E%3Ctext x='32' y='44' font-size='34' font-family='ui-monospace,monospace' fill='%2358a6ff' text-anchor='middle'%3E%E2%88%A0%3C/text%3E%3C/svg%3E" />
 
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/reveal.css" />
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/theme/black.css" id="theme" />
+  <!-- reveal.js via CDN; graceful offline fallback below -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.6.1/dist/reveal.css" />
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.6.1/dist/theme/black.css" id="theme" />
+
+  <!--
+    ============================================================
+    TIMING BUDGET  (target ~15:00 for a foundations classroom)
+    ------------------------------------------------------------
+     1  Hook — the poll                                  1:00
+     2  Proofs are objects; the trust root               1:30
+     3  The metric: cut-free / fully inlined             1:30
+     4  The trap: the layer illusion                     1:30
+     5  The substrate (axiom tower diagram)              1:30
+     6  Doing it: the wall, and the one idea             3:00
+     7  Where the 10^1000 went (spectrum)                2:30
+     8  THE money shot — the gap (log bar)               1:00
+     9  Honesty: the refusals                            1:30
+    10  Close                                            0:30
+    ------------------------------------------------------------
+                                              TOTAL    ~15:00
+    ============================================================
+    Numbers are all traceable to HISTORY.md / docs/data/site.json:
+      F0 ASA = 224 (exact); G4-SAS = 7,251,714 (10^6.86);
+      G3a = 4,720,242; G2-incid = 607,583; all-7 run = 87 lemmas,
+      250-statement DB; substrate full-ZFC = 10^45.7; Euclidean-
+      sqrt primitive = 10^37.2; poll = 10^1000.
+    ============================================================
+  -->
 
   <style>
-    :root { --asa-accent: #58a6ff; --asa-warn: #f87171; --asa-ok: #6bcf98; }
-    .reveal { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .reveal h1, .reveal h2, .reveal h3 { letter-spacing: -.01em; text-transform: none; }
-    .reveal h1 { font-size: 2.1em; }
-    .reveal .accent { color: var(--asa-accent); }
-    .reveal .warn   { color: var(--asa-warn); }
-    .reveal .ok     { color: var(--asa-ok); }
-    .reveal code, .reveal pre {
-      font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+    :root{
+      --bg:#0d1117; --fg:#e7edf3; --mut:#9aa4b2; --line:#30363d;
+      --accent:#58a6ff; --warn:#f87171; --ok:#6bcf98; --gold:#ffb84d;
     }
-    .reveal .big {
-      font-size: 1.7em; font-weight: 700; line-height: 1.15;
-      font-variant-numeric: tabular-nums;
+    .reveal{ font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--fg); }
+    .reveal h1,.reveal h2,.reveal h3{ letter-spacing:-.015em; text-transform:none; color:var(--fg); }
+    .reveal h1{ font-size:2.4em; } .reveal h2{ font-size:1.55em; margin-bottom:.5em; }
+    .reveal section{ text-align:left; }
+    .reveal section.center{ text-align:center; }
+    .reveal .accent{ color:var(--accent); } .reveal .warn{ color:var(--warn); }
+    .reveal .ok{ color:var(--ok); } .reveal .gold{ color:var(--gold); }
+    .reveal code,.reveal pre{ font-family:ui-monospace,"Cascadia Code",Menlo,Consolas,monospace; }
+    .reveal code{ color:var(--accent); font-size:.92em; }
+    .reveal .kicker{ color:var(--mut); font-size:.62em; letter-spacing:.18em;
+      text-transform:uppercase; margin-bottom:.2em; }
+    .reveal .big{ font-size:2em; font-weight:800; line-height:1.1;
+      font-variant-numeric:tabular-nums; }
+    .reveal .huge{ font-size:3.1em; font-weight:800; line-height:1;
+      font-variant-numeric:tabular-nums; }
+    .reveal .sub{ color:var(--mut); font-size:.78em; line-height:1.4; }
+    .reveal .lead{ font-size:1.12em; line-height:1.4; }
+    .reveal ul{ line-height:1.5; } .reveal li{ margin:.35em 0; }
+    .reveal strong{ color:var(--fg); }
+    .reveal table{ font-size:.74em; border-collapse:collapse; }
+    .reveal table th{ color:var(--accent); border-bottom:1px solid var(--line);
+      padding:.3em .7em; }
+    .reveal table td{ padding:.3em .7em; border-bottom:1px solid #1e2630; }
+    .reveal .num{ font-variant-numeric:tabular-nums; text-align:right; }
+    .reveal .footnote{ position:fixed; bottom:8px; left:14px; font-size:12px;
+      color:#5b6675; z-index:30; }
+    /* pills */
+    .reveal .pill{ display:inline-block; border:1px solid var(--line);
+      border-radius:999px; padding:.1em .7em; font-size:.62em; color:var(--mut); }
+    .reveal .pill.ok{ border-color:#2e5b40; color:var(--ok); }
+    .reveal .pill.todo{ border-color:#5b4220; color:var(--gold); }
+    /* axiom tower */
+    .tower{ display:flex; flex-direction:column; align-items:center; gap:7px;
+      margin:.3em auto 0; max-width:880px; }
+    .tower .row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .tower .blk{ border:1.5px solid var(--line); border-radius:8px;
+      padding:.4em .9em; background:#11161d; font-size:.62em; text-align:center;
+      min-width:150px; }
+    .tower .blk b{ display:block; color:var(--fg); font-size:1.18em; }
+    .tower .blk .bind{ color:var(--accent); font-family:ui-monospace,monospace;
+      font-size:.92em; }
+    .tower .arrow{ color:var(--mut); font-size:.7em; }
+    .tower .blk.def{ border-style:dashed; border-color:#3a4d6a; }
+    .tower .blk.geo{ border-color:#2e5b40; }
+    /* dual-grounding spectrum */
+    .spectrum{ display:flex; flex-direction:column; gap:.55em; margin:.5em 0 .2em; }
+    .spectrum .row{ display:grid; grid-template-columns:13.5em 1fr 4.2em;
+      align-items:center; gap:.7em; }
+    .spectrum .nm{ font-size:.62em; color:var(--fg); text-align:right; }
+    .spectrum .nm small{ display:block; color:var(--mut); font-size:.82em; }
+    .spectrum .track{ height:20px; background:#161b22; border:1px solid var(--line);
+      border-radius:4px; position:relative; }
+    .spectrum .fill{ position:absolute; left:0; top:0; bottom:0; border-radius:3px; }
+    .spectrum .val{ font-size:.62em; color:var(--mut); font-variant-numeric:tabular-nums; }
+    /* the money-shot bar */
+    .moneybar{ position:relative; height:64px; background:#161b22;
+      border:1px solid var(--line); border-radius:8px; margin:1.6em 0 2.4em; }
+    .moneybar .m{ position:absolute; top:0; bottom:0; width:4px; }
+    .moneybar .lbl{ position:absolute; transform:translateX(-50%);
+      font-size:.46em; white-space:nowrap; color:#e7edf3; }
+    .moneybar .lbl.top{ top:-2.4em; } .moneybar .lbl.bot{ bottom:-2.6em; }
+    .moneybar .lbl b{ font-size:1.35em; display:block; }
+    .moneybar .gap{ position:absolute; top:50%; transform:translateY(-50%);
+      height:2px; background:repeating-linear-gradient(90deg,#5b6675 0 7px,transparent 7px 13px); }
+    .moneybar .gaptxt{ position:absolute; top:calc(50% - 2.3em);
+      transform:translateX(-50%); font-size:.5em; color:var(--gold);
+      letter-spacing:.05em; white-space:nowrap; }
+    /* dag glimpse */
+    .dagwrap{ display:flex; gap:1.4em; align-items:center; }
+    .dagwrap svg{ flex:0 0 auto; }
+    .reveal .aside-tag{ color:var(--mut); }
+    @media (max-width:700px){
+      .spectrum .row{ grid-template-columns:8.5em 1fr 3.4em; }
+      .tower .blk{ min-width:120px; }
     }
-    .reveal .sub { color: #9aa4b2; font-size: .8em; }
-    .reveal table { font-size: .72em; }
-    .reveal table th { color: var(--asa-accent); }
-    .reveal .num { font-variant-numeric: tabular-nums; text-align: right; }
-    .reveal .lead { font-size: 1.05em; }
-    .reveal .pillrow { display: flex; gap: .6em; flex-wrap: wrap; justify-content: center; margin-top: .4em; }
-    .reveal .pill {
-      border: 1px solid #3a4150; border-radius: 999px;
-      padding: .12em .7em; font-size: .62em; color: #9aa4b2;
-    }
-    .reveal .pill.ok   { border-color: #2e5b40; color: var(--asa-ok); }
-    .reveal .pill.todo { border-color: #5b4220; color: #ffb366; }
-    .reveal .pill.ext  { border-color: #284a7a; color: var(--asa-accent); }
-    .reveal .scalebar {
-      position: relative; height: 46px; background: #161b22;
-      border: 1px solid #30363d; border-radius: 6px; margin: .6em 0 1.6em;
-    }
-    .reveal .scalebar .m {
-      position: absolute; top: 0; bottom: 0; width: 3px;
-    }
-    .reveal .scalebar .lbl {
-      position: absolute; top: -1.5em; transform: translateX(-50%);
-      font-size: .42em; white-space: nowrap; color: #c9d1d9;
-    }
-    .reveal .scalebar .lbl.below {
-      top: auto; bottom: -1.7em;
-    }
-    .reveal .footnote {
-      position: fixed; bottom: 8px; left: 14px;
-      font-size: 12px; color: #5b6675; z-index: 30;
-    }
-    .reveal section { text-align: left; }
-    .reveal section.center { text-align: center; }
   </style>
 </head>
 <body>
 <div class="reveal"><div class="slides">
 
-  <!-- 1 — title -->
+  <!-- ════════ 1 — HOOK (1:00) ════════ -->
   <section class="center" data-background-color="#0d1117">
-    <h1>asa<span class="accent">golf</span></h1>
-    <p class="lead">How big is a fully-expanded ASA proof, in ZFC, really?</p>
-    <p class="big">The poll said <span class="warn">10<sup>1000</sup></span></p>
-    <p class="sub">A real machine-checked proof object — not a Fermi estimate.<br/>
+    <p class="kicker">a foundations lightning talk</p>
+    <h1>How big is a<br/><span class="accent">"simple"</span> proof, really?</h1>
+    <p class="lead" style="margin-top:.6em">A poll claimed: fully expand the proof of
+      <strong>ASA</strong> — basic triangle congruence — all the way down to ZFC,
+      and it exceeds</p>
+    <p class="huge warn">10<sup>1000</sup> steps.</p>
+    <p class="sub">We didn't model that. We <strong>built the proof object and counted.</strong><br/>
       emberian.github.io/asagolf</p>
+    <aside class="notes">
+      [0:00–1:00] Open cold. "A Twitter poll claimed that if you take the
+      proof of angle-side-angle — the triangle congruence theorem you saw in
+      school — and fully expand it down to ZFC set theory, the proof is more
+      than ten-to-the-thousand primitive steps. That's a Fermi number, a
+      number with no physical referent. My reaction, and maybe yours, is:
+      that can't be right — but I can't actually say why, and neither could
+      the poll. Underneath the meme there's a real foundations question:
+      what does 'expand a proof down to its axioms' even MEAN, and how big
+      is it ACTUALLY? Not a model. Not a hand-wave. We built the real proof
+      object, kernel-checked, and counted the steps. That's the talk."
+      KEEP TIGHT — 60s. Do not preview the answer yet.
+    </aside>
   </section>
 
-  <!-- 2 — the claim -->
+  <!-- ════════ 2 — PROOFS ARE OBJECTS + TRUST ROOT (1:30) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>The poll claim</h2>
-    <p class="lead">
-      "Fully expand the proof of <strong>ASA</strong> (angle-side-angle
-      triangle congruence) down to ZFC / first-order logic. It's more than
-      10<sup>1000</sup> primitive steps."
-    </p>
-    <p>Two ways to answer:</p>
+    <p class="kicker">step 1 — make it concrete</p>
+    <h2>A proof is a finite object.<br/>Re-check it with something tiny.</h2>
+    <div class="dagwrap">
+      <div style="flex:1">
+        <ul>
+          <li>A proof is a finite tree of axiom-instances and substitutions —
+            you can <strong>print it and machine-check it</strong>.</li>
+          <li>One small, sound <strong>Metamath-subset kernel</strong>
+            (<code>src/kernel.rs</code>) re-verifies every step.
+            <span class="accent">It is the only trusted code.</span></li>
+          <li>Everything else — the proof search, the normaliser, all of it —
+            is <strong>untrusted</strong>. If the kernel says <span class="ok">Ok</span>,
+            it's a proof. That's the LCF / de&nbsp;Bruijn discipline.</li>
+        </ul>
+      </div>
+      <svg width="190" height="200" viewBox="0 0 190 200" aria-hidden="true">
+        <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3"
+          orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5b6675"/></marker></defs>
+        <g stroke="#5b6675" stroke-width="1.4" marker-end="url(#ar)" fill="none">
+          <path d="M95,40 L55,90"/><path d="M95,40 L135,90"/>
+          <path d="M55,108 L40,150"/><path d="M55,108 L78,150"/>
+          <path d="M135,108 L120,150"/><path d="M135,108 L158,150"/>
+        </g>
+        <g font-family="ui-monospace,monospace" font-size="11" fill="#e7edf3">
+          <circle cx="95" cy="30" r="13" fill="#1f6feb"/><text x="95" y="34" text-anchor="middle">$p</text>
+          <circle cx="50" cy="100" r="12" fill="#21262d" stroke="#30363d"/><text x="50" y="104" text-anchor="middle" fill="#9aa4b2">·</text>
+          <circle cx="140" cy="100" r="12" fill="#21262d" stroke="#30363d"/><text x="140" y="104" text-anchor="middle" fill="#9aa4b2">·</text>
+          <g fill="#6bcf98">
+          <circle cx="36" cy="162" r="11" fill="#1a2b1f" stroke="#2e5b40"/><text x="36" y="166" text-anchor="middle">$a</text>
+          <circle cx="80" cy="162" r="11" fill="#1a2b1f" stroke="#2e5b40"/><text x="80" y="166" text-anchor="middle">$a</text>
+          <circle cx="118" cy="162" r="11" fill="#1a2b1f" stroke="#2e5b40"/><text x="118" y="166" text-anchor="middle">$a</text>
+          <circle cx="160" cy="162" r="11" fill="#1a2b1f" stroke="#2e5b40"/><text x="160" y="166" text-anchor="middle">$a</text>
+          </g>
+        </g>
+        <text x="95" y="195" text-anchor="middle" font-size="10" fill="#9aa4b2">axioms (leaves)</text>
+      </svg>
+    </div>
+    <aside class="notes">
+      [1:00–2:30] "First move: make the question concrete. You know this from
+      proof theory — a proof is a finite syntactic object, a tree whose
+      leaves are axiom instances and whose nodes are inference steps. Finite
+      means countable. So we wrote a tiny verifier — a sound subset of
+      Metamath, a few hundred lines, four self-tests — and that kernel is
+      the ONLY thing we trust. Every proof we build, however it was found,
+      gets handed back to that kernel and re-checked from the axioms by
+      substitution alone. This is exactly the LCF idea, de Bruijn's
+      criterion: a small trusted core, an arbitrarily clever untrusted
+      mantle. When I say a number is 'verified' in this talk, I mean that
+      kernel returned Ok on that exact proof object." 90s.
+    </aside>
+  </section>
+
+  <!-- ════════ 3 — THE METRIC (1:30) ════════ -->
+  <section data-background-color="#0d1117">
+    <p class="kicker">step 2 — pick an honest metric</p>
+    <h2>"Fully expanded" = <span class="accent">cut-free</span>, zero reuse</h2>
+    <p class="lead">Expand every lemma. Inline every shared sub-proof.
+      Reuse nothing. Count primitive axiom-instances.</p>
     <ul>
-      <li class="fragment"><strong>Model it.</strong> Hand-wave a branching
-        factor and a depth. Unfalsifiable.</li>
-      <li class="fragment"><strong>Build it.</strong> A trusted kernel, a real
-        proof object, an <em>exact</em> count it re-verifies. ← this</li>
+      <li>This is the <strong>most pessimistic <em>honest</em> size</strong> —
+        we deliberately picked the metric that's biggest.</li>
+      <li>You know the catch from <strong>cut-elimination</strong>: a one-line
+        statement can have a cut-free proof that is
+        <span class="gold">non-elementarily larger</span> than the proof
+        with lemmas.</li>
+      <li>So the question isn't loaded in our favour. If anything blows up,
+        <em>this</em> metric finds it.</li>
     </ul>
+    <p class="sub">Convention: each <code>$a</code> primitive instance counts 1;
+      every definition and lemma is expanded away. (We also report the
+      DAG-shared size; it's far smaller — that's the point of cut.)</p>
+    <aside class="notes">
+      [2:30–4:00] "Second move: choose the metric, and choose it AGAINST
+      ourselves. 'Fully expanded' means cut-free: expand every lemma,
+      inline every reused sub-proof, reuse nothing, count primitive axiom
+      instances. You all know why that's the dangerous metric — cut
+      elimination. A short theorem can have a normal-form proof that's
+      hyper-exponentially bigger than the one with lemmas; Statman,
+      Orevkov, the standard blow-up results. So by picking the cut-free
+      count we are NOT making it easy on ourselves — we're deliberately
+      using the metric most likely to vindicate a 10^1000 claim. Foreshadow:
+      keep that blow-up in your pocket; it shows up live in a few slides."
+      90s. Land 'cut-free = pessimistic on purpose'.
+    </aside>
   </section>
 
-  <!-- 3 — the kernel -->
+  <!-- ════════ 4 — THE TRAP / LAYER ILLUSION (1:30) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>The trust root: a micro-kernel</h2>
-    <ul>
-      <li>A small Metamath-subset verifier (<code>src/kernel.rs</code>),
-        4 self-tests. <span class="sub">That's the entire trusted base.</span></li>
-      <li>Substrate axioms: an <strong>ordered commutative ring with 1</strong>,
-        one <strong>square-root</strong> primitive (Euclidean field), and
-        ordinary <strong>logic with equality</strong>.</li>
-      <li>Points, lines, distance, dot product, angle congruence are
-        <strong>conservative definitions over coordinates</strong> —
-        never axioms.</li>
-    </ul>
-    <p class="sub">Metric: every <code>$a</code> primitive invocation counts 1;
-      definitions and lemmas expand. Cut-free, deliberately pessimistic.</p>
-  </section>
-
-  <!-- 4 — derived not asserted -->
-  <section data-background-color="#0d1117">
-    <h2>Derived, not asserted</h2>
-    <p class="lead">The trick that makes the question non-vacuous:</p>
-    <table>
-      <tr><th>Approach</th><th>"ASA" cost</th><th>Honest?</th></tr>
-      <tr><td>Assert Birkhoff postulates (ruler, protractor, SAS…) as axioms</td>
-          <td class="num">~200 steps</td><td class="warn">No — vacuous</td></tr>
-      <tr><td>Derive every postulate from the ring + √ substrate</td>
-          <td class="num">measured here</td><td class="ok">Yes</td></tr>
+    <p class="kicker">step 3 — don't cheat</p>
+    <h2>The trap: assert the postulates &rArr; the question is vacuous</h2>
+    <table style="margin:.2em 0 .6em">
+      <tr><th>If you…</th><th class="num">"ASA" costs</th><th>verdict</th></tr>
+      <tr><td>assert Birkhoff's ruler / protractor / SAS as <em>axioms</em></td>
+          <td class="num gold">224 steps</td>
+          <td class="warn">vacuous — you assumed the hard parts</td></tr>
+      <tr><td>derive every postulate from a minimal substrate</td>
+          <td class="num accent">the real question</td>
+          <td class="ok">honest</td></tr>
     </table>
-    <p class="fragment">Each Birkhoff postulate used is a
-      <strong>kernel-verified theorem</strong>, proved bottom-up from
-      <code>ax-1/2/3/mp</code> and the ordered-ring axioms.</p>
+    <p class="lead">Birkhoff "tidiness" is a <strong>layer illusion</strong>.
+      It doesn't remove the cost — it <em>relocates</em> it into one phrase:
+      <span class="gold">"…now construct&nbsp;&#8477; so that distance and
+      angle are real-valued."</span></p>
+    <p class="sub">So: derive ASA from postulates we <em>prove</em>, and
+      ground the substrate honestly. F0 ASA = 224 is exact and
+      kernel-verified — and it's exactly the move we are refusing to call an answer.</p>
+    <aside class="notes">
+      [4:00–5:30] "Third move, and it's the conceptual hinge. There's a
+      cheap answer: take Birkhoff's axioms — the ruler postulate, the
+      protractor postulate, SAS — as axioms. Then ASA is a 224-step
+      proof. We verified that; it's exact. And it's vacuous, because
+      Birkhoff's elegance is a LAYER illusion. Axiomatising the ruler and
+      protractor doesn't make the cost go away — it relocates ALL of it
+      into one sentence the textbook waves past: 'let distance and angle
+      be real numbers.' Constructing those reals is where the bodies are
+      buried. So to answer the poll honestly we do two things: derive
+      every Birkhoff postulate as a theorem from a minimal substrate, and
+      then ground that substrate. No assuming the hard parts." 90s.
+    </aside>
   </section>
 
-  <!-- 5 — the degree-8 wall -->
+  <!-- ════════ 5 — THE SUBSTRATE / AXIOM TOWER (1:30) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>The wall — and the breakthrough</h2>
-    <p>The naive route fed the ring normaliser a dense
-      <strong>degree-8 coordinate identity</strong>. It ran for over ten
-      minutes and never finished.</p>
-    <ul>
-      <li class="fragment">Fix 1 — <strong>O(n⁴) → O(n³) normaliser</strong>:
-        thread suffix endpoints instead of rebuilding the term list per swap.</li>
-      <li class="fragment">Fix 2 — <strong>generic-Plücker factoring</strong>:
-        prove tiny identities <em>once</em> over fresh atoms (a 2&times;2
-        Plücker relation, sign/EQ splits), then instantiate the big
-        subterms by substitution — <em>zero</em> per-instance normalisation.</li>
-    </ul>
-    <p class="fragment sub">Same idea reused for every high-degree postulate.</p>
+    <p class="kicker">step 4 — the minimal substrate</p>
+    <h2>What we actually assume</h2>
+    <div class="tower">
+      <div class="row">
+        <div class="blk geo"><b>ASA</b> triangle congruence</div>
+      </div>
+      <div class="arrow">▲ derived from</div>
+      <div class="row">
+        <div class="blk geo"><b>7 Birkhoff postulates</b><span style="color:#9aa4b2">G0–G4 — all <em>theorems</em></span></div>
+      </div>
+      <div class="arrow">▲ defined over coordinates (conservative <code>df-*</code>)</div>
+      <div class="row">
+        <div class="blk def">point · line · <b>distance</b> · dot · <b>angle</b><span style="color:#9aa4b2">definitions, not axioms</span></div>
+      </div>
+      <div class="arrow">▲ over the substrate</div>
+      <div class="row">
+        <div class="blk"><b>ordered field</b><span class="bind">↔ ZFC: axrrecex, …</span></div>
+        <div class="blk"><b>one √ primitive</b><span class="bind">ax-sqrt ↔ resqrtth</span></div>
+        <div class="blk"><b>FOL + equality</b><span class="bind">ax-1/2/3/mp/gen</span></div>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:.6em">These are <strong>not</strong> ZFC
+      axioms — but each is a <strong>theorem of ZFC</strong>, and we bind
+      every one by machine to the set.mm theorem that proves it. The
+      substrate is honest <em>and</em> mechanically grounded.</p>
+    <aside class="notes">
+      [5:30–7:00] "Here's the whole tower. Bottom: an ordered field, ONE
+      square-root primitive — square roots of non-negatives exist, a
+      Euclidean field — and ordinary first-order logic with equality. That
+      is the entire non-logical commitment. Crucially these are NOT ZFC
+      axioms; they're modest algebraic assumptions. But each one is a
+      THEOREM of ZFC, and we don't just assert that — we mechanically bind
+      each substrate axiom to the set.mm theorem that proves it from ZFC:
+      ax-sqrt to resqrtth, the field reciprocal to axrrecex, and so on.
+      Above that, points, lines, distance, dot product, angle congruence
+      are conservative DEFINITIONS over coordinates — eliminable, not
+      axioms. Above that, the seven Birkhoff postulates, every one a
+      derived theorem. Then ASA. Nothing assumed that we could prove."
+      90s. Point at the diagram, don't read it.
+    </aside>
   </section>
 
-  <!-- 6 — the numbers -->
+  <!-- ════════ 6 — THE WALL + THE IDEA (3:00, technical heart) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>The exact numbers</h2>
-    <table>
-      <tr><th>Result</th><th>What it is</th><th class="num">Cut-free steps</th></tr>
-      <tr><td><code>F0 ASA</code></td>
-          <td>ASA over asserted Birkhoff postulates</td>
-          <td class="num">224</td></tr>
-      <tr><td><code>G3c</code> rayline</td><td>derived postulate</td>
-          <td class="num">320</td></tr>
-      <tr><td><code>G0</code> cong-sub</td><td>derived postulate</td>
-          <td class="num">1,035</td></tr>
-      <tr><td><code>G3a</code> rayangle <span class="pill ok">verified</span></td>
-          <td>ray-angle congruence</td>
-          <td class="num">4,720,242</td></tr>
-      <tr><td class="accent"><code>G4 SAS</code></td>
-          <td><strong>the hardest postulate</strong> — law of cosines,
-              √-free metric, integral-domain cancel</td>
+    <p class="kicker">step 5 — doing it · the technical heart</p>
+    <h2>We hit the cut-free wall — live, in our own engine</h2>
+    <div class="dagwrap">
+      <div style="flex:1.25">
+        <p class="lead">The geometry is just <strong>polynomial identities +
+          order facts</strong>. The naive normaliser was handed one tiny
+          statement: a dense <strong class="warn">degree-8 identity in 8
+          variables</strong>.</p>
+        <ul>
+          <li>It ran <strong>&gt;10 minutes and never finished.</strong>
+            That's <em>the thesis of this talk, happening to us:</em> a tiny
+            statement, an astronomical cut-free proof.</li>
+          <li class="fragment"><strong>The fix is mathematical, not
+            engineering.</strong> Prove a small generic identity
+            <em>once</em> over fresh variables; then
+            <strong class="accent">instantiate by substitution</strong>.
+            Substitution doesn't re-expand.</li>
+          <li class="fragment">One idea — and it <strong>cascaded to all 7
+            postulates.</strong></li>
+        </ul>
+      </div>
+      <svg width="150" height="150" viewBox="0 0 150 150" aria-hidden="true">
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#30363d" stroke-width="1"/>
+        <text x="75" y="20" text-anchor="middle" font-size="10" fill="#f87171">deg-8 → blow-up</text>
+        <g stroke="#f87171" stroke-width="1" opacity=".55" fill="none">
+          <path d="M75,75 L120,40"/><path d="M75,75 L130,75"/><path d="M75,75 L120,115"/>
+          <path d="M75,75 L75,135"/><path d="M75,75 L30,115"/><path d="M75,75 L20,75"/>
+          <path d="M75,75 L30,38"/><path d="M75,75 L75,15"/>
+          <path d="M120,40 L138,30"/><path d="M120,40 L132,22"/><path d="M130,75 L148,68"/>
+          <path d="M130,75 L146,84"/><path d="M120,115 L137,128"/><path d="M30,38 L14,28"/>
+          <path d="M20,75 L4,82"/><path d="M30,115 L16,130"/>
+        </g>
+        <circle cx="75" cy="75" r="9" fill="#1f6feb"/>
+      </svg>
+    </div>
+    <aside class="notes">
+      [7:00–10:00] THE TECHNICAL HEART — slow down here, 3 full minutes.
+      "Now we actually do it. Good news: through those coordinate
+      definitions, all of Euclidean geometry is just polynomial identities
+      and order inequalities over the field. So we built a normaliser and
+      started proving postulates. Then the angle postulate handed the
+      normaliser one statement — a single dense degree-8 polynomial
+      identity in eight coordinate variables. The naive expansion ran for
+      over ten minutes and never finished. Pause on that. We had just,
+      accidentally, REPRODUCED the poll's claim inside our own engine: a
+      one-line statement whose fully-expanded cut-free proof is
+      astronomical. That is exactly cut-elimination blow-up, live. [click]
+      The temptation is to optimise the normaliser. We did profile it and
+      fix a quadratic, but the real lesson is the honest one: a dense
+      degree-8 cut-free proof is INTRINSICALLY astronomical — that's our
+      own thesis, not a bug. The fix had to be mathematical. Prove the
+      needed identity ONCE, generically, over fresh abstract variables —
+      a small proof — then instantiate it with the giant coordinate
+      subterms by SUBSTITUTION. Substitution is one step; it does not
+      re-expand the proof. That single idea — 'cut, reused deliberately' —
+      [click] cascaded: all seven Birkhoff postulates, kernel-verified, no
+      cheating, in one run: 87 lemmas, a 250-statement database. SAS,
+      the hardest, 7.25 million steps; the angle postulate 4.72 million;
+      incidence 608 thousand. Every postulate derived, none asserted."
+      180s — this is the slide you must not rush.
+    </aside>
+  </section>
+
+  <!-- ════════ 6b — THE NUMBERS (folds into slide-6 budget) ════════ -->
+  <section data-background-color="#0d1117">
+    <p class="kicker">all 7 postulates, one kernel run</p>
+    <h2>Derived. None asserted. <span class="pill ok">verified</span></h2>
+    <table style="margin-top:.2em">
+      <tr><th>Birkhoff postulate (a derived <code>$p</code>)</th>
+          <th class="num">cut-free steps</th></tr>
+      <tr><td><code>G4-sas</code> — SAS · law of cosines, √-free metric,
+          integral-domain cancel <span class="accent">(hardest)</span></td>
           <td class="num accent"><strong>7,251,714</strong></td></tr>
+      <tr><td><code>G3a-rayangle</code> — ray-angle congruence</td>
+          <td class="num">4,720,242</td></tr>
+      <tr><td><code>G2-incid</code> — incidence</td><td class="num">607,583</td></tr>
+      <tr><td><code>G1</code> ruler · <code>G3b&prime;</code> oriented prot.-uniq ·
+          <code>G3c</code> · <code>G0</code></td>
+          <td class="num sub">small</td></tr>
     </table>
-    <p class="sub">All exact, all kernel-verified. SAS ≈
-      <strong>10<sup>6.9</sup></strong>.</p>
+    <p class="lead" style="margin-top:.5em">One run:
+      <strong>87 lemmas, 250-statement DB</strong>, single kernel re-check.
+      Total geometry ≈ <span class="ok big" style="font-size:1.3em">10<sup>6.9</sup></span></p>
+    <aside class="notes">
+      [folded into the 7:00–10:00 budget — show this for ~20s while landing
+      "all seven, one run, none asserted"] "These are the exact, kernel-
+      verified, fully-inlined counts. SAS — which needs the law of cosines,
+      square-root-free distance, and integral-domain cancellation, the
+      hardest postulate — is seven-point-two-five million steps. The whole
+      geometry is around ten-to-the-six-point-nine. Hold that number." Do
+      not linger; the comparison is two slides away.
+    </aside>
   </section>
 
-  <!-- 7 — where the big number lives -->
+  <!-- ════════ 7 — WHERE THE 10^1000 WENT (2:30) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>Where the large number actually lives</h2>
-    <p class="lead">Not in the geometry. In constructing <span class="accent">&#8477;</span>.</p>
-    <table>
-      <tr><th>Layer</th><th class="num">log₁₀ steps</th></tr>
-      <tr><td>Geometry (SAS, kernel-exact)</td><td class="num">6.9</td></tr>
-      <tr><td>Minimal Euclidean-field model (√ a primitive)</td>
-          <td class="num">~37</td></tr>
-      <tr><td>Full ZFC model of &#8477; (set.mm) — dominated by
-              analytic √ (<code>resqrtth</code>)</td>
-          <td class="num">~45.7</td></tr>
-    </table>
-    <p class="fragment">Completeness (Dedekind/Cauchy) is
-      <strong>never used</strong> by the geometry — and is a <em>lower</em>
-      order than √ anyway. The cost is the <em>construction</em> of the
-      field, not any deep theorem about it.</p>
+    <p class="kicker">step 6 — so where did 10^1000 go?</p>
+    <h2>The big number is a <span class="accent">model-choice artifact</span></h2>
+    <div class="spectrum">
+      <div class="row">
+        <div class="nm">Geometry, kernel-exact<small>F0 ASA 224 · SAS 7.25M</small></div>
+        <div class="track"><div class="fill" style="width:14.6%;background:linear-gradient(90deg,#2e5b40,#6bcf98)"></div></div>
+        <div class="val">10<sup>6.9</sup></div>
+      </div>
+      <div class="row">
+        <div class="nm">RCF floor<small>decidable; consist. ≈ PRA</small></div>
+        <div class="track"><div class="fill" style="width:42%;background:linear-gradient(90deg,#1f4d6b,#58a6ff)"></div></div>
+        <div class="val">≪ 10<sup>37</sup></div>
+      </div>
+      <div class="row">
+        <div class="nm">√ as Euclidean primitive<small>no analytic √ build</small></div>
+        <div class="track"><div class="fill" style="width:79%;background:linear-gradient(90deg,#1f4d6b,#58a6ff)"></div></div>
+        <div class="val">10<sup>37.2</sup></div>
+      </div>
+      <div class="row">
+        <div class="nm">set.mm-maximalist&nbsp;&#8477;<small>full ZFC construction</small></div>
+        <div class="track"><div class="fill" style="width:97%;background:linear-gradient(90deg,#3a2a6b,#9b6bff)"></div></div>
+        <div class="val">10<sup>45.7</sup></div>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:.5em">Exact machine attribution of the
+      10<sup>45.7</sup>: it is <strong class="warn">not</strong> completeness,
+      and <strong class="warn">not</strong> even the completion definitions
+      (0.6%). It's <strong>ℤ→ℚ pair-plumbing multiplicity</strong> — a function
+      of <em>which&nbsp;&#8477; you build</em>, never of the geometry.</p>
+    <aside class="notes">
+      [10:00–12:30] "So where did the poll's 10^1000 go? Look at the
+      spectrum. The geometry is the green sliver, 10^6.9, fixed in every
+      model. The ONLY astronomical term is constructing the reals inside
+      ZFC: 10^45.7. And here's the result I most want you to take away —
+      we did an exact, occurrence-level machine attribution of that
+      number. It is NOT completeness — Dedekind/Cauchy completeness is
+      never invoked by the geometry and is lower order anyway. It's not
+      even the completion DEFINITIONS — those are zero-point-six percent.
+      It is integer-to-rational pair-plumbing multiplicity: the bookkeeping
+      cost every field operation pays over a fully constructed real number.
+      Which means the big number is a function of WHICH real numbers you
+      build. Set.mm's maximalist construction: 45.7. Take square root as a
+      Euclidean-field primitive instead: 37.2. Drop completion entirely —
+      real-closed fields, which by Tarski are decidable with a quantifier-
+      elimination decision procedure and consistency strength near PRA,
+      far below ZFC: lower still. The geometry never moves. The cost is
+      the construction, and you chose the construction." 150s.
+    </aside>
   </section>
 
-  <!-- 8 — the scale -->
+  <!-- ════════ 8 — THE MONEY SHOT (1:00) ════════ -->
   <section class="center" data-background-color="#0d1117">
-    <h2>10<sup>1000</sup> is off by ~950 orders</h2>
-    <div class="scalebar" id="scalebar"></div>
-    <p class="sub">Linear in log₁₀, 10<sup>0</sup> → 10<sup>1000</sup>.
-      Geometry and the entire ZFC real construction sit hard against the
-      left edge. The poll's estimate is the lone marker on the right.</p>
+    <p class="kicker">the whole talk, in one picture</p>
+    <h2>10<sup>1000</sup> is off by <span class="gold">~950 orders</span></h2>
+    <div class="moneybar" id="moneybar"></div>
+    <p class="sub">One log-scale axis, 10<sup>0</sup> → 10<sup>1000</sup>.
+      The geometry <em>and</em> the entire ZFC real construction are pinned
+      against the left edge. The poll's claim is the lone marker on the far
+      right. <strong class="gold">That gap is the answer.</strong></p>
+    <aside class="notes">
+      [12:30–13:30] Let the slide do the work. "This is the whole talk in
+      one picture. The axis is logarithmic, ten-to-the-zero on the left to
+      ten-to-the-thousand on the right. The geometry — and the ENTIRE cost
+      of constructing the real numbers inside ZFC — are both jammed against
+      the left edge; on this scale you can't even separate them. The
+      poll's estimate is that lonely marker on the right. The empty space
+      between them is about nine hundred and fifty orders of magnitude.
+      That gap IS the result." Pause. Let them look. 60s.
+    </aside>
   </section>
 
-  <!-- 9 — what's verified -->
+  <!-- ════════ 9 — THE HONESTY SLIDE (1:30, the soul) ════════ -->
   <section data-background-color="#0d1117">
-    <h2>Honest status</h2>
-    <p>This rebuts an over-claim, so it must not over-claim.</p>
+    <p class="kicker">the soul of the project</p>
+    <h2>The best results were the <span class="accent">refusals</span></h2>
+    <p class="lead">This rebuts an over-claim — so it must not over-claim.</p>
     <ul>
-      <li><span class="pill ok">verified in one build</span>
-        <strong>all 7 Birkhoff postulates</strong> — 87 lemmas, 250-stmt
-        DB, single kernel re-check: <code>G0</code>, <code>G3c</code>,
-        <code>G4&#8209;sas</code> (7.25M), <code>G3a</code> (4.72M),
-        <code>G2&#8209;incid</code> (608k), <code>G1</code> ruler,
-        <code>G3bp</code> oriented protractor-uniqueness. Each a
-        <em>derived</em> <code>$p</code>, none asserted.</li>
-      <li><span class="pill ok">mechanized</span>
-        the of-* / √ substrate is the minimal ordered-Euclidean-field
-        axioms, each bound by machine to its set.mm ZFC theorem — and the
-        10<sup>45.7</sup> is exactly attributed: ℤ→ℚ construction
-        multiplicity, not completeness (Euclidean-√ primitive ⇒
-        10<sup>37.2</sup>; RCF floor far below).</li>
-      <li><span class="pill todo">final step, in progress</span>
-        the regrounded <em>ASA&prime;</em> is structurally kernel-verified;
-        wiring its last leaves to the verified <code>$p</code> is the one
-        remaining finite step — not counted as done until it closes.</li>
+      <li><strong>We proved a postulate <span class="warn">false</span>.</strong>
+        Bare protractor-uniqueness is provably false in the √-free
+        squared-cosine encoding (mirror-blind; explicit counterexample) —
+        so we proved the faithful <em>oriented</em> form instead.</li>
+      <li><strong>The assembler refuses to lie.</strong> The end-to-end
+        re-expression (<code>asaprime</code>) currently <strong>stops dead
+        and names the exact missing wiring</strong> — Birkhoff's SAS is
+        <em>angle-output</em>, our verified <code>G4-sas</code> is
+        <em>side-output</em> — rather than print a green checkmark it
+        hasn't earned.</li>
+      <li>Stated plainly: <span class="pill ok">all 7 postulates verified,
+        no cheating</span>; the literal end-to-end ASA&prime; is the last
+        finite step and is <span class="pill todo">honestly in progress</span>.</li>
     </ul>
-    <p class="sub">Every number traceable to a kernel-verified run.
-      Reported, not faked.</p>
+    <aside class="notes">
+      [13:30–15:00] DO NOT SKIP. This is the soul. "Foundations people
+      should be suspicious of a talk that rebuts an over-claim, because
+      the rebuttal can over-claim too. So let me be exact about what we did
+      NOT prove. Two things, and I'm proud of both. One: we tried to prove
+      protractor-uniqueness and found the natural statement is provably
+      FALSE in our square-root-free squared-cosine encoding — it's
+      mirror-blind, and we have an explicit counterexample. So we proved
+      the faithful ORIENTED version instead. Two: the program that wires
+      the postulates into one end-to-end ASA proof currently STOPS and
+      tells you precisely what's missing — our verified SAS outputs a side,
+      Birkhoff's outputs an angle, and the angle-output law-of-cosines
+      lemma isn't among the 87 yet — rather than print a checkmark it
+      hasn't earned. All seven postulates are kernel-verified with no
+      cheating; the literal final assembly is one named finite step, in
+      progress, and we say so. The foundations punchline: 'cut-free size'
+      turns an abstract notion concrete; 'tidiness' is relative to your
+      foundation; the cost lives in the construction, not the theorem;
+      and every digit is, or will be, kernel-checked." 90s. End on
+      'reported, not faked'.
+    </aside>
   </section>
 
-  <!-- 10 — takeaway -->
+  <!-- ════════ 10 — CLOSE (0:30) ════════ -->
   <section class="center" data-background-color="#0d1117">
-    <h2>Takeaway</h2>
-    <p class="lead">Euclidean geometry, derived honestly to a ring + √
-      substrate, is <span class="ok">cheap</span> — about
-      10<sup>6.9</sup> steps for the hardest postulate.</p>
-    <p class="lead">The only astronomical cost is
-      <strong>building &#8477; inside ZFC</strong> (~10<sup>45.7</sup>) —
-      still <span class="ok">~950 orders below</span> the poll's
-      10<sup>1000</sup>.</p>
-    <p class="big accent">Build it. Then count.</p>
-    <p class="sub">Explore the proof DAG → emberian.github.io/asagolf</p>
+    <h2 class="big">Build it. Then count.</h2>
+    <p class="lead">The poll said <span class="warn">10<sup>1000</sup></span>.
+      The geometry is <span class="ok">10<sup>6.9</sup></span>. The only big
+      term is building&nbsp;&#8477; — <span class="accent">10<sup>45.7</sup></span>,
+      and it's a model choice, not the theorem.</p>
+    <p class="big gold" style="margin:.4em 0">Reported, not faked.</p>
+    <p class="sub">Proof DAG explorer, every lemma, every number:<br/>
+      <strong class="accent">emberian.github.io/asagolf</strong></p>
+    <aside class="notes">
+      [15:00] "The recipe was: build the object, pick the pessimistic
+      metric, refuse to assume the hard parts, and report exactly what's
+      checked. The poll said ten-to-the-thousand. The geometry is
+      ten-to-the-seven. The only big number is the one you choose when you
+      build the reals. Every lemma, every count, the interactive proof DAG
+      — it's all at emberian.github.io/asagolf. Reported, not faked.
+      Thank you." 30s, then questions.
+    </aside>
   </section>
 
 </div></div>
 
-<div class="footnote">asagolf — numbers are exact, kernel-verified · ↔ arrows / Esc overview</div>
+<div class="footnote">asagolf — every number kernel-verified · S = speaker notes · Esc = overview · ← → navigate</div>
 
-<script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
+<!-- reveal.js core via CDN -->
+<script src="https://unpkg.com/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://unpkg.com/reveal.js@4.6.1/plugin/notes/notes.js"></script>
 <script>
-  Reveal.initialize({
-    hash: true, slideNumber: 'c/t', transition: 'fade',
-    controls: true, progress: true, center: false,
-  });
-
-  // Build the log-scale bar on slide 8 (10^0 .. 10^1000).
+  // ── Graceful offline fallback: if the CDN didn't load, slides still read ──
   (function () {
-    var bar = document.getElementById('scalebar');
-    if (!bar) return;
+    var ok = typeof Reveal !== 'undefined';
+    if (!ok) {
+      var s = document.createElement('style');
+      s.textContent =
+        '.reveal .slides{position:static!important;width:auto!important;' +
+        'height:auto!important;transform:none!important;left:0!important;top:0!important;}' +
+        '.reveal section{display:block!important;position:static!important;' +
+        'transform:none!important;opacity:1!important;visibility:visible!important;' +
+        'border-bottom:1px solid #30363d;padding:5vh 6vw;min-height:auto!important;}' +
+        '.reveal .footnote{position:static;margin:1em}';
+      document.head.appendChild(s);
+      document.body.style.cssText =
+        'background:#0d1117;color:#e7edf3;overflow:auto;margin:0';
+      drawDiagrams();
+      return;
+    }
+    Reveal.initialize({
+      hash: true, slideNumber: 'c/t', transition: 'fade',
+      controls: true, progress: true, center: false,
+      plugins: (typeof RevealNotes !== 'undefined') ? [ RevealNotes ] : []
+    });
+    Reveal.on('ready', drawDiagrams);
+  })();
+
+  // ── The money-shot bar (slide 8): one log axis, 10^0 .. 10^1000 ──
+  function drawDiagrams() {
+    var bar = document.getElementById('moneybar');
+    if (!bar || bar.dataset.done) return;
+    bar.dataset.done = '1';
     var MAX = 1000;
     var pts = [
-      { log: 6.9,  color: '#6bcf98', label: 'Geometry 10^6.9', side: 'top' },
-      { log: 45.7, color: '#58a6ff', label: 'ZFC ℝ-construction 10^45.7', side: 'bottom' },
-      { log: 1000, color: '#f87171', label: "Poll 10^1000", side: 'top' }
+      { log: 6.9,  color:'#6bcf98', label:'Geometry',           v:'10⁶·⁹', side:'top' },
+      { log: 45.7, color:'#9b6bff', label:'Build ℝ in ZFC', v:'10⁴⁵·⁷', side:'bot' },
+      { log: 1000, color:'#f87171', label:'The poll',            v:'10¹⁰⁰⁰', side:'top' }
     ];
     pts.forEach(function (p) {
       var x = (p.log / MAX) * 100;
       var m = document.createElement('div');
-      m.className = 'm';
-      m.style.left = x + '%';
-      m.style.background = p.color;
+      m.className = 'm'; m.style.left = x + '%'; m.style.background = p.color;
       var l = document.createElement('div');
-      l.className = 'lbl' + (p.side === 'bottom' ? ' below' : '');
+      l.className = 'lbl ' + (p.side === 'bot' ? 'bot' : 'top');
       l.style.left = x + '%';
-      l.textContent = p.label;
-      m.appendChild(l);
-      bar.appendChild(m);
+      l.innerHTML = '<b style="color:' + p.color + '">' + p.v + '</b>' + p.label;
+      m.appendChild(l); bar.appendChild(m);
     });
-  })();
+    // the gap visual: from the (overlapping) left cluster to the poll
+    var g = document.createElement('div');
+    g.className = 'gap';
+    g.style.left = (45.7 / MAX * 100) + '%';
+    g.style.width = ((1000 - 45.7) / MAX * 100) + '%';
+    bar.appendChild(g);
+    var gt = document.createElement('div');
+    gt.className = 'gaptxt';
+    gt.style.left = ((45.7 + (1000 - 45.7) / 2) / MAX * 100) + '%';
+    gt.textContent = '≈ 950 orders of magnitude of nothing';
+    bar.appendChild(gt);
+  }
 </script>
 </body>
 </html>

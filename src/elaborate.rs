@@ -520,29 +520,39 @@ pub fn assemble(base: &str, db: &Db, lemmas: &[Lemma]) -> Result<String, String>
     let mut s = String::from(cut);
     s.push_str("\n$( ---- elaborator-emitted, kernel-checked proofs ---- $)\n");
     for lm in lemmas {
-        let locals: HashMap<String, Vec<String>> = lm.ess.iter().cloned().collect();
-        let concl = el.conclusion_l(&lm.goal, &locals)?;
-        let mut proof = Vec::new();
-        el.rpn(&lm.goal, &mut proof);
-        if lm.ess.is_empty() {
-            s.push_str(&format!(
-                "{} $p {} $= {} $.\n",
-                lm.name,
-                concl.join(" "),
-                proof.join(" ")
-            ));
-        } else {
-            s.push_str("${\n");
-            for (hl, he) in &lm.ess {
-                s.push_str(&format!("  {} $e {} $.\n", hl, he.join(" ")));
-            }
-            s.push_str(&format!(
-                "  {} $p {} $= {} $.\n$}}\n",
-                lm.name,
-                concl.join(" "),
-                proof.join(" ")
-            ));
+        s.push_str(&assemble_one(&el, lm)?);
+    }
+    Ok(s)
+}
+
+/// Emit the kernel `.mm` text for exactly one lemma (a bare `$p`, or a
+/// `${ $e… $p $}` block when it has essential hypotheses). Shared by
+/// `assemble` (full corpus) and the incremental staging path so the two
+/// always produce byte-identical statement text.
+pub fn assemble_one(el: &Elab, lm: &Lemma) -> Result<String, String> {
+    let locals: HashMap<String, Vec<String>> = lm.ess.iter().cloned().collect();
+    let concl = el.conclusion_l(&lm.goal, &locals)?;
+    let mut proof = Vec::new();
+    el.rpn(&lm.goal, &mut proof);
+    let mut s = String::new();
+    if lm.ess.is_empty() {
+        s.push_str(&format!(
+            "{} $p {} $= {} $.\n",
+            lm.name,
+            concl.join(" "),
+            proof.join(" ")
+        ));
+    } else {
+        s.push_str("${\n");
+        for (hl, he) in &lm.ess {
+            s.push_str(&format!("  {} $e {} $.\n", hl, he.join(" ")));
         }
+        s.push_str(&format!(
+            "  {} $p {} $= {} $.\n$}}\n",
+            lm.name,
+            concl.join(" "),
+            proof.join(" ")
+        ));
     }
     Ok(s)
 }

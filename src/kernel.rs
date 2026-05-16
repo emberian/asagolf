@@ -44,6 +44,10 @@ pub struct Db {
     pub by_label: HashMap<String, usize>,
     consts: BTreeSet<Sym>,
     vars: BTreeSet<Sym>,
+    /// Top-level scope (active `$f`/`$e`/`$d`) after the base was parsed.
+    /// Reused by `extend` so incrementally-appended lemmas compute the
+    /// same mandatory frames as a monolithic parse of base + lemmas.
+    top_scope: Scope,
 }
 
 #[derive(Default, Clone)]
@@ -63,9 +67,27 @@ impl Db {
 
     /// Parse a Metamath-subset source string into a database.
     pub fn parse(src: &str) -> Result<Db, String> {
-        let toks = tokenize(src);
         let mut db = Db::default();
+        let toks = tokenize(src);
         let mut stack: Vec<Scope> = vec![Scope::default()];
+        db.run(&toks, &mut stack)?;
+        db.top_scope = stack.into_iter().next().unwrap_or_default();
+        Ok(db)
+    }
+
+    /// Append the statements in `src` to an existing database, reusing the
+    /// post-base top-level scope. Sound for our use because every appended
+    /// lemma fragment is scope-balanced and only back-references earlier
+    /// labels; the final `verify()` remains the authoritative check and is
+    /// byte-identical to verifying a monolithic parse of base + lemmas.
+    pub fn extend(&mut self, src: &str) -> Result<(), String> {
+        let toks = tokenize(src);
+        let mut stack: Vec<Scope> = vec![self.top_scope.clone()];
+        self.run(&toks, &mut stack)
+    }
+
+    fn run(&mut self, toks: &[String], stack: &mut Vec<Scope>) -> Result<(), String> {
+        let db = self;
         let mut i = 0;
         while i < toks.len() {
             match toks[i].as_str() {
@@ -183,7 +205,7 @@ impl Db {
                 }
             }
         }
-        Ok(db)
+        Ok(())
     }
 
     /// Mandatory frame: active `$e` plus the active `$f` whose variable occurs

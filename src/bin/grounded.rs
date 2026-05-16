@@ -30,7 +30,7 @@ mod proof_g3;
 #[path = "../proof_g1.rs"]
 mod proof_g1;
 
-use elaborate::{assemble, leaf, Elab, Lemma, Pt};
+use elaborate::{assemble, assemble_one, leaf, Elab, Lemma, Pt};
 use number::ProofSize;
 use std::collections::HashMap;
 use std::process::exit;
@@ -4705,7 +4705,7 @@ const NAMES: [&str; 57] = [
 /// reassemble + reparse, and (only with GROUNDED_VERIFY_EACH) re-verify.
 /// Used identically for the core 57 and the extra postulate modules.
 fn stage(
-    base: &str,
+    _base: &str,
     db: &mut kernel::Db,
     lemmas: &mut Vec<Lemma>,
     concls: &mut Vec<String>,
@@ -4716,6 +4716,7 @@ fn stage(
     {
         let el = Elab::new(db);
         let before = elaborate::pt_nodes(&lm.goal);
+        eprintln!("  staged[{label_idx}] {}: {before} raw nodes; shrinking...", lm.name);
         lm.goal = el.shrink(&lm.goal);
         let after = elaborate::pt_nodes(&lm.goal);
         if before != after {
@@ -4737,12 +4738,19 @@ fn stage(
         }
     }
     let name = lm.name.clone();
+    // Incremental append: emit only this lemma's kernel text and extend the
+    // in-memory db, instead of re-stringifying + re-parsing the entire
+    // growing corpus every stage (which was O(n²) in total proof size — the
+    // 4.3M-node loclink RPN was being re-tokenised ~34+ times). The final
+    // cumulative `db.verify()` in main remains the authoritative check and
+    // is byte-identical to verifying a monolithic parse of base + lemmas.
+    let frag = {
+        let el = Elab::new(db);
+        assemble_one(&el, &lm).unwrap_or_else(|e| die(&format!("assemble {name}"), e))
+    };
     lemmas.push(lm);
-    let src = assemble(base, db, lemmas)
-        .unwrap_or_else(|e| die(&format!("assemble through {name}"), e));
-    std::fs::write("data/grounded.out.mm", &src).ok();
-    *db = kernel::Db::parse(&src)
-        .unwrap_or_else(|e| die(&format!("reparse through {name}"), e));
+    db.extend(&frag)
+        .unwrap_or_else(|e| die(&format!("append {name}"), e));
     if std::env::var("GROUNDED_VERIFY_EACH").is_ok() {
         if let Err(e) = db.verify() {
             die(&format!("KERNEL REJECTED at {name}"), e);
@@ -4752,7 +4760,14 @@ fn stage(
 
 fn main() {
     let base = std::fs::read_to_string("data/grounded.mm").expect("read grounded.mm");
-    let mut db = kernel::Db::parse(&base).unwrap_or_else(|e| die("base parse", e));
+    // Start the incremental db from the same truncated base `assemble` uses
+    // (everything before the F0 ASA-GOAL section), so the cumulative db is
+    // exactly base-prefix + staged lemmas — identical to the old reparse path.
+    let cut_base = base
+        .find("$( ASA-GOAL:")
+        .map(|i| base[..i].to_string())
+        .unwrap_or_else(|| base.clone());
+    let mut db = kernel::Db::parse(&cut_base).unwrap_or_else(|e| die("base parse", e));
     let mut lemmas: Vec<Lemma> = Vec::new();
     let mut concls: Vec<String> = Vec::new();
     let mut shrinks: Vec<Option<(usize, usize)>> = Vec::new();
@@ -4777,10 +4792,12 @@ fn main() {
         next += 1;
     }
     for k in 0..proof_g3::count() {
+        eprintln!("  building[{next}] proof_g3::make({k})...");
         let lm = {
             let el = Elab::new(&db);
             proof_g3::make(k, &el)
         };
+        eprintln!("  built[{next}] proof_g3::make({k}) ok");
         stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
         next += 1;
     }
@@ -4792,6 +4809,12 @@ fn main() {
         stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
         next += 1;
     }
+    // Write the full assembled corpus once (inspection artifact only; no
+    // longer on the per-stage hot path).
+    if let Ok(src) = assemble(&base, &db, &lemmas) {
+        std::fs::write("data/grounded.out.mm", &src).ok();
+    }
+
     // single authoritative cumulative kernel verification.
     if let Err(e) = db.verify() {
         die("KERNEL REJECTED (final)", e);

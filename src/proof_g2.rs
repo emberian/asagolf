@@ -36,7 +36,7 @@ use super::*;
 /// they stage tiny + kernel-✔, exactly as g3a-plk did). The full G2
 /// inference lemma is wired on top of these next.
 pub fn count() -> usize {
-    2
+    3
 }
 
 /// Build local lemma `idx` against an `Elab` over the current db.
@@ -81,6 +81,27 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             let rhs = mu(el, det.clone(), f.clone());
             Lemma {
                 name: "g2-elim-x".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            }
+        }
+        // g2-sq : ( m·n )·( m·n ) = ( m·m )·( n·n )   [generic, tiny]
+        // Keeps (det·dy)² = det²·dy² off the normaliser (det,dy are
+        // degree-2 coord terms → (det·dy)² would be degree-8 dense).
+        2 => {
+            let (m, nn) = (v("vu"), v("vv"));
+            let lhs = mu(
+                el,
+                mu(el, m.clone(), nn.clone()),
+                mu(el, m.clone(), nn.clone()),
+            );
+            let rhs = mu(
+                el,
+                mu(el, m.clone(), m.clone()),
+                mu(el, nn.clone(), nn.clone()),
+            );
+            Lemma {
+                name: "g2-sq".into(),
                 ess: vec![],
                 goal: ring_eq(el, &lhs, &rhs),
             }

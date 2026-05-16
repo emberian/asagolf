@@ -102,10 +102,21 @@ function renderHero(data) {
   fill('#stat-lemmas',  fmtNum(h.lemmas));
   fill('#stat-stmts',   fmtNum(h.db_statements));
 
-  // Update generated date
+  // Status section spans (kept in sync with the verified build)
+  fill('#status-stmts', fmtNum(h.db_statements));
+  fill('#status-g4',    fmtNum(h.g4_sas_inlined));
+
+  // Update generated date — supports ISO 8601 or "unix:<secs>"
   const genEl = document.getElementById('generated-date');
   if (genEl && data.generated) {
-    genEl.textContent = data.generated.split('T')[0];
+    let txt = String(data.generated);
+    const m = /^unix:(\d+)$/.exec(txt);
+    if (m) {
+      txt = new Date(Number(m[1]) * 1000).toISOString().split('T')[0];
+    } else {
+      txt = txt.split('T')[0];
+    }
+    genEl.textContent = txt;
   }
 }
 
@@ -196,17 +207,29 @@ function renderLogScale(models) {
  * Build Cytoscape elements from dag nodes/edges plus any lemma data
  * (for node sizing from lemma.inlined when not in dag.nodes).
  */
-function buildCyElements(dag, lemmaMap) {
+function buildCyElements(dag, lemmaMap, metric = 'inlined') {
   const elements = [];
+
+  // Largest size present (for this metric) sets the log scale ceiling.
+  let maxSize = 1;
+  for (const n of dag.nodes) {
+    const lm = lemmaMap.get(n.id);
+    const s = metric === 'shared'
+      ? (lm?.shared ?? n.size ?? 1)
+      : (lm?.inlined ?? n.size ?? 1);
+    if (s > maxSize) maxSize = s;
+  }
+  const maxLog = Math.max(1, Math.log10(maxSize));
 
   // Nodes
   for (const n of dag.nodes) {
     const lemma = lemmaMap.get(n.id);
-    const size = n.size ?? lemma?.inlined ?? 1;
-    // Log-scale node size: min 24, max 80
+    const size = metric === 'shared'
+      ? (lemma?.shared ?? n.size ?? 1)
+      : (lemma?.inlined ?? n.size ?? 1);
+    // Log-scale node size: min 22, max 82
     const logSize = Math.log10(Math.max(size, 1));
-    const maxLog = Math.log10(10_000_000); // 10^7
-    const nodeSize = 24 + 56 * Math.min(1, logSize / maxLog);
+    const nodeSize = 22 + 60 * Math.min(1, logSize / maxLog);
 
     elements.push({
       data: {
@@ -237,14 +260,62 @@ function buildCyElements(dag, lemmaMap) {
 }
 
 let cyInstance = null;
+let dagMetric = 'inlined';
+
+/** Render the cut-free-vs-shared cruncher headline above the DAG. */
+function renderCseCallout(data) {
+  const el = document.getElementById('cse-callout');
+  if (!el) return;
+  const h = data.headline;
+  const inl = h.g4_sas_inlined;
+  const shared = h.shared_total;
+  if (!inl || !shared) { el.style.display = 'none'; return; }
+  const ratio = (inl / shared);
+  el.innerHTML = `
+    <strong>Cut-free vs shared.</strong>
+    The fully-inlined SAS chain is <code>${fmtNum(inl)}</code> primitive
+    steps with <em>no</em> sub-proof reuse — the deliberately pessimistic
+    metric. Kept as a DAG with common sub-proofs shared once, the same
+    proof is <code>${fmtNum(shared)}</code> nodes
+    (~${ratio.toFixed(1)}× smaller). Both are exact and re-checked by the
+    kernel. Toggle the node sizing below to see where the reuse is.`;
+}
 
 async function renderDag(data) {
   const cyEl = document.getElementById('cy');
   const fallback = document.getElementById('dag-fallback');
   if (!cyEl) return;
 
+  renderCseCallout(data);
+
   const lemmaMap = new Map(data.lemmas.map(l => [l.name, l]));
-  const elements = buildCyElements(data.dag, lemmaMap);
+  let elements = buildCyElements(data.dag, lemmaMap, dagMetric);
+
+  // Node-size metric toggle
+  document.querySelectorAll('#dag-size-buttons .seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const m = btn.dataset.metric;
+      if (m === dagMetric) return;
+      dagMetric = m;
+      document.querySelectorAll('#dag-size-buttons .seg-btn').forEach(b => {
+        const a = b.dataset.metric === m;
+        b.classList.toggle('active', a);
+        b.setAttribute('aria-pressed', a);
+      });
+      if (cyInstance) {
+        const fresh = buildCyElements(data.dag, lemmaMap, dagMetric);
+        const byId = new Map(
+          fresh.filter(e => e.data.nodeSize != null)
+               .map(e => [e.data.id, e.data.nodeSize]));
+        cyInstance.batch(() => {
+          cyInstance.nodes().forEach(n => {
+            const ns = byId.get(n.id());
+            if (ns != null) n.data('nodeSize', ns);
+          });
+        });
+      }
+    });
+  });
 
   // Try loading Cytoscape from CDN
   let cy;
@@ -377,8 +448,15 @@ function showDagDetail(nodeData) {
       html += detailRow('Deps', `<code>${esc(l.deps.join(', '))}</code>`);
     }
 
-    if (l.inlined != null) html += detailRow('Inlined', `<code>${fmtNum(l.inlined)}</code>`);
-    if (l.shared  != null) html += detailRow('Shared',  `<code>${fmtNum(l.shared)}</code>`);
+    if (l.inlined != null) html += detailRow('Inlined (cut-free)', `<code>${fmtNum(l.inlined)}</code>`);
+    if (l.shared  != null) html += detailRow('Shared (DAG)',  `<code>${fmtNum(l.shared)}</code>`);
+    if (l.inlined && l.shared) {
+      const r = l.inlined / l.shared;
+      html += detailRow('Reuse factor',
+        `<code>${r >= 1 ? r.toFixed(1) + '×' : (1 / r).toFixed(1) + '× larger'}</code>`);
+    }
+    if (l.inlined_log10 != null)
+      html += detailRow('log₁₀', `<code>${Number(l.inlined_log10).toFixed(2)}</code>`);
 
     if (l.shrink_before != null || l.shrink_after != null) {
       html += detailRow('Shrink',

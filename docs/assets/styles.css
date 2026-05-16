@@ -286,6 +286,34 @@ table.results-table tr:hover td { background: var(--clr-border); }
 }
 
 /* ─── Proof DAG ─────────────────────────────────────────────────────────── */
+.cse-callout {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-left: 4px solid var(--clr-accent);
+  border-radius: var(--radius);
+  padding: .85rem 1.1rem;
+  font-size: .88rem;
+  line-height: 1.55;
+  margin-bottom: 1rem;
+  max-width: 80ch;
+}
+.cse-callout code { font-size: .82em; font-weight: 600; }
+
+.dag-controls {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+.dag-controls-label {
+  font-size: .78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--clr-muted);
+}
+
 #dag-section .dag-wrapper {
   position: relative;
   background: var(--clr-surface);
@@ -594,6 +622,47 @@ footer {
 .monospace  { font-family: var(--font-mono); }
 .mt-1 { margin-top: .5rem; }
 .mt-2 { margin-top: 1rem; }
+
+/* ─── Status grid ───────────────────────────────────────────────────────── */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 880px) { .status-grid { grid-template-columns: 1fr; } }
+
+.status-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.status-card h3 { font-size: 1.02rem; margin: .35rem 0 .5rem; }
+.status-card p  { font-size: .86rem; color: var(--clr-text); max-width: none; }
+.status-card code { font-size: .8em; }
+
+.status-tag {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: .15em .55em;
+  border-radius: 999px;
+}
+.status-done       { border-left-color: #198754; }
+.status-done .status-tag      { background: #d1e7dd; color: #0a3622; }
+.status-elsewhere  { border-left-color: #0d6efd; }
+.status-elsewhere .status-tag { background: #cfe2ff; color: #084298; }
+.status-todo       { border-left-color: #fd7e14; }
+.status-todo .status-tag      { background: #ffe5d0; color: #6e2d00; }
+
+@media (prefers-color-scheme: dark) {
+  .status-done .status-tag      { background: #0a2e1d; color: #6bcf98; }
+  .status-elsewhere .status-tag { background: #0d2952; color: #8ab4f8; }
+  .status-todo .status-tag      { background: #3d1900; color: #ffb366; }
+}
 
 /* ─── Responsive tweaks ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {

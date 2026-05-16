@@ -6,6 +6,11 @@ reads only this file (plus `site.sample.json` as a dev fallback); set.mm and the
 verifier never reach the browser.
 
 ```jsonc
+// `generated` is either ISO-8601 or "unix:<epoch-seconds>" (the emitter
+// currently writes the latter); the front-end accepts both. The headline,
+// lemma list and DAG reflect ONLY what the emitting run kernel-verified —
+// e.g. a 57-lemma core build does not list G3a/G2/G1, which the site shows
+// as a clearly-labelled roadmap, never as finished.
 {
   "generated": "2026-05-15T00:00:00Z",
   "headline": {

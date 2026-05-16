@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>asagolf — measuring ASA in ZFC</title>
   <meta name="description"
-        content="Exact step counts for a Birkhoff ASA proof, kernel-verified from ring axioms all the way to ZFC. The poll said 10^1000. It is 10^6.9." />
+        content="Exact step counts for a Birkhoff ASA proof, kernel-verified from ring axioms all the way to ZFC. The poll said 10^1000. The geometry is 10^6.9." />
 
   <!-- Open Graph / Twitter Card: makes the link unfurl with title + summary -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="asagolf" />
-  <meta property="og:title" content="asagolf — the poll said 10^1000; it's 10^6.9" />
+  <meta property="og:title" content="asagolf — the poll said 10^1000; the geometry is 10^6.9" />
   <meta property="og:description"
         content="Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof, traced from ordered-ring axioms through ZFC. Every Birkhoff postulate derived, not asserted." />
   <meta property="og:url" content="https://emberian.github.io/asagolf/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="asagolf — the poll said 10^1000; it's 10^6.9" />
+  <meta name="twitter:title" content="asagolf — the poll said 10^1000; the geometry is 10^6.9" />
   <meta name="twitter:description"
         content="Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof, traced from ordered-ring axioms through ZFC. Derived, not asserted." />
 
@@ -31,39 +31,49 @@
   <div class="container">
     <h1 class="hero-title">asa<span>golf</span></h1>
     <p class="hero-tagline">
-      Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof,
-      traced from ring axioms through ZFC — the poll said 10<sup>1000</sup>.
+      A poll claimed the fully-expanded, machine-checked proof of a basic
+      triangle-congruence theorem, reduced to ZFC, would exceed
+      10<sup>1000</sup> steps. We built the actual proof object and counted.
+      The hardest Birkhoff postulate, derived with zero cheating from
+      ordered-ring axioms, is <strong>~10<sup>6.9</sup></strong> steps —
+      and the only large term anywhere is constructing&nbsp;&#8477;,
+      at&nbsp;~10<sup>45.7</sup>. The claim overshoots by roughly
+      <strong>950 orders of magnitude</strong>.
     </p>
 
     <div class="hero-stats" role="list" aria-label="Headline statistics">
       <div class="stat-card" role="listitem">
-        <div class="stat-value" id="stat-f0" aria-label="F0 ASA step count">224</div>
-        <div class="stat-label">F0 ASA (steps, exact)</div>
-      </div>
-      <div class="stat-card" role="listitem">
         <div class="stat-value" id="stat-g4" aria-label="G4 SAS inlined step count">7,251,714</div>
-        <div class="stat-label">G4 SAS inlined (no-cheating)</div>
+        <div class="stat-label">SAS, fully inlined, no cheating
+          (<span id="stat-log">~10^6.86</span>)</div>
       </div>
       <div class="stat-card" role="listitem">
-        <div class="stat-value" id="stat-log" aria-label="G4 SAS log10">~10^6.86</div>
-        <div class="stat-label">vs poll's 10<sup>1000</sup></div>
+        <div class="stat-value">~10<sup>45.7</sup></div>
+        <div class="stat-label">whole ZFC &#8477;-construction (the only big term)</div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-value" style="color:#f87171">10<sup>1000</sup></div>
+        <div class="stat-label">the poll's claim — off by ~950 OOM</div>
       </div>
       <div class="stat-card" role="listitem">
         <div class="stat-value" id="stat-lemmas" aria-label="Number of lemmas">57</div>
-        <div class="stat-label">kernel-verified lemmas</div>
+        <div class="stat-label">kernel-verified lemmas
+          (<span id="stat-stmts">189</span>-statement DB)</div>
       </div>
       <div class="stat-card" role="listitem">
-        <div class="stat-value" id="stat-stmts" aria-label="DB statements">189</div>
-        <div class="stat-label">statements in verified DB</div>
+        <div class="stat-value" id="stat-f0" aria-label="F0 ASA step count">224</div>
+        <div class="stat-label">F0 ASA over Birkhoff postulates (exact)</div>
       </div>
     </div>
 
     <nav class="hero-nav" aria-label="Page sections">
       <a href="#results-section">Results</a>
+      <a href="#status-section">Status</a>
       <a href="#dag-section">Proof DAG</a>
       <a href="#lemma-section">Lemmas</a>
       <a href="#model-section">Model variation</a>
       <a href="#what-section">What this means</a>
+      <a href="slides.html">Slides &#8599;</a>
     </nav>
 
     <p class="text-muted" style="font-size:.78rem;color:#8b949e">
@@ -118,16 +128,101 @@
   </div>
 </section>
 
+<!-- ─── Status: what is verified vs roadmap ───────────────────────────────── -->
+<section class="section" id="status-section" aria-labelledby="status-heading">
+  <div class="container">
+    <h2 class="section-title" id="status-heading">
+      What is verified, and what is not
+      <small>
+        This is a rebuttal of an over-claim, so it must not itself over-claim.
+        Below, "verified in this build" means re-checked by the kernel in the
+        exact run that emitted the data on this page.
+      </small>
+    </h2>
+
+    <div class="status-grid">
+      <div class="status-card status-done">
+        <div class="status-tag">Verified in this build</div>
+        <h3>The full SAS chain</h3>
+        <p>
+          57 lemmas, an <span id="status-stmts">189</span>-statement database,
+          bottom-up from <code>ax-1/2/3/mp</code> and the ordered-ring +
+          one-square-root axioms — through propositional logic, equality
+          logic, the ring normaliser, the order toolkit, up to
+          <code>G4&#8209;sas</code>, the law-of-cosines side-equality
+          (<strong><span id="status-g4">7,251,714</span></strong> cut-free
+          steps). The single Metamath kernel re-checks the whole assembled
+          DB and prints the verdict before any number on this page is
+          written. <code>G0&#8209;congsub</code> and
+          <code>G3c&#8209;rayline</code> (other Birkhoff postulates) are in
+          the same run.
+        </p>
+      </div>
+
+      <div class="status-card status-elsewhere">
+        <div class="status-tag">Verified, integrated separately</div>
+        <h3>G3a — ray-angle congruence</h3>
+        <p>
+          <code>ACong a b x a b c</code> from collinearity, kernel-verified
+          at ~4.7&#8239;million cut-free steps using the generic-Plücker
+          factoring technique and an O(n³) normaliser. It lives on a
+          dedicated branch and is not part of the 57-lemma run that produced
+          the data here, so it is listed as a milestone rather than folded
+          into the headline counts.
+        </p>
+      </div>
+
+      <div class="status-card status-todo">
+        <div class="status-tag">Roadmap — not done</div>
+        <h3>G2, G1, and regrounded ASA&prime;</h3>
+        <p>
+          G2 (incidence) and G1 (ruler — needs a principal-√ substrate axiom)
+          are designed but not yet kernel-verified, and the end-to-end
+          re-expression of ASA over the derived postulates
+          (<em>ASA&prime;</em>) is future work. They are shown here only as a
+          roadmap. Nothing on this page counts them as finished.
+        </p>
+      </div>
+    </div>
+
+    <p class="text-muted mt-2" style="font-size:.82rem;max-width:74ch">
+      Why this matters: asserting the Birkhoff postulates as axioms makes
+      "ASA" about 200 steps and the question vacuous. Here every postulate
+      used is a theorem derived from an ordered commutative ring with 1, one
+      square-root primitive, and ordinary logic with equality — points,
+      lines, distance, dot product and angle congruence are all conservative
+      definitions over coordinates, never axioms.
+    </p>
+  </div>
+</section>
+
 <!-- ─── Proof DAG ─────────────────────────────────────────────────────────── -->
 <section class="section" id="dag-section" aria-labelledby="dag-heading">
   <div class="container">
     <h2 class="section-title" id="dag-heading">
       Interactive proof DAG
       <small>
-        Node size and colour by kind and inlined size (log-scaled).
-        Click a node to see lemma details. Pan and scroll to zoom.
+        Every node is a lemma or axiom; edges point to what a proof uses.
+        Node colour is by kind; node area is log-scaled by size. Click a
+        node for its statement, hypotheses and exact counts. Drag to pan,
+        scroll to zoom.
       </small>
     </h2>
+
+    <div id="cse-callout" class="cse-callout" aria-live="polite">
+      <!-- Populated by app.js: the inlined-vs-shared cruncher headline -->
+    </div>
+
+    <div class="dag-controls">
+      <span class="dag-controls-label">Size nodes by</span>
+      <div class="segment-buttons" id="dag-size-buttons" role="group"
+           aria-label="DAG node size metric">
+        <button class="seg-btn active" data-metric="inlined"
+                aria-pressed="true">Inlined (cut-free)</button>
+        <button class="seg-btn" data-metric="shared"
+                aria-pressed="false">Shared (DAG-CSE)</button>
+      </div>
+    </div>
 
     <!-- Kind legend -->
     <div class="dag-legend" id="dag-legend" aria-label="Node colour legend">
@@ -260,9 +355,14 @@
       <p>
         A poll estimated that the fully-expanded, machine-checked proof of a basic
         triangle-congruence theorem, reduced all the way to ZFC set theory, would be
-        more than 10<sup>1000</sup> steps. This project measures it directly with a
-        small trusted proof checker and real, kernel-verified proof objects, reporting
-        exact step counts.
+        more than 10<sup>1000</sup> steps. Rather than argue with a Fermi estimate,
+        this project builds the actual proof object: a small trusted Metamath-subset
+        checker (the kernel), a hand-and-machine-assembled proof from ordered-ring
+        axioms upward, and an exact cut-free step count that the kernel re-verifies.
+        The answer is not close to 10<sup>1000</sup> — the geometry is around
+        10<sup>6.9</sup>, and the single genuinely large term, constructing the real
+        numbers inside ZFC, is around 10<sup>45.7</sup>. The claim is high by roughly
+        950 orders of magnitude.
       </p>
 
       <h3>Derived, not asserted</h3>

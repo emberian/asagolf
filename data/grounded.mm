@@ -91,7 +91,7 @@ of-distr  $a |- ( u * ( v + w ) ) = ( ( u * v ) + ( u * w ) ) $.
 $( Multiplicative inverse: the ordered substrate is a field (Birkhoff's
    reals are a field).  Only the ruler postulate (G1) needs it; G0-G4 do
    not.  Algebra primitive, silent about geometry.                       $)
-of-recip $a |- ( -. ( u = 0 ) -> ( ( u * ( inv u ) ) = 1 ) ) $.
+of-recip $a |- ( -. u = 0 -> ( u * ( inv u ) ) = 1 ) $.
 of-lein   $a |- ( ( ( u <_ v ) /\ ( v <_ u ) ) -> u = v ) $.
 of-letri  $a |- ( ( u <_ v ) -> ( ( v <_ w ) -> ( u <_ w ) ) ) $.
 of-sqpos  $a |- ( 0 <_ ( u * u ) ) $.
@@ -113,12 +113,12 @@ $( General subtraction is a conservative definition over + and the
 df-sub $a |- ( u -x v ) = ( u + ( 0 -x v ) ) $.
 
 $( The only extra primitive beyond an ordered field: square roots of
-   non-negatives exist (Pythagorean/Euclidean field closure).  This is F1.$)
+   non-negatives exist (Pythagorean/Euclidean field closure).  This is F1. $)
 tsqrt   $a term ( sqrt u ) $.
-ax-sqrt $a |- ( 0 <_ u -> ( ( sqrt u ) * ( sqrt u ) ) = u ) $.
+ax-sqrt $a |- ( ( 0 <_ u ) -> ( ( sqrt u ) * ( sqrt u ) ) = u ) $.
 $( sqrt denotes the principal (non-negative) root — needed so the ruler
    lands on the ray, not the opposite side.  Euclidean-field fact.       $)
-of-sqrtnn $a |- ( 0 <_ u -> ( 0 <_ ( sqrt u ) ) ) $.
+of-sqrtnn $a |- ( ( 0 <_ u ) -> ( 0 <_ ( sqrt u ) ) ) $.
 
 $( ---- coordinate model: conservative DEFINITIONS (df-*, NOT axioms) ---- $)
 $( A point is a coordinate pair ( Pt x y ); Xc/Yc project.                 $)

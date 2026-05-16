@@ -4762,6 +4762,26 @@ fn stage(
     label_idx: usize,
     mut lm: Lemma,
 ) {
+    // `--only <name>`: non-authoritative DEBUG fast path. For every lemma
+    // that is not the target, skip the (dominant) shrink + conclusion work
+    // but still `extend` it so the target can reference it (an unshrunk
+    // proof is still kernel-valid). The full `grounded data/grounded.mm`
+    // run with its `verified all N ✔` remains the sole authoritative check.
+    let only = only_target();
+    let is_target = only.as_deref() == Some(lm.name.as_str());
+    if only.is_some() && !is_target {
+        shrinks.push(None);
+        concls.push(String::new());
+        let name = lm.name.clone();
+        let frag = {
+            let el = Elab::new(db);
+            assemble_one(&el, &lm).unwrap_or_else(|e| die(&format!("assemble {name}"), e))
+        };
+        lemmas.push(lm);
+        db.extend(&frag)
+            .unwrap_or_else(|e| die(&format!("append {name}"), e));
+        return;
+    }
     {
         let el = Elab::new(db);
         let before = elaborate::pt_nodes(&lm.goal);
@@ -4805,6 +4825,39 @@ fn stage(
             die(&format!("KERNEL REJECTED at {name}"), e);
         }
     }
+    if is_target {
+        eprintln!(
+            "  [--only {name}] staged — kernel-verifying prefix+target \
+             (DEBUG path; the full run's `verified all N ✔` is authoritative)..."
+        );
+        match db.verify() {
+            Ok(()) => {
+                println!(
+                    "  [--only] {name} VERIFIED ✔  ({} db statements in prefix)",
+                    db.stmts.len()
+                );
+                std::process::exit(0);
+            }
+            Err(e) => {
+                eprintln!("  [--only] {name} KERNEL REJECTED: {e}");
+                std::process::exit(1);
+            }
+        }
+    }
+}
+
+/// `--only <name>` / `--only=<name>` target for the debug fast path.
+fn only_target() -> Option<String> {
+    let args: Vec<String> = std::env::args().collect();
+    for (i, a) in args.iter().enumerate() {
+        if let Some(n) = a.strip_prefix("--only=") {
+            return Some(n.to_string());
+        }
+        if a == "--only" {
+            return args.get(i + 1).cloned();
+        }
+    }
+    None
 }
 
 fn main() {

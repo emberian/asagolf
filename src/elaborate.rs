@@ -142,6 +142,28 @@ impl<'a> Elab<'a> {
         }
     }
 
+    /// Load-time grammar lint (untrusted convenience — the Metamath kernel
+    /// remains the sole trust root and still independently re-checks every
+    /// proof). Grammar-parses every `|-` assertion / `$e` hypothesis against
+    /// the constructor grammar so a malformed statement (parenthesised
+    /// `weq`, unparenthesised `tle`, …) is reported at load instead of only
+    /// when it is first *used* in a proof (which historically cost many
+    /// kernel-debug cycles: df-coll, ptext, of-recip, ax-sqrt, of-sqrtnn).
+    /// `$f` floating hyps and the `term`/`wff` syntax constructors *define*
+    /// the grammar and are skipped.
+    pub fn lint(&self) -> Vec<String> {
+        let mut out = Vec::new();
+        for st in &self.db.stmts {
+            if st.expr.first().map(|s| s.as_str()) != Some("|-") {
+                continue;
+            }
+            if let Err(e) = self.parse_wff(&st.expr[1..]) {
+                out.push(format!("{}: {}", st.label, e));
+            }
+        }
+        out
+    }
+
     /// The two operands of a top-level binary `wff` constructor whose body is
     /// `( A op B )` or `A op B`, identified structurally by `op`.
     fn split_binop(&self, concl: &[String], op: &str) -> Result<(Pt, Pt), String> {

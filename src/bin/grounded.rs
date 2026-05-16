@@ -4809,6 +4809,41 @@ fn stage(
 
 fn main() {
     let base = std::fs::read_to_string("data/grounded.mm").expect("read grounded.mm");
+
+    // `--lint`: fail-fast load-time grammar/well-formedness check (untrusted
+    // convenience; the kernel is still the sole trust root). Catches the
+    // historically-expensive bug-classes — malformed `|-` statements that
+    // only error when first *used* (df-coll/ptext/of-recip/ax-sqrt/
+    // of-sqrtnn) and glued comment delimiters that silently swallow
+    // statements (the ax-sqrt incident) — at load instead of mid-proof.
+    if std::env::args().any(|a| a == "--lint") {
+        let ldb = kernel::Db::parse(&base).unwrap_or_else(|e| die("lint: base parse", e));
+        let mut issues = Elab::new(&ldb).lint();
+        for (ln, line) in base.lines().enumerate() {
+            for tok in line.split_whitespace() {
+                if tok != "$(" && tok != "$)" && (tok.contains("$(") || tok.contains("$)")) {
+                    issues.push(format!(
+                        "data/grounded.mm:{}: glued comment delimiter in token \
+                         `{tok}` — `$(`/`$)` must be whitespace-separated tokens",
+                        ln + 1
+                    ));
+                }
+            }
+        }
+        if issues.is_empty() {
+            println!(
+                "lint: grounded.mm grammar-clean ✔  ({} statements checked)",
+                ldb.stmts.len()
+            );
+            std::process::exit(0);
+        }
+        eprintln!("lint: {} issue(s) — these will fail mid-proof:", issues.len());
+        for i in &issues {
+            eprintln!("  {i}");
+        }
+        std::process::exit(1);
+    }
+
     // Start the incremental db from the same truncated base `assemble` uses
     // (everything before the F0 ASA-GOAL section), so the cumulative db is
     // exactly base-prefix + staged lemmas — identical to the old reparse path.

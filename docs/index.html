@@ -56,9 +56,9 @@
         <div class="stat-label">the poll's claim — off by ~950 OOM</div>
       </div>
       <div class="stat-card" role="listitem">
-        <div class="stat-value" id="stat-lemmas" aria-label="Number of lemmas">57</div>
-        <div class="stat-label">kernel-verified lemmas
-          (<span id="stat-stmts">189</span>-statement DB)</div>
+        <div class="stat-value" id="stat-lemmas" aria-label="Number of lemmas">87</div>
+        <div class="stat-label">kernel-verified lemmas — all 7 postulates
+          (<span id="stat-stmts">250</span>-statement DB)</div>
       </div>
       <div class="stat-card" role="listitem">
         <div class="stat-value" id="stat-f0" aria-label="F0 ASA step count">224</div>
@@ -143,44 +143,60 @@
     <div class="status-grid">
       <div class="status-card status-done">
         <div class="status-tag">Verified in this build</div>
-        <h3>The full SAS chain</h3>
+        <h3>All 7 Birkhoff postulates — no cheating</h3>
         <p>
-          57 lemmas, an <span id="status-stmts">189</span>-statement database,
-          bottom-up from <code>ax-1/2/3/mp</code> and the ordered-ring +
-          one-square-root axioms — through propositional logic, equality
-          logic, the ring normaliser, the order toolkit, up to
-          <code>G4&#8209;sas</code>, the law-of-cosines side-equality
-          (<strong><span id="status-g4">7,251,714</span></strong> cut-free
-          steps). The single Metamath kernel re-checks the whole assembled
-          DB and prints the verdict before any number on this page is
-          written. <code>G0&#8209;congsub</code> and
-          <code>G3c&#8209;rayline</code> (other Birkhoff postulates) are in
-          the same run.
+          <strong><span id="status-lemmas">87</span> lemmas,
+          a <span id="status-stmts">250</span>-statement database</strong>,
+          one run, bottom-up from <code>ax-1/2/3/mp</code> + the ordered-ring
+          and one-√ axioms. Every Birkhoff postulate is a kernel-verified
+          <em>derived</em> <code>$p</code>, none asserted:
+          <code>G0&#8209;congsub</code>, <code>G3c&#8209;rayline</code>,
+          <strong><code>G4&#8209;sas</code></strong>
+          (<span id="status-g4">7,251,714</span> cut-free steps, law of
+          cosines), <strong><code>G3a&#8209;rayangle</code></strong>
+          (4,720,242), <strong><code>G2&#8209;incid</code></strong>
+          (607,583), <strong><code>G1&#8209;ruler</code></strong>
+          (<code>sqd a (cp a c u)=u</code> &amp; <code>Ray a c (cp a c u)</code>),
+          and <strong><code>G3bp&#8209;protuniq&#8209;oriented</code></strong>
+          (the faithful oriented protractor-uniqueness — see note). The single
+          Metamath kernel re-checks the whole assembled DB and prints the
+          verdict before any number on this page is written.
         </p>
       </div>
 
-      <div class="status-card status-elsewhere">
-        <div class="status-tag">Verified, integrated separately</div>
-        <h3>G3a — ray-angle congruence</h3>
+      <div class="status-card status-done">
+        <div class="status-tag">Mechanized, not asserted</div>
+        <h3>The substrate is a ZFC theorem</h3>
         <p>
-          <code>ACong a b x a b c</code> from collinearity, kernel-verified
-          at ~4.7&#8239;million cut-free steps using the generic-Plücker
-          factoring technique and an O(n³) normaliser. It lives on a
-          dedicated branch and is not part of the 57-lemma run that produced
-          the data here, so it is listed as a milestone rather than folded
-          into the headline counts.
+          The of-* / √ axioms are the <em>minimal</em> ordered-Euclidean-field
+          substrate the geometry needs (no completeness, no Archimedean). Each
+          is mechanically bound to the metamath/set.mm theorem proving the
+          same fact from ZFC (<code>ax-sqrt&nbsp;↔&nbsp;resqrtth</code>,
+          <code>of-recip&nbsp;↔&nbsp;axrrecex</code>, …) — so they <em>are</em>
+          modelled by the standard construction, shown by machine. Fully
+          ZFC-grounded the substrate is ≈10<sup>45.7</sup>; an exact
+          occurrence-level split proves that is <em>not</em> completeness and
+          not the completion definitions (0.6%) but ℤ→ℚ construction
+          multiplicity — so with √ a Euclidean-field primitive it drops to
+          ≈10<sup>37.2</sup>, and the proof-theoretic floor (decidable RCF,
+          Tarski QE; consistency ≪ ZFC) is far below that. The one large
+          number is a quantified model-choice artifact, never the geometry.
         </p>
       </div>
 
       <div class="status-card status-todo">
-        <div class="status-tag">Roadmap — not done</div>
-        <h3>G2, G1, and regrounded ASA&prime;</h3>
+        <div class="status-tag">Final step — in progress</div>
+        <h3>End-to-end ASA&prime; closure</h3>
         <p>
-          G2 (incidence) and G1 (ruler — needs a principal-√ substrate axiom)
-          are designed but not yet kernel-verified, and the end-to-end
-          re-expression of ASA over the derived postulates
-          (<em>ASA&prime;</em>) is future work. They are shown here only as a
-          roadmap. Nothing on this page counts them as finished.
+          The regrounded ASA proof (<code>asaprime</code>) is already
+          <em>structurally</em> kernel-verified against the derived
+          postulates; the remaining work is wiring its last placeholder
+          leaves to the now-verified <code>$p</code> (with G3b&prime; in its
+          mathematically-faithful vertex-b form) plus two tiny bridge lemmas.
+          Honest status: the postulates are done; the literal end-to-end
+          re-expression is the last finite step and nothing here counts it as
+          finished until <code>asaprime</code> prints a real no-cheating
+          closure.
         </p>
       </div>
     </div>

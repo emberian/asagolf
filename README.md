@@ -1,117 +1,150 @@
-# asagolf
+# asagolf — how big is a "simple" proof, really?
 
-How long is the fully-expanded, machine-checked proof of a triangle-congruence
-theorem when reduced to ZFC, in a Birkhoff (ruler/protractor) formalism?
+A Twitter poll estimated that the fully-expanded, machine-checked proof of a
+basic triangle-congruence theorem (**ASA**, in a Birkhoff
+ruler/protractor formalism), reduced all the way down to ZFC, exceeds
+**10^1000 steps**. This repository answers that by *building the proof
+object and counting* — a small sound Metamath-subset kernel plus
+hand-built, kernel-re-checked proofs, with exact step counts.
 
-This repository measures it directly: a micro-kernel Metamath verifier plus
-hand-built, kernel-checked proof objects, reporting exact step counts. The
-motivating context was a poll that estimated the answer at more than 10^1000.
+**The short answer:** the geometry is ≈ **10^6.9**. The only astronomical
+term anywhere is *constructing ℝ inside ZFC*, ≈ **10^45.7**, and an exact
+machine attribution shows even that is not completeness — it is ℤ→ℚ
+construction multiplicity, removable by model choice to ≈ 10^37.2 (with a
+real-closed-field floor far below). The poll overshoots by roughly **950
+orders of magnitude**, and every digit here is, or is becoming,
+kernel-checked.
 
-## Results
+A 15-minute foundations-classroom talk is in `docs/slides.html` (press
+`S` for speaker notes + timing); the interactive explorer is
+`docs/index.html` (live at emberian.github.io/asagolf); the full project
+narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 
-| quantity | exact, kernel-verified | ≈ |
+## Results (exact, kernel-verified)
+
+| quantity | exact | ≈ |
 |---|---|---|
-| F0 Birkhoff ASA (postulates + field axioms as primitives) | 224 cut-free steps | 10^2.4 |
-| G4 SAS, derived (substrate = ordered ring + one √ axiom) | 7,251,714 steps | 10^6.86 |
-| F1 substrate against a full ZFC model of ℝ (set.mm) | — | ≈ 10^45.7 |
-| F1 substrate against a minimal Euclidean-field model | — | ≈ 10^37 |
+| F0 Birkhoff ASA — postulates *asserted* as axioms | 224 cut-free steps | 10^2.4 |
+| **G4 SAS** — derived, no cheating (hardest postulate) | 7,251,714 | 10^6.86 |
+| **G3a** ray-angle — derived | 4,720,242 | 10^6.7 |
+| **G2** incidence — derived | 607,583 | 10^5.8 |
+| G1 ruler · G3b′ oriented prot-uniq · g4a-sss · G0 · G3c — derived | small | 10^3–10^5 |
+| **all of the above, one run** | **88 lemmas, 255-statement DB, `verified all ✔`** | |
+| F1 substrate vs. a full ZFC model of ℝ (set.mm) | — | 10^45.7 |
+| same, √ as a Euclidean-field primitive | — | 10^37.2 |
+| analytic-completion *definitions* (#9, exact split) | 0.6% of that | |
 
-The geometry is small (10^2–10^7). The large numbers come from constructing ℝ
-from sets; even fully mechanized that term is ≈ 10^46. The dominant single
-substrate fact is √-existence as routed through set.mm's analytic completeness
-machinery (`resqrtth`); completeness itself is never used by ASA, and the
-field/order construction — not completeness — is what costs.
+"F0 = 224" is the cheap, vacuous answer (assert the postulates).
+Everything else is the honest one: every Birkhoff postulate *derived*.
 
-## What is derived versus asserted
+## "No cheating", defined precisely
 
-If the Birkhoff postulates (ruler, protractor, SAS, …) are asserted as axioms,
-ASA is ~200 steps and the question is trivial. The substrate here instead
-*derives* the postulates. `data/grounded.mm` asserts only:
+- **Substrate F1**: an ordered commutative ring with 1, **one** square-root
+  primitive (`ax-sqrt`, principal root), and first-order logic with
+  equality. Nothing geometric is an axiom.
+- Points, lines, distance, dot product, angle congruence, the
+  oriented-area discriminator (`crs`), the ruler point (`cp`):
+  **conservative definitions** (`df-*`), eliminable, scored *Definition* —
+  never GenuineAxiom.
+- Every Birkhoff postulate (ruler G1, incidence G2, ray-angle G3a,
+  protractor-uniqueness G3b, ray-line G3c, SAS G4,
+  congruence-substitution G0) is a **kernel-verified `$p`** proved
+  bottom-up from F1 — *none asserted as `$a`*.
+- The substrate axioms are non-conservative, but each is **mechanically
+  bound to the metamath/set.mm theorem proving the same fact from ZFC**
+  (`ax-sqrt ↔ resqrtth`, `of-recip ↔ axrrecex`, …) via `modelsplice` —
+  soundness *relative to ZFC* is shown by machine, not asserted. Task #9
+  splits that ≈10^45.7 exactly: not completeness, not the completion
+  definitions (0.6%) — ℤ→ℚ pair-plumbing over *any* constructed ℝ.
 
-* an ordered commutative ring with 1
-  (`of-addcom/addass/add0/addinv/mulcom/mulass/mul1/distr`,
-  `of-lein/letri/letot/leadd/lemul/lemul0/sqpos`),
-* one further primitive: square roots of non-negatives exist (`ax-sqrt`),
-  i.e. a Euclidean field,
-* propositional and first-order logic with equality (`ax-1/2/3/mp`, `ax-7`, …),
-* conservative definitions (`df-*`) of points, lines, distance, dot product,
-  and angle congruence as polynomials over coordinates.
+## Trust boundary (the only thing you have to believe)
 
-Points/lines/distance/angle are definitions, not axioms, so the class-splitter
-scores them `Definition` rather than `GenuineAxiom`. Each Birkhoff postulate is
-then a kernel-verified `$p` proved from (field + √ + df-*).
+**Trusted: `src/kernel.rs`, alone.** A faithful sound Metamath-subset
+verifier — constants/variables, `$f/$e/$a/$p`, `$d`, `${ $}` scoping,
+mandatory-frame computation, substitution, the stack discipline,
+disjoint-variable checks. If `verify()` returns `Ok`, every `$p` was
+derived from the `$a` axioms by substitution and the stack discipline,
+DV side-conditions enforced. That is the entire trust story.
 
-`G4 SAS` (law of cosines, √-free metric reasoning, integral-domain
-cancellation) is discharged in 57 staged, kernel-verified lemmas:
+**Untrusted — and the kernel re-checks all of it:**
 
-```
-classical propositional calculus   con3, jca, jaoi, pm2.18, …   from ax-1/2/3/mp
-ordered-ring algebra               sqz, sqcong, mulcposcan       square-squeeze;
-                                                                 no zero-divisor
-                                                                 axiom, no trichotomy
-law of cosines                     loclink   decided by a kernel-checked ring
-                                              normalizer (desugar −x → distribute
-                                              → sign-canonicalize → cancel)
-G4 SAS                             df-acong unfold → substitute the two side
-                                   equalities → cancel S=(sqd a b)(sqd a c) > 0
-                                   → dot a b c = dot e f g → loclink×2 + congruence
-```
+- the proof elaborator and ring normalizer (`src/elaborate.rs`,
+  `src/bin/grounded.rs`), the deduction-form combinator library, every
+  `proof_g*.rs` derivation, and *every subagent that wrote any of it*.
+  A bug there cannot yield an unsound proof — only a kernel rejection.
+- the convenience tooling is convenience, never trust: `--lint`
+  (load-time grammar check), the `el.app` key-checker, the `ring_eq`
+  degree guard, and `--only <lemma>` — an explicitly **non-authoritative**
+  debug fast-path. The *sole* authoritative claim is the full
+  `grounded data/grounded.mm` run printing `Kernel: verified all N ✔`.
 
-## Reusability
+LCF/de Bruijn discipline: a small trusted core, everything else
+disposable. It is why this could be built by an adversarially-honest
+swarm and still mean something.
 
-The grounded proof uses no property beyond the F1 axioms — no completeness, no
-Archimedean property, no specific construction — so it is valid in every
-Euclidean field (ℝ, the real algebraic numbers, real-closed fields, computable
-reals, …); ℝ is the most expensive such model. Formally: F1-axioms ⊆ Th(ℝ),
-so SAS ∈ Th(F1) implies SAS holds in ℝ. The converse does not hold: a proof
-that used completeness would not transfer down.
+## Honest status
 
-`src/bin/modelsplice.rs` mechanizes the transfer: it binds each F1 axiom to the
-set.mm theorem proving the same fact over ZFC-constructed ℝ
-(`of-addcom → axaddcom`, …, `ax-sqrt → resqrtth`) and reports the
-fully-ZFC-grounded cost. The ~10^6.9 geometry skeleton is invariant across
-models; only the substrate term changes.
-
-## Architecture
-
-| file | role |
-|---|---|
-| `src/kernel.rs` | sound Metamath-subset verifier; the trust root (self-tested) |
-| `data/birkhoff.mm` | F0 axiom system; `src/bin/asa.rs` proves ASA (224 steps) |
-| `data/grounded.mm` | F1 substrate + conservative `df-*` definitions |
-| `src/bin/grounded.rs` | 57 staged lemmas + a kernel-checked ring normalizer; emits `grounded.out.mm`, re-verified by the kernel |
-| `src/bin/modelsplice.rs` | binds F1 axioms to their set.mm ZFC proofs |
-| `src/metamath.rs`, `src/bin/calibrate.rs` | exact fully-expanded extractor over set.mm |
-| `src/number.rs` | bignum → log → log-log proof-size arithmetic |
+All seven Birkhoff postulates are kernel-verified, no cheating, in one
+run. The end-to-end re-expression of ASA over those derived `$p`
+(`src/bin/asaprime.rs`) is *structurally* kernel-verified and its maximal
+sound sub-tree (265 statements, no PENDING axiom) checks against the
+genuine `$p`; the final faithful wiring — exporting an equality
+`g4a-sss` already proves internally, so the protractor-uniqueness bridge
+stays sign-free without an **unfaithful** non-degeneracy (Birkhoff ASA
+holds for right triangles, so `∠≠90°` must not be assumed) — is the last
+in-progress step. `asaprime` **refuses to claim closure until it is
+genuine**. The honest refusals (bare prot-uniq is provably false; the
+side-output-vs-angle-output SAS gap) have been among the best results
+here — see [`HISTORY.md`](HISTORY.md).
 
 ## Reproduce
 
 ```sh
-cargo run --release --bin grounded     # 57 lemmas; kernel verdict + exact sizes
-cargo run --release --bin asa          # F0 Birkhoff ASA = 224
-./scripts/fetch-setmm.sh               # set.mm (public domain, Metamath project)
-cargo run --release --bin modelsplice  # F1 axioms → set.mm ZFC proofs
-cargo run --release --bin calibrate    # set.mm fully-expanded calibration
+cargo run --release --bin grounded -- data/grounded.mm          # all postulates; verdict + exact sizes
+cargo run --release --bin grounded -- data/grounded.mm --lint   # load-time grammar check (fail-fast)
+cargo run --release --bin asa                                   # F0 Birkhoff ASA = 224
+cargo run --release --bin asaprime                              # regrounded ASA′ (honest closure guard)
+bash scripts/fetch-setmm.sh && cargo run --release --bin modelsplice   # F1↔ZFC splice (#8) + #9 split
+cargo test --release                                            # kernel self-tests + combinator tests
 ```
 
-The kernel re-checks every emitted proof object.
+`data/set.mm` (~48 MB, public domain, Metamath project) is git-ignored;
+the fetch script pulls it. The kernel re-checks every emitted proof.
 
-## Caveats
+## Reusability
 
-* `of-*` / `ax-sqrt` are non-conservative; discharging them requires exhibiting
-  a model, which is what `modelsplice` measures. `df-*` are eliminable
-  definitions.
-* The SAS statement carries non-degeneracy hypotheses (`0 < sqd a b`,
-  `0 < sqd a c`).
-* A fully end-to-end regrounded ASA′ still requires the remaining Birkhoff
-  postulates derived (G1 ruler, G2 incidence, G3a/G3b protractor). G3c and G4
-  are done.
+The grounded proof uses no property beyond the F1 axioms — no
+completeness, no Archimedean property, no specific construction — so it
+holds in *every* Euclidean field (ℝ, the real algebraic numbers,
+real-closed fields, the computable reals, …); ℝ is merely the most
+expensive such model. Formally F1 ⊆ Th(ℝ), so the result transfers up
+unchanged; a proof that leaned on completeness would not transfer down.
+
+## Layout
+
+| path | role |
+|---|---|
+| `src/kernel.rs` | **the trust root** — sound Metamath-subset verifier (self-tested) |
+| `src/elaborate.rs` | proof elaborator + deduction-form combinator library (untrusted) |
+| `src/bin/grounded.rs` | staged no-cheating postulate proofs + kernel-checked ring normalizer; `--lint`, `--only` |
+| `src/proof_g{1,2,3,4a}.rs` | the G1 / G2 / G3 / angle-LoC derivations (generic-lemma template) |
+| `data/grounded.mm` | F1 substrate + conservative `df-*`; the postulate goals |
+| `data/birkhoff.mm`, `src/bin/asa.rs` | F0 axiom system; Birkhoff ASA asserted = 224 |
+| `src/bin/asaprime.rs` | ASA′ regrounded over the derived `$p` (closure-guarded) |
+| `src/metamath.rs`, `src/bin/{calibrate,modelsplice}.rs` | set.mm extractor; F1↔ZFC splice (#8/#9) |
+| `src/number.rs` | bignum → log → log-log proof-size arithmetic |
+| `docs/` | interactive explorer + the 15-minute talk |
+| `HISTORY.md` | the full narrative, including the dead ends |
 
 ## Golf
 
-The headline 7.25M is a deliberately cut-free, fully-inlined count with no
-lemma reuse; that is the metric. The shared-subexpression DAG is small
-(db = 191 statements). `loclink` (3.18M, invoked twice) and the
-no-common-subexpression ring normalizer dominate the inlined total. Sharper
-normalizer strategies, common-subexpression elimination in `ring_eq` output,
-and a more aggressive sound proof-DAG minimizer are the open directions.
+The headline counts are deliberately cut-free, fully-inlined, no lemma
+reuse — that *is* the metric (it makes "size of a fully-expanded proof"
+concrete). The shared-subexpression DAG is far smaller; the cruncher
+reports both. `loclink` (≈3.18M, invoked twice in SAS) and the
+no-common-subexpression ring normalizer dominate the inlined totals; the
+generic-lemma template is what kept the high-degree postulates from
+exploding cut-free. Sharper normalizer strategies and a more aggressive
+sound proof-DAG minimizer remain open directions.
+
+*Reported, not faked — including the parts still in progress.*

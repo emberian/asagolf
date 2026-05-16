@@ -29,6 +29,8 @@ mod proof_g2;
 mod proof_g3;
 #[path = "../proof_g1.rs"]
 mod proof_g1;
+#[path = "../proof_g4a.rs"]
+mod proof_g4a;
 
 use elaborate::{assemble, assemble_one, leaf, Elab, Lemma, Pt};
 use number::ProofSize;
@@ -4942,6 +4944,16 @@ fn main() {
         let lm = {
             let el = Elab::new(&db);
             proof_g1::make(k, &el)
+        };
+        stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
+        next += 1;
+    }
+    // proof_g4a: angle-output law of cosines (SSS→ACong) — staged last so
+    // it may reference loclink + every postulate $p. Closes ASA′ GAP #2.
+    for k in 0..proof_g4a::count() {
+        let lm = {
+            let el = Elab::new(&db);
+            proof_g4a::make(k, &el)
         };
         stage(&base, &mut db, &mut lemmas, &mut concls, &mut shrinks, next, lm);
         next += 1;

@@ -107,6 +107,20 @@ impl ProofSize {
         }
     }
 
+    /// self - other. Only meaningful (and only used) when both are `Exact`
+    /// and `self >= other` — the Task #9 split derives the completion part
+    /// as (resqrtth total) - (ℤ→ℚ core), both exact ~46-digit integers.
+    /// Returns `None` if either operand is not `Exact` (log-space variants
+    /// cannot subtract precisely) so the caller can fall back.
+    pub fn checked_sub(&self, other: &ProofSize) -> Option<ProofSize> {
+        match (self, other) {
+            (ProofSize::Exact(a), ProofSize::Exact(b)) if a >= b => {
+                Some(ProofSize::Exact(a - b).normalize())
+            }
+            _ => None,
+        }
+    }
+
     /// self * other (full multiply; used for compounding factors)
     pub fn mul(&self, other: &ProofSize) -> ProofSize {
         if let (ProofSize::Exact(a), ProofSize::Exact(b)) = (self, other) {

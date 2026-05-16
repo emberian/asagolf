@@ -218,13 +218,22 @@ fn flatten(el: &Elab, t: &Pt) -> (Vec<Pt>, Pt) {
 
 /// Proof `RA(xs) = RA(xs with positions k,k+1 swapped)` (len>=2).
 fn ra_swap_at(el: &Elab, xs: &[Pt], k: usize) -> Pt {
+    swap_terms(el, xs, k).0
+}
+
+/// Returns `(proof : RA(xs) = RA(swap_k(xs)), RA(xs), RA(swap_k(xs)))`.
+/// Threading the two endpoint terms up the recursion makes the head-atom
+/// wrapping O(1) per level instead of recomputing `ra(suffix)` each level
+/// (the old code was O(n²) per swap; this is O(n)).
+fn swap_terms(el: &Elab, xs: &[Pt], k: usize) -> (Pt, Pt, Pt) {
     if k == 0 {
         let x = xs[0].clone();
         let y = xs[1].clone();
         if xs.len() == 2 {
-            return el
-                .app("of-addcom", &[("u", x), ("v", y)], &[])
+            let p = el
+                .app("of-addcom", &[("u", x.clone()), ("v", y.clone())], &[])
                 .unwrap();
+            return (p, pl(el, x.clone(), y.clone()), pl(el, y, x));
         }
         let s = ra(el, &xs[2..]);
         // (x+(y+S)) = ((x+y)+S) = ((y+x)+S) = (y+(x+S))
@@ -262,7 +271,7 @@ fn ra_swap_at(el: &Elab, xs: &[Pt], k: usize) -> Pt {
             a1r,
             b,
         );
-        return eqtr3(
+        let p = eqtr3(
             el,
             pl(el, x.clone(), pl(el, y.clone(), s.clone())),
             pl(el, pl(el, y.clone(), x.clone()), s.clone()),
@@ -270,30 +279,40 @@ fn ra_swap_at(el: &Elab, xs: &[Pt], k: usize) -> Pt {
             t1,
             c,
         );
+        let l = pl(el, x.clone(), pl(el, y.clone(), s.clone()));
+        let r = pl(el, y.clone(), pl(el, x.clone(), s.clone()));
+        return (p, l, r);
     }
-    // recurse under head atom
+    // recurse under head atom; wrap child's endpoints in O(1) (no ra rebuild)
     let a0 = xs[0].clone();
-    let p_tail = ra_swap_at(el, &xs[1..], k - 1);
-    let mut swapped_tail = xs[1..].to_vec();
-    swapped_tail.swap(k - 1, k);
-    cpl2(el, ra(el, &xs[1..]), ra(el, &swapped_tail), a0, p_tail)
+    let (p_tail, lt, rt) = swap_terms(el, &xs[1..], k - 1);
+    let proof = cpl2(el, lt.clone(), rt.clone(), a0.clone(), p_tail);
+    (proof, pl(el, a0.clone(), lt), pl(el, a0, rt))
 }
 
 /// Proof `RA(xs) = RA(sorted)` by canonical token-key bubble sort.
 fn ra_sort(el: &Elab, xs: &[Pt]) -> (Vec<Pt>, Pt) {
     let key = |p: &Pt| el.conclusion(p).map(|c| c[1..].join(" ")).unwrap_or_default();
+    // Precompute each element's sort key once (was O(n²·conclusion) recomputed
+    // in the inner loop). The proof endpoints `RA(xs)` (constant) and the
+    // running `before` (= previous `after`) are threaded instead of rebuilt
+    // from scratch on every swap — that alone removes two O(n) Pt rebuilds
+    // per swap (the O(n⁴)→O(n³) win on high-degree sums).
     let mut cur = xs.to_vec();
-    let mut proof = eqid(el, &ra(el, &cur));
+    let mut keys: Vec<String> = cur.iter().map(|p| key(p)).collect();
+    let xs_ra = ra(el, xs);
+    let mut cur_ra = xs_ra.clone();
+    let mut proof = eqid(el, &xs_ra);
     let n = cur.len();
     for i in 0..n {
         for j in 0..n - 1 - i {
-            if key(&cur[j]) > key(&cur[j + 1]) {
-                let before = ra(el, &cur);
-                let sw = ra_swap_at(el, &cur, j);
+            if keys[j] > keys[j + 1] {
+                let sw = ra_swap_at(el, &cur, j); // proof: cur_ra = after
                 cur.swap(j, j + 1);
+                keys.swap(j, j + 1);
                 let after = ra(el, &cur);
-                // chain: RA(xs) = before = after
-                proof = eqtr3(el, ra(el, xs), before, after, proof, sw);
+                proof = eqtr3(el, xs_ra.clone(), cur_ra, after.clone(), proof, sw);
+                cur_ra = after;
             }
         }
     }
@@ -1146,16 +1165,20 @@ fn replace_in_ra(el: &Elab, xs: &[Pt], i: usize, y: Pt, p: Pt) -> Pt {
 /// Generic right-assoc sort by an arbitrary key (mirror of `ra_sort`).
 fn ra_sort_by(el: &Elab, xs: &[Pt], key: &dyn Fn(&Pt) -> String) -> (Vec<Pt>, Pt) {
     let mut cur = xs.to_vec();
-    let mut proof = eqid(el, &ra(el, &cur));
+    let mut keys: Vec<String> = cur.iter().map(|p| key(p)).collect();
+    let xs_ra = ra(el, xs);
+    let mut cur_ra = xs_ra.clone();
+    let mut proof = eqid(el, &xs_ra);
     let n = cur.len();
     for i in 0..n {
         for j in 0..n - 1 - i {
-            if key(&cur[j]) > key(&cur[j + 1]) {
-                let before = ra(el, &cur);
+            if keys[j] > keys[j + 1] {
                 let sw = ra_swap_at(el, &cur, j);
                 cur.swap(j, j + 1);
+                keys.swap(j, j + 1);
                 let after = ra(el, &cur);
-                proof = eqtr3(el, ra(el, xs), before, after, proof, sw);
+                proof = eqtr3(el, xs_ra.clone(), cur_ra, after.clone(), proof, sw);
+                cur_ra = after;
             }
         }
     }

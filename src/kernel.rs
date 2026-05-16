@@ -306,7 +306,9 @@ impl Db {
                                 let want = self.apply(&h.expr, &subst);
                                 if &want != arg {
                                     return Err(format!(
-                                        "essential hyp {h_lbl} unmatched in {lbl}"
+                                        "essential hyp {h_lbl} unmatched in {lbl}\n  want: {}\n  got:  {}",
+                                        want.join(" "),
+                                        arg.join(" ")
                                     ));
                                 }
                             }

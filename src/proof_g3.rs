@@ -60,7 +60,7 @@
 use super::*;
 
 pub fn count() -> usize {
-    3
+    8
 }
 
 #[allow(unused_variables)]
@@ -552,7 +552,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 ); // |- -.-.H
                 // A -> ( M0 -> ( -.-.H ) ) by a1i x2
                 let nnH_AM0 = a1i(
-                    n(n(le(z(), wm()))),
+                    imp(m0(), n(n(le(z(), wm())))),
                     aA(),
                     a1i(n(n(le(z(), wm()))), m0(), nnH),
                 );
@@ -679,7 +679,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 ess: vec![(
                     "lecpos.1".into(),
                     toks(&[
-                        "|-", "(", "0", "<_", "(", "w", "*", "m", ")", ")",
+                        "|-", "(", "0", "<_", "(", "w", "*", "t", ")", ")",
                     ]),
                 )],
                 goal: g,
@@ -766,7 +766,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                     ("addz.2".into(), toks(&["|-", "(", "0", "<_", "b", ")"])),
                     (
                         "addz.3".into(),
-                        toks(&["|-", "(", "(", "a", "+", "b", ")", ")", "=", "0"]),
+                        toks(&["|-", "(", "a", "+", "b", ")", "=", "0"]),
                     ),
                 ],
                 goal: g,
@@ -774,9 +774,174 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
         }
 
         // ============================================================
-        // idx 2 : G3a-rayangle   ( Ray a c x ) => ( ACong a b x a b c )
+        // idx 2 : g3a-gsplit — generic degree-4 split identity. Lets G3a
+        // factor the would-be degree-8 null_id without ever handing the
+        // normaliser anything past degree 4: proven over fresh term atoms
+        // a,b,c,e,f,g, then instantiated with the big subterms by
+        // substitution (no re-expansion).
+        //   (a·a)(e·f) − (b·b)(e·g) = e·( a·(a·f − b·c) + b·(a·c − b·g) )
         // ============================================================
         2 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, c, e, f, g) = (v("va"), v("vb"), v("vc"), v("ve"), v("vf"), v("vg"));
+            let lhs = mi(
+                el,
+                mu(el, mu(el, a.clone(), a.clone()), mu(el, e.clone(), f.clone())),
+                mu(el, mu(el, b.clone(), b.clone()), mu(el, e.clone(), g.clone())),
+            );
+            let rhs = mu(
+                el,
+                e.clone(),
+                pl(
+                    el,
+                    mu(
+                        el,
+                        a.clone(),
+                        mi(el, mu(el, a.clone(), f.clone()), mu(el, b.clone(), c.clone())),
+                    ),
+                    mu(
+                        el,
+                        b.clone(),
+                        mi(el, mu(el, a.clone(), c.clone()), mu(el, b.clone(), g.clone())),
+                    ),
+                ),
+            );
+            return Lemma {
+                name: "g3a-gsplit".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 3 : g3a-gfac — generic degree-4 factor-out identity:
+        //   e·( a·(f·w) + b·(g·w) ) = ( e·( a·f + b·g ) )·w
+        // ============================================================
+        3 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, e, f, g, w) = (v("va"), v("vb"), v("ve"), v("vf"), v("vg"), v("vw"));
+            let lhs = mu(
+                el,
+                e.clone(),
+                pl(
+                    el,
+                    mu(el, a.clone(), mu(el, f.clone(), w.clone())),
+                    mu(el, b.clone(), mu(el, g.clone(), w.clone())),
+                ),
+            );
+            let rhs = mu(
+                el,
+                mu(
+                    el,
+                    e.clone(),
+                    pl(el, mu(el, a.clone(), f.clone()), mu(el, b.clone(), g.clone())),
+                ),
+                w.clone(),
+            );
+            return Lemma {
+                name: "g3a-gfac".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 4 : g3a-plk — generic 2D Plücker/Lagrange identity, proven
+        // once over fresh component atoms a..p and instantiated so G3a
+        // does ZERO per-instance ring_eq:
+        //   (A·C)(B·D) − (A·D)(B·C) = (0 − X(A,B))·X(D,C)
+        // with A=(a,b) B=(c,e) C=(f,g) D=(o,p), X(U,V)=Ux·Vy − Uy·Vx.
+        // ============================================================
+        4 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, c, e, f, g, o, p) = (
+                v("va"), v("vb"), v("vc"), v("ve"),
+                v("vf"), v("vg"), v("vo"), v("vp"),
+            );
+            let dot2 = |x1: &Pt, y1: &Pt, x2: &Pt, y2: &Pt| {
+                pl(el, mu(el, x1.clone(), x2.clone()), mu(el, y1.clone(), y2.clone()))
+            };
+            let cross2 = |x1: &Pt, y1: &Pt, x2: &Pt, y2: &Pt| {
+                mi(el, mu(el, x1.clone(), y2.clone()), mu(el, y1.clone(), x2.clone()))
+            };
+            // (A·C)(B·D) -x (A·D)(B·C)
+            let lhs = mi(
+                el,
+                mu(el, dot2(&a, &b, &f, &g), dot2(&c, &e, &o, &p)),
+                mu(el, dot2(&a, &b, &o, &p), dot2(&c, &e, &f, &g)),
+            );
+            // ( 0 -x X(A,B) ) · X(D,C)      [ X(D,C) = o·g -x p·f ]
+            let xab = cross2(&a, &b, &c, &e); // a·e -x b·c
+            let xdc = mi(el, mu(el, o.clone(), g.clone()), mu(el, p.clone(), f.clone()));
+            let rhs = mu(el, mi(el, z(), xab), xdc);
+            return Lemma {
+                name: "g3a-plk".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 5 : g3a-gsplit2 — SGN-conjunct split (generic, degree-3):
+        //   (a·b)(e+f) − ( c·(b·b) + c·(a·a) )
+        //     = b·(a·e − b·c) − a·(a·c − b·f)
+        // (the bracketed factors are exactly plkA's k1 and plkB's k2)
+        // ============================================================
+        5 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, c, e, f) = (v("va"), v("vb"), v("vc"), v("ve"), v("vf"));
+            let lhs = mi(
+                el,
+                mu(el, mu(el, a.clone(), b.clone()), pl(el, e.clone(), f.clone())),
+                pl(
+                    el,
+                    mu(el, c.clone(), mu(el, b.clone(), b.clone())),
+                    mu(el, c.clone(), mu(el, a.clone(), a.clone())),
+                ),
+            );
+            let rhs = mi(
+                el,
+                mu(
+                    el,
+                    b.clone(),
+                    mi(el, mu(el, a.clone(), e.clone()), mu(el, b.clone(), c.clone())),
+                ),
+                mu(
+                    el,
+                    a.clone(),
+                    mi(el, mu(el, a.clone(), c.clone()), mu(el, b.clone(), f.clone())),
+                ),
+            );
+            return Lemma {
+                name: "g3a-gsplit2".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 6 : g3a-gfac2 — SGN factor-out (generic, degree-3):
+        //   b·(f·w) − a·(g·w) = ( b·f − a·g )·w
+        // ============================================================
+        6 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, f, g, w) = (v("va"), v("vb"), v("vf"), v("vg"), v("vw"));
+            let lhs = mi(
+                el,
+                mu(el, b.clone(), mu(el, f.clone(), w.clone())),
+                mu(el, a.clone(), mu(el, g.clone(), w.clone())),
+            );
+            let rhs = mu(
+                el,
+                mi(el, mu(el, b.clone(), f.clone()), mu(el, a.clone(), g.clone())),
+                w.clone(),
+            );
+            return Lemma {
+                name: "g3a-gfac2".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 7 : G3a-rayangle   ( Ray a c x ) => ( ACong a b x a b c )
+        // ============================================================
+        7 => {
             let pa = || leaf("va");
             let pb = || leaf("vb");
             let pc = || leaf("vc");
@@ -968,26 +1133,175 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             );
             let eql_cv = mu(el, mu(el, bx_c(), bx_c()), mu(el, sb_c(), sc_c()));
             let eqr_cv = mu(el, mu(el, bc_c(), bc_c()), mu(el, sb_c(), sx_c()));
-            let two = |t: Pt| pl(el, t.clone(), t.clone());
-            let gcof = {
-                let t_pruv = mu(el, mu(el, pX(), rX()), mu(el, uX(), vY()));
-                let t_psuu = mu(el, mu(el, pX(), sY()), mu(el, uX(), uX()));
-                let t_psvv = mu(el, mu(el, pX(), sY()), mu(el, vY(), vY()));
-                let t_qruu = mu(el, mu(el, qY(), rX()), mu(el, uX(), uX()));
-                let t_qrvv = mu(el, mu(el, qY(), rX()), mu(el, vY(), vY()));
-                let t_qsuv = mu(el, mu(el, qY(), sY()), mu(el, uX(), vY()));
-                let a1 = mi(el, two(t_pruv), t_psuu);
-                let a2 = pl(el, a1, t_psvv);
-                let a3 = mi(el, a2, t_qruu);
-                let a4 = pl(el, a3, t_qrvv);
-                mi(el, a4, two(t_qsuv))
-            };
-            let cof = mu(el, sb_c(), gcof.clone());
-            eprintln!("    [g3a] cp3: null_id ring_eq (EQ conjunct, deg-4)");
-            let null_id = ring_eq(
+            // ---- Plücker factoring: never hand the normaliser anything
+            // past degree 4.  X(U,P), X(U,R); DE = X(P,R) = dexpr().
+            let xup = mi(el, mu(el, uX(), qY()), mu(el, vY(), pX())); // X(U,P)
+            let xur = mi(el, mu(el, uX(), sY()), mu(el, vY(), rX())); // X(U,R)
+            let nxup = mi(el, z(), xup.clone()); // 0 - X(U,P)
+            let nxur = mi(el, z(), xur.clone()); // 0 - X(U,R)
+            let de = || dexpr(); // = X(P,R)
+            // K1 = BX·SC - BC·CC ,  K2 = BX·CC - BC·SX
+            let k1 = mi(el, mu(el, bx_c(), sc_c()), mu(el, bc_c(), cc_c()));
+            let k2 = mi(el, mu(el, bx_c(), cc_c()), mu(el, bc_c(), sx_c()));
+            let k1p = mu(el, nxup.clone(), de()); // (0-XUP)·DE
+            let k2p = mu(el, nxur.clone(), de()); // (0-XUR)·DE
+            // plkA: instantiate generic g3a-plk with A=U,B=P,C=R,D=P.
+            // Verified: LHS ≡ k1 and RHS ≡ k1p exactly (no bridge needed).
+            eprintln!("    [g3a] cp3a: plkA = g3a-plk instantiation");
+            let plka = el
+                .app(
+                    "g3a-plk",
+                    &[
+                        ("a", uX()), ("b", vY()), ("c", pX()), ("e", qY()),
+                        ("f", rX()), ("g", sY()), ("o", pX()), ("p", qY()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // k1 = k1p
+            // plkB: g3a-plk with A=U,B=R,C=R,D=P gives k2_plk = k2p, where
+            // k2_plk differs from k2 only in the P·R factor's mul order
+            // (Plücker forces R·P shape) — bridge via two of-mulcom.
+            eprintln!("    [g3a] cp3b: plkB = g3a-plk + comm bridge");
+            let plkb_raw = el
+                .app(
+                    "g3a-plk",
+                    &[
+                        ("a", uX()), ("b", vY()), ("c", rX()), ("e", sY()),
+                        ("f", rX()), ("g", sY()), ("o", pX()), ("p", qY()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // k2_plk = k2p
+            let rps = pl(el, mu(el, rX(), pX()), mu(el, sY(), qY())); // R·P shape
+            let k2_plk = mi(el, mu(el, bx_c(), rps.clone()), mu(el, bc_c(), sx_c()));
+            // cc_c = rps  (commute each addend's product)
+            let comm1 = el
+                .app("of-mulcom", &[("u", pX()), ("v", rX())], &[])
+                .unwrap(); // (pX·rX)=(rX·pX)
+            let comm2 = el
+                .app("of-mulcom", &[("u", qY()), ("v", sY())], &[])
+                .unwrap(); // (qY·sY)=(sY·qY)
+            let cc_step1 = cpl1(
                 el,
-                &mi(el, eql_cv.clone(), eqr_cv.clone()),
-                &mu(el, cof.clone(), dexpr()),
+                mu(el, pX(), rX()),
+                mu(el, rX(), pX()),
+                mu(el, qY(), sY()),
+                comm1,
+            ); // (pX·rX + qY·sY) = (rX·pX + qY·sY)
+            let cc_step2 = cpl2(
+                el,
+                mu(el, qY(), sY()),
+                mu(el, sY(), qY()),
+                mu(el, rX(), pX()),
+                comm2,
+            ); // (rX·pX + qY·sY) = (rX·pX + sY·qY)
+            let cc_eq_rps = eqtr3(
+                el,
+                cc_c(),
+                pl(el, mu(el, rX(), pX()), mu(el, qY(), sY())),
+                rps.clone(),
+                cc_step1,
+                cc_step2,
+            ); // cc_c = rps
+            let mu_eq = cmu2(el, cc_c(), rps.clone(), bx_c(), cc_eq_rps); // (bx_c·cc_c)=(bx_c·rps)
+            let k2_eq_k2plk = cmi1(
+                el,
+                mu(el, bx_c(), cc_c()),
+                mu(el, bx_c(), rps.clone()),
+                mu(el, bc_c(), sx_c()),
+                mu_eq,
+            ); // k2 = k2_plk
+            let plkb = eqtr3(el, k2.clone(), k2_plk, k2p.clone(), k2_eq_k2plk, plkb_raw); // k2 = k2p
+            // gsplit instantiated: ( eql_cv -x eqr_cv ) = SB·( BX·K1 + BC·K2 )
+            eprintln!("    [g3a] cp3c: instantiate gsplit");
+            let gsplit = el
+                .app(
+                    "g3a-gsplit",
+                    &[
+                        ("a", bx_c()),
+                        ("b", bc_c()),
+                        ("c", cc_c()),
+                        ("e", sb_c()),
+                        ("f", sc_c()),
+                        ("g", sx_c()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            let g1rhs = mu(
+                el,
+                sb_c(),
+                pl(
+                    el,
+                    mu(el, bx_c(), k1.clone()),
+                    mu(el, bc_c(), k2.clone()),
+                ),
+            );
+            // Rrw : g1rhs = SB·( BX·K1' + BC·K2' )  via plkA/plkB congruence
+            let r1 = cmu2(el, k1.clone(), k1p.clone(), bx_c(), plka.clone()); // (BX·K1)=(BX·K1')
+            let r2 = cmu2(el, k2.clone(), k2p.clone(), bc_c(), plkb.clone()); // (BC·K2)=(BC·K2')
+            let inner_l = pl(el, mu(el, bx_c(), k1.clone()), mu(el, bc_c(), k2.clone()));
+            let inner_m = pl(el, mu(el, bx_c(), k1p.clone()), mu(el, bc_c(), k2.clone()));
+            let inner_r = pl(el, mu(el, bx_c(), k1p.clone()), mu(el, bc_c(), k2p.clone()));
+            let ce1 = cpl1(
+                el,
+                mu(el, bx_c(), k1.clone()),
+                mu(el, bx_c(), k1p.clone()),
+                mu(el, bc_c(), k2.clone()),
+                r1,
+            ); // inner_l = inner_m
+            let ce2 = cpl2(
+                el,
+                mu(el, bc_c(), k2.clone()),
+                mu(el, bc_c(), k2p.clone()),
+                mu(el, bx_c(), k1p.clone()),
+                r2,
+            ); // inner_m = inner_r
+            let inner_eq =
+                eqtr3(el, inner_l.clone(), inner_m, inner_r.clone(), ce1, ce2);
+            let rrw = cmu2(el, inner_l.clone(), inner_r.clone(), sb_c(), inner_eq); // g1rhs = rhs'
+            let rhsp = mu(el, sb_c(), inner_r.clone());
+            // gfac instantiated: rhs' = ( SB·( BX·(0-XUP) + BC·(0-XUR) ) )·DE
+            eprintln!("    [g3a] cp3d: instantiate gfac");
+            let cof = mu(
+                el,
+                sb_c(),
+                pl(
+                    el,
+                    mu(el, bx_c(), nxup.clone()),
+                    mu(el, bc_c(), nxur.clone()),
+                ),
+            );
+            let gfac = el
+                .app(
+                    "g3a-gfac",
+                    &[
+                        ("e", sb_c()),
+                        ("a", bx_c()),
+                        ("f", nxup.clone()),
+                        ("w", de()),
+                        ("b", bc_c()),
+                        ("g", nxur.clone()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // rhs' = cof·DE
+            // chain: (eql_cv -x eqr_cv) = g1rhs = rhs' = cof·DE
+            let t1 = eqtr3(
+                el,
+                mi(el, eql_cv.clone(), eqr_cv.clone()),
+                g1rhs.clone(),
+                rhsp.clone(),
+                gsplit,
+                rrw,
+            );
+            let null_id = eqtr3(
+                el,
+                mi(el, eql_cv.clone(), eqr_cv.clone()),
+                rhsp,
+                mu(el, cof.clone(), de()),
+                t1,
+                gfac,
             );
             let cof_d0 = cmu2(el, dexpr(), z(), cof.clone(), deq0.clone());
             let cofz = mul0r(cof.clone());
@@ -1061,28 +1375,80 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 mu(el, cc_c(), mu(el, bc_c(), bc_c())),
                 mu(el, cc_c(), mu(el, bx_c(), bx_c())),
             );
-            let lamn = {
-                let t1 = mu(el, mu(el, pX(), pX()), mu(el, uX(), vY()));
-                let t2 = mu(el, mu(el, pX(), qY()), mu(el, uX(), uX()));
-                let t3 = mu(el, mu(el, pX(), qY()), mu(el, vY(), vY()));
-                let t4 = mu(el, mu(el, qY(), qY()), mu(el, uX(), vY()));
-                let t5 = mu(el, mu(el, rX(), rX()), mu(el, uX(), vY()));
-                let t6 = mu(el, mu(el, rX(), sY()), mu(el, uX(), uX()));
-                let t7 = mu(el, mu(el, rX(), sY()), mu(el, vY(), vY()));
-                let t8 = mu(el, mu(el, sY(), sY()), mu(el, uX(), vY()));
-                let a1 = mi(el, t1, t2);
-                let a2 = pl(el, a1, t3);
-                let a3 = mi(el, a2, t4);
-                let a4 = mi(el, a3, t5);
-                let a5 = pl(el, a4, t6);
-                let a6 = mi(el, a5, t7);
-                pl(el, a6, t8)
-            };
-            eprintln!("    [g3a] cp4b: n_null ring_eq");
-            let n_null = ring_eq(
+            // n_null by the SAME Plücker template as null_id, reusing the
+            // already-built plka (k1=k1p) and plkb (k2=k2p):
+            //   bxbc·n_sum − rhs_n  =  BC·k1 − BX·k2  (g3a-gsplit2)
+            //                       =  BC·k1p − BX·k2p (plka/plkb congr)
+            //                       =  lamn·DE         (g3a-gfac2)
+            eprintln!("    [g3a] cp4b: n_null via gsplit2/gfac2 (no ring_eq)");
+            let lamn = mi(
                 el,
-                &mi(el, mu(el, bxbc(), n_sum()), rhs_n.clone()),
-                &mu(el, lamn.clone(), dexpr()),
+                mu(el, bc_c(), nxup.clone()),
+                mu(el, bx_c(), nxur.clone()),
+            );
+            let s2 = el
+                .app(
+                    "g3a-gsplit2",
+                    &[
+                        ("a", bx_c()), ("b", bc_c()), ("c", cc_c()),
+                        ("e", sc_c()), ("f", sx_c()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // mi(mu(bxbc,n_sum),rhs_n) = mi(mu(bc_c,k1),mu(bx_c,k2))
+            let s2_rhs = mi(
+                el,
+                mu(el, bc_c(), k1.clone()),
+                mu(el, bx_c(), k2.clone()),
+            );
+            let s2_rhsp = mi(
+                el,
+                mu(el, bc_c(), k1p.clone()),
+                mu(el, bx_c(), k2p.clone()),
+            );
+            let nr1 = cmu2(el, k1.clone(), k1p.clone(), bc_c(), plka.clone()); // (bc_c·k1)=(bc_c·k1p)
+            let nr2 = cmu2(el, k2.clone(), k2p.clone(), bx_c(), plkb.clone()); // (bx_c·k2)=(bx_c·k2p)
+            let nstep1 = cmi1(
+                el,
+                mu(el, bc_c(), k1.clone()),
+                mu(el, bc_c(), k1p.clone()),
+                mu(el, bx_c(), k2.clone()),
+                nr1,
+            ); // s2_rhs = mi(mu(bc_c,k1p),mu(bx_c,k2))
+            let nstep2 = cmi2(
+                el,
+                mu(el, bx_c(), k2.clone()),
+                mu(el, bx_c(), k2p.clone()),
+                mu(el, bc_c(), k1p.clone()),
+                nr2,
+            ); // = s2_rhsp
+            let nrrw = eqtr3(
+                el,
+                s2_rhs.clone(),
+                mi(el, mu(el, bc_c(), k1p.clone()), mu(el, bx_c(), k2.clone())),
+                s2_rhsp.clone(),
+                nstep1,
+                nstep2,
+            ); // s2_rhs = s2_rhsp
+            let gfac2 = el
+                .app(
+                    "g3a-gfac2",
+                    &[
+                        ("a", bx_c()), ("b", bc_c()),
+                        ("f", nxup.clone()), ("g", nxur.clone()), ("w", de()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // s2_rhsp = lamn·DE
+            let n_lhs = mi(el, mu(el, bxbc(), n_sum()), rhs_n.clone());
+            let n_t1 = eqtr3(el, n_lhs.clone(), s2_rhs, s2_rhsp.clone(), s2, nrrw);
+            let n_null = eqtr3(
+                el,
+                n_lhs,
+                s2_rhsp,
+                mu(el, lamn.clone(), de()),
+                n_t1,
+                gfac2,
             );
             let lamn_d0 = cmu2(el, dexpr(), z(), lamn.clone(), deq0.clone());
             let lamnz = mul0r(lamn.clone());
@@ -1208,12 +1574,12 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             }; // |- 0<_( (Bx*Bc)*(Sc+Sx) )
             // commute to 0<_( (Sc+Sx)*(Bx*Bc) ) for lecpos (ess 0<=(w*m), w=N)
             let lhsn_nm = {
-                eprintln!("    [g3a] cp4c: comm_r ring_eq");
-                let comm_r = ring_eq(
-                    el,
-                    &mu(el, bxbc(), n_sum()),
-                    &mu(el, n_sum(), bxbc()),
-                ); // ((Bx*Bc)*N)=(N*(Bx*Bc))
+                // pure commutativity — one axiom on opaque subterms, not a
+                // degree-high coordinate ring_eq.
+                eprintln!("    [g3a] cp4c: comm_r = of-mulcom (no ring_eq)");
+                let comm_r = el
+                    .app("of-mulcom", &[("u", bxbc()), ("v", n_sum())], &[])
+                    .unwrap(); // ((Bx*Bc)*N)=(N*(Bx*Bc))
                 let cl2 = el
                     .app(
                         "cong-le2",
@@ -1245,7 +1611,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             let lecpos_impl = el
                 .app(
                     "lecpos",
-                    &[("vw", n_sum()), ("vt", bxbc())],
+                    &[("w", n_sum()), ("t", bxbc())],
                     &[lhsn_nm.clone()],
                 )
                 .unwrap(); // |- ( (0<N) -> (0<_(Bx*Bc)) )
@@ -1337,7 +1703,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 let addz = |a: Pt, b: Pt, p0a: Pt, p0b: Pt, pab: Pt| -> Pt {
                     el.app(
                         "addz",
-                        &[("va", a), ("vb", b)],
+                        &[("a", a), ("b", b)],
                         &[p0a, p0b, pab],
                     )
                     .unwrap()
@@ -1697,7 +2063,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                     let az = el
                         .app(
                             "addz",
-                            &[("va", a.clone()), ("vb", b.clone())],
+                            &[("a", a.clone()), ("b", b.clone())],
                             &[
                                 el.app("of-sqpos", &[("u", pp.clone())], &[]).unwrap(),
                                 el.app("of-sqpos", &[("u", qq.clone())], &[]).unwrap(),

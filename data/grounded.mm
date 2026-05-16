@@ -135,8 +135,8 @@ df-dot $a |- ( dot o p q ) =
 $( Collinearity = determinant zero (√-free).                              $)
 wcoll $a wff ( Coll a b c ) $.
 df-coll $a |- ( ( Coll a b c ) <->
-   ( ( ( ( Xc b ) -x ( Xc a ) ) * ( ( Yc c ) -x ( Yc a ) ) )
-   = ( ( ( Yc b ) -x ( Yc a ) ) * ( ( Xc c ) -x ( Xc a ) ) ) ) ) $.
+   ( ( ( Xc b ) -x ( Xc a ) ) * ( ( Yc c ) -x ( Yc a ) ) )
+   = ( ( ( Yc b ) -x ( Yc a ) ) * ( ( Xc c ) -x ( Xc a ) ) ) ) $.
 
 $( On / Ln / Tri / Ray defined from collinearity + an order condition.    $)
 won  $a wff ( On a ( Ln b c ) ) $.

@@ -4099,8 +4099,11 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
             let dd = || mu(el, d(), d());
             let ss = || mu(el, s(), s());
             let uv = || mu(el, u(), v());
-            // dS0 : |- ( (d*s) = 0 )
-            let rds = ring_eq(el, &mu(el, d(), s()), &mi(el, mu(el, u(), u()), mu(el, v(), v())));
+            // dS0 : |- ( (d*s) = 0 ).  Generic: sqc-diffsq[p:=u,q:=v] gives
+            // ( (u-xv)(u+v) ) = ( u·u -x v·v ) ≡ ( d·s ) = ( u·u -x v·v ).
+            let rds = el
+                .app("sqc-diffsq", &[("p", u()), ("q", v())], &[])
+                .unwrap();
             // (d*s) = (u*u)-x(v*v)
             let cm1 = el
                 .app(
@@ -4156,8 +4159,8 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
                     &[p1.clone(), p1],
                 )
                 .unwrap(); // |- ( 0 <_ (((uv)+(uv))+((uv)+(uv))) )
-            // (s*s) -x (d*d) = 4uv  (ring)
-            let r4 = ring_eq(el, &mi(el, ss(), dd()), &four);
+            // (s*s) -x (d*d) = 4uv  — generic sqc-4uv[p:=u,q:=v].
+            let r4 = el.app("sqc-4uv", &[("p", u()), ("q", v())], &[]).unwrap();
             let r4c = eqcomm(el, mi(el, ss(), dd()), four.clone(), r4); // 4uv = (s*s)-x(d*d)
             let cl2a = el
                 .app(
@@ -4197,8 +4200,13 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
                     &[dd_le_ss, sqpd.clone()],
                 )
                 .unwrap(); // |- ( ((d*d)*(d*d)) <_ ((s*s)*(d*d)) )
-            // ((s*s)*(d*d)) = (d*s)*(d*s) = 0
-            let rsd = ring_eq(el, &mu(el, ss(), dd()), &mu(el, mu(el, d(), s()), mu(el, d(), s())));
+            // ((s*s)*(d*d)) = (d*s)*(d*s) = 0  — the degree-4 identity,
+            // proved ONCE in 2 fresh atoms: sqc-gprod[p:=d,q:=s] gives
+            // ( (s·s)·(d·d) ) = ( (d·s)·(d·s) ).  (This was ~the bulk of
+            // sqcong's inline 169k tmu mass; now free substitution.)
+            let rsd = el
+                .app("sqc-gprod", &[("p", d()), ("q", s())], &[])
+                .unwrap();
             let dsds0 = {
                 let cm = el
                     .app(
@@ -4898,11 +4906,44 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
             let rhs = mi(el, c.clone(), b.clone());
             Lemma { name: "telesh".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
         }
+        // ---- 59,60,61: sqcong's heavy ring identities, made *generic* ----
+        //  sqcong was stated over fresh u,v but did its ring work inline on
+        //  the degree-4 products (u±v)² — same disease as loclink, one
+        //  level down. Prove each ONCE over 2 fresh atoms p,q and let
+        //  sqcong instantiate by substitution (p:=u-v / u+v / u, q:=…).
+        // 59: sqc-diffsq  ( p -x q )( p + q ) = ( p·p -x q·q )
+        59 => {
+            let v = |s: &str| leaf(s);
+            let (p, q) = (v("vp"), v("vq"));
+            let lhs = mu(el, mi(el, p.clone(), q.clone()), pl(el, p.clone(), q.clone()));
+            let rhs = mi(el, mu(el, p.clone(), p.clone()), mu(el, q.clone(), q.clone()));
+            Lemma { name: "sqc-diffsq".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
+        }
+        // 60: sqc-gprod   ( q·q )·( p·p ) = ( p·q )·( p·q )   [the deg-4 one]
+        60 => {
+            let v = |s: &str| leaf(s);
+            let (p, q) = (v("vp"), v("vq"));
+            let lhs = mu(el, mu(el, q.clone(), q.clone()), mu(el, p.clone(), p.clone()));
+            let rhs = mu(el, mu(el, p.clone(), q.clone()), mu(el, p.clone(), q.clone()));
+            Lemma { name: "sqc-gprod".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
+        }
+        // 61: sqc-4uv  (p+q)(p+q) -x (p-xq)(p-xq) = (((pq)+(pq))+((pq)+(pq)))
+        61 => {
+            let v = |s: &str| leaf(s);
+            let (p, q) = (v("vp"), v("vq"));
+            let sp = pl(el, p.clone(), q.clone());
+            let dp = mi(el, p.clone(), q.clone());
+            let pq = mu(el, p.clone(), q.clone());
+            let lhs = mi(el, mu(el, sp.clone(), sp), mu(el, dp.clone(), dp));
+            let two = pl(el, pq.clone(), pq.clone());
+            let rhs = pl(el, two.clone(), two);
+            Lemma { name: "sqc-4uv".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
+        }
         _ => unreachable!(),
     }
 }
 
-const NAMES: [&str; 59] = [
+const NAMES: [&str; 62] = [
     "id", "a1i", "syl", "pm2.21", "pm2.43", "notnot2", "notnot1", "simpl",
     "simpr", "G3c-rayline", "eqtrd", "G0-congsub", "eqtr", "addcan",
     "ac-demo", "ac-mul-demo", "ring-demo", "mul0", "neginv", "negneg",
@@ -4915,6 +4956,9 @@ const NAMES: [&str; 59] = [
     // generic LoC factoring (idx 57,58): staged BEFORE loclink (idx 23) via
     // the reordered stage sequence in main(), so loclink references them.
     "loc-gen", "telesh",
+    // generic sqcong ring identities (idx 59,60,61): staged BEFORE sqcong
+    // (idx 54) via the same reordered sequence.
+    "sqc-diffsq", "sqc-gprod", "sqc-4uv",
 ];
 
 /// Stage one lemma: sound peephole-shrink, show the conclusion, append,
@@ -5084,10 +5128,15 @@ fn main() {
     // which needs the core combinators (eqtr=idx12, …). Stage them in
     // loclink's *own* dependency environment: right after idx 22, just
     // before loclink — earliest point where every dep is present.
-    let hoisted = [57usize, 58];
+    // Generic helper lemmas are staged just before their first consumer
+    // (loclink=idx23 needs 57,58; sqcong=idx54 needs 59,60,61): earliest
+    // point where every dependency is present. label_idx is display-only.
+    let hoisted = [57usize, 58, 59, 60, 61];
     let mut stage_order: Vec<usize> = (0..23).collect();
-    stage_order.extend_from_slice(&hoisted);
-    stage_order.extend((23..NAMES.len()).filter(|i| !hoisted.contains(i)));
+    stage_order.extend_from_slice(&[57, 58]);
+    stage_order.extend((23..54).filter(|i| !hoisted.contains(i)));
+    stage_order.extend_from_slice(&[59, 60, 61]);
+    stage_order.extend((54..NAMES.len()).filter(|i| !hoisted.contains(i)));
     for idx in stage_order {
         let lm = {
             let el = Elab::new(&db);

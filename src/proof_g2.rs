@@ -110,9 +110,11 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             }
         }
         // ====================================================================
-        // idx 3 : g2-posne  (INFERENCE, reusable)
-        //   ess  0 <_ u ,  -. ( u = 0 )      goal  ( 0 < u )
-        //   recipe: ltII + lein2 + con3i  (memory: posne)
+        // idx 3 : g2-posne  (INFERENCE, reusable, composable implication form)
+        //   ess  g2pn.1 : -. ( u = 0 )      goal  ( ( 0 <_ u ) -> ( 0 < u ) )
+        //   (closed-implication form so it composes through syl/mpd under
+        //   an of-letot branch — same pattern as lecpos.)
+        //   recipe: lein2 + eqcom + con3 + mpd + ltII.
         3 => {
             let u = || leaf("vu");
             let n = |p: Pt| el.app("wn", &[("ph", p)], &[]).unwrap();
@@ -122,52 +124,63 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             let syl = |p: Pt, q: Pt, r: Pt, s1: Pt, s2: Pt| {
                 el.app("syl", &[("ph", p), ("ps", q), ("ch", r)], &[s1, s2]).unwrap()
             };
+            let a1i = |ph: Pt, ps: Pt, pf: Pt| {
+                el.app("a1i", &[("ph", ph), ("ps", ps)], &[pf]).unwrap()
+            };
+            let mpd = |ph: Pt, ps: Pt, ch: Pt, p1: Pt, p2: Pt| {
+                el.app("mpd", &[("ph", ph), ("ps", ps), ("ch", ch)], &[p1, p2]).unwrap()
+            };
             let imp = |p: Pt, q: Pt| el.app("wi", &[("ph", p), ("ps", q)], &[]).unwrap();
             let eqp = |s: Pt, t: Pt| el.app("weq", &[("x", s), ("y", t)], &[]).unwrap();
             let le = |s: Pt, t: Pt| el.app("tle", &[("u", s), ("v", t)], &[]).unwrap();
             let lt = |s: Pt, t: Pt| el.app("tlt", &[("u", s), ("v", t)], &[]).unwrap();
             let z = || t0p(el);
-            let con3i = |ph: Pt, ps: Pt, p1: Pt| {
-                el.app("con3i", &[("ph", ph), ("ps", ps)], &[p1]).unwrap()
-            };
-            // ltII(0,u) : ( (0<_u) -> ( -.(u<_0) -> (0<u) ) )
-            let ltii = el
-                .app("ltII", &[("u", z()), ("v", u())], &[])
-                .unwrap();
-            let a = mp(
-                le(z(), u()),
-                imp(n(le(u(), z())), lt(z(), u())),
-                leaf("g2pn.1"),
-                ltii,
-            ); // ( -.(u<_0) -> (0<u) )
+            let con3 = |ph: Pt, ps: Pt| el.app("con3", &[("ph", ph), ("ps", ps)], &[]).unwrap();
+            let ple = le(z(), u()); // ( 0 <_ u )  (the implication antecedent)
             // lein2(0,u) : ( (0<_u) -> ( (u<_0) -> 0=u ) )
-            let lein2 = el
-                .app("lein2", &[("u", z()), ("v", u())], &[])
-                .unwrap();
-            let b = mp(
-                le(z(), u()),
-                imp(le(u(), z()), eqp(z(), u())),
-                leaf("g2pn.1"),
-                lein2,
-            ); // ( (u<_0) -> 0=u )
-            let ecm = el
-                .app("eqcom", &[("x", z()), ("y", u())], &[])
-                .unwrap(); // ( 0=u -> u=0 )
-            let bu = syl(le(u(), z()), eqp(z(), u()), eqp(u(), z()), b, ecm); // ( (u<_0) -> u=0 )
-            let c3 = con3i(le(u(), z()), eqp(u(), z()), bu); // ( -.(u=0) -> -.(u<_0) )
-            let nul0 = mp(
+            let lein2 = el.app("lein2", &[("u", z()), ("v", u())], &[]).unwrap();
+            // append eqcom (0=u -> u=0) in the inner consequent:
+            let ecm = el.app("eqcom", &[("x", z()), ("y", u())], &[]).unwrap();
+            let lein2eq = {
+                // p: ( (0<_u) -> ( (u<_0) -> 0=u ) ) ; want ( (0<_u) -> ( (u<_0) -> u=0 ) )
+                // a1i eqcom under (0<_u): ( (0<_u) -> ( 0=u -> u=0 ) )
+                let ecm_a = a1i(imp(eqp(z(), u()), eqp(u(), z())), ple.clone(), ecm);
+                // syld-style: from (P->(Q->R)) and (P->(R->S)) get (P->(Q->S))
+                el.app(
+                    "syld",
+                    &[
+                        ("ph", ple.clone()),
+                        ("ps", le(u(), z())),
+                        ("ch", eqp(z(), u())),
+                        ("th", eqp(u(), z())),
+                    ],
+                    &[lein2, ecm_a],
+                )
+                .unwrap()
+            }; // ( (0<_u) -> ( (u<_0) -> u=0 ) )
+            // con3 in consequent: ( (0<_u) -> ( -.(u=0) -> -.(u<_0) ) )
+            let c3 = syl(
+                ple.clone(),
+                imp(le(u(), z()), eqp(u(), z())),
+                imp(n(eqp(u(), z())), n(le(u(), z()))),
+                lein2eq,
+                con3(le(u(), z()), eqp(u(), z())),
+            );
+            // discharge g2pn.1 (-.(u=0)) : ( (0<_u) -> -.(u<_0) )
+            let nu0 = mpd(
+                ple.clone(),
                 n(eqp(u(), z())),
                 n(le(u(), z())),
-                leaf("g2pn.2"),
+                a1i(n(eqp(u(), z())), ple.clone(), leaf("g2pn.1")),
                 c3,
-            ); // ( -.(u<_0) )
-            let g = mp(n(le(u(), z())), lt(z(), u()), nul0, a); // ( 0 < u )
+            );
+            // ltII(0,u) : ( (0<_u) -> ( -.(u<_0) -> (0<u) ) )
+            let ltii = el.app("ltII", &[("u", z()), ("v", u())], &[]).unwrap();
+            // mpd: ( (0<_u) -> (0<u) )
+            let g = mpd(ple.clone(), n(le(u(), z())), lt(z(), u()), nu0, ltii);
             return Lemma {
                 name: "g2-posne".into(),
-                ess: vec![
-                    ("g2pn.1".into(), toks(&["|-", "(", "0", "<_", "u", ")"])),
-                    ("g2pn.2".into(), toks(&["|-", "-.", "u", "=", "0"])),
-                ],
+                ess: vec![("g2pn.1".into(), toks(&["|-", "-.", "u", "=", "0"]))],
                 goal: g,
             };
         }

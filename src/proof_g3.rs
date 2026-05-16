@@ -60,7 +60,7 @@
 use super::*;
 
 pub fn count() -> usize {
-    16
+    17
 }
 
 #[allow(unused_variables)]
@@ -3689,6 +3689,235 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                         ]),
                     ),
                 ],
+                goal: g,
+            }
+        }
+        // ============================================================
+        // idx 16 : g3a-dotprop — the Cp-on-ray dot-PROPORTIONALITY,
+        //   exported as its own staged $p (same export pattern as
+        //   g4a-dot factoring g4a-sss's internal D1=D2).
+        //
+        //   goal (NO ess) :
+        //     ( dot a b ( cp a c u ) )
+        //       = ( ( sqrt ( u * ( inv ( sqd a c ) ) ) ) * ( dot a b c ) )
+        //
+        //   This is EXACTLY G3a-rayangle's internal "Cp lies on ray a→c
+        //   with non-negative coefficient s" content, made explicit: by
+        //   df-cp the ruler point is  Cp = a + s·(c−a)  with the SAME
+        //   coefficient  s = sqrt( u · inv( sqd a c ) )  whose 0 ≤ s is
+        //   `of-sqrtnn`.  df-dot is bilinear in its third argument, so
+        //     dot(a,b,Cp) = s · dot(a,b,c) .
+        //   Pure df-cp/df-dot/df-xc/df-yc unfold + ONE degree-2 ring
+        //   identity (≈8 monomials, far under the 512 guard); case-free,
+        //   NO `dot(a,b,c)≠0`, NO right-angle exclusion (so it does NOT
+        //   weaken Birkhoff ASA).  asaprime composes it with asa.h1's
+        //   SGN through of-sqrtnn + of-lemul0 to discharge asap.s4's SGN.
+        // ============================================================
+        16 => {
+            let pa = || leaf("va");
+            let pb = || leaf("vb");
+            let pc = || leaf("vc");
+            let pu = || leaf("vu");
+            let xc = |t: Pt| el.app("txc", &[("a", t)], &[]).unwrap();
+            let yc = |t: Pt| el.app("tyc", &[("a", t)], &[]).unwrap();
+            let sqd = |p: Pt, q: Pt| el.app("tsqd", &[("a", p), ("b", q)], &[]).unwrap();
+            let inv = |t: Pt| el.app("tinv", &[("u", t)], &[]).unwrap();
+            let sqrt = |t: Pt| el.app("tsqrt", &[("u", t)], &[]).unwrap();
+            let cp = || {
+                el.app(
+                    "tcp",
+                    &[("a", pa()), ("c", pc()), ("u", pu())],
+                    &[],
+                )
+                .unwrap()
+            };
+            let dot = |o: Pt, p: Pt, q: Pt| {
+                el.app("tdot", &[("o", o), ("p", p), ("q", q)], &[]).unwrap()
+            };
+            // s = sqrt( u * inv( sqd a c ) )  — kept atomic for ring_eq
+            let s = || sqrt(mu(el, pu(), inv(sqd(pa(), pc()))));
+            // df-cp : ( cp a c u ) = ( Pt PX PY )
+            let px = || {
+                pl(
+                    el,
+                    xc(pa()),
+                    mu(el, s(), mi(el, xc(pc()), xc(pa()))),
+                )
+            };
+            let py = || {
+                pl(
+                    el,
+                    yc(pa()),
+                    mu(el, s(), mi(el, yc(pc()), yc(pa()))),
+                )
+            };
+            let ptcp = || {
+                el.app("tpt", &[("u", px()), ("v", py())], &[]).unwrap()
+            };
+
+            // ---- 1. df-dot unfold of ( dot a b ( cp a c u ) ) --------
+            //   ( dot a b Cp ) = ( (Xb-Xa)·(X_Cp-Xa) + (Yb-Ya)·(Y_Cp-Ya) )
+            let xb_a = || mi(el, xc(pb()), xc(pa()));
+            let yb_a = || mi(el, yc(pb()), yc(pa()));
+            let xcp_a = || mi(el, xc(cp()), xc(pa()));
+            let ycp_a = || mi(el, yc(cp()), yc(pa()));
+            let dotc = || {
+                pl(
+                    el,
+                    mu(el, xb_a(), xcp_a()),
+                    mu(el, yb_a(), ycp_a()),
+                )
+            }; // df-dot RHS with Cp's coords still symbolic
+            let df_dot_cp = el
+                .app(
+                    "df-dot",
+                    &[("o", pa()), ("p", pb()), ("q", cp())],
+                    &[],
+                )
+                .unwrap(); // |- ( dot a b Cp ) = dotc
+
+            // ---- 2. ( Xc Cp ) = PX ,  ( Yc Cp ) = PY  (df-cp ∘ df-xc) -
+            let df_cp = el
+                .app(
+                    "df-cp",
+                    &[("a", pa()), ("c", pc()), ("u", pu())],
+                    &[],
+                )
+                .unwrap(); // |- ( cp a c u ) = ( Pt PX PY )
+            // cong-xc : ( cp a c u )=( Pt PX PY ) -> ( Xc Cp )=( Xc(Pt PX PY) )
+            let congxc = el
+                .app("cong-xc", &[("a", cp()), ("b", ptcp())], &[])
+                .unwrap();
+            let xcp_eq_xptn = mp(
+                eq(cp(), ptcp()),
+                eq(xc(cp()), xc(ptcp())),
+                df_cp.clone(),
+                congxc,
+            ); // |- ( Xc Cp ) = ( Xc ( Pt PX PY ) )
+            let df_xc = el
+                .app("df-xc", &[("u", px()), ("v", py())], &[])
+                .unwrap(); // |- ( Xc ( Pt PX PY ) ) = PX
+            let xcp_eq = eqtr3(
+                el,
+                xc(cp()),
+                xc(ptcp()),
+                px(),
+                xcp_eq_xptn,
+                df_xc,
+            ); // |- ( Xc Cp ) = PX
+            let congyc = el
+                .app("cong-yc", &[("a", cp()), ("b", ptcp())], &[])
+                .unwrap();
+            let ycp_eq_yptn = mp(
+                eq(cp(), ptcp()),
+                eq(yc(cp()), yc(ptcp())),
+                df_cp.clone(),
+                congyc,
+            );
+            let df_yc = el
+                .app("df-yc", &[("u", px()), ("v", py())], &[])
+                .unwrap(); // |- ( Yc ( Pt PX PY ) ) = PY
+            let ycp_eq = eqtr3(
+                el,
+                yc(cp()),
+                yc(ptcp()),
+                py(),
+                ycp_eq_yptn,
+                df_yc,
+            ); // |- ( Yc Cp ) = PY
+
+            // ---- 3. rewrite dotc  →  LC (fully in coords + atomic s) --
+            //   left  addend : (Xb-Xa)·((Xc Cp)-Xa)  →  (Xb-Xa)·(PX-Xa)
+            let l_old = || mu(el, xb_a(), xcp_a());
+            let r_old = || mu(el, yb_a(), ycp_a());
+            let px_a = || mi(el, px(), xc(pa()));
+            let py_a = || mi(el, py(), yc(pa()));
+            let l_new = || mu(el, xb_a(), px_a());
+            let r_new = || mu(el, yb_a(), py_a());
+            // (Xc Cp)-Xa = PX-Xa
+            let mi_x = cmi1(el, xc(cp()), px(), xc(pa()), xcp_eq);
+            // (Xb-Xa)·((Xc Cp)-Xa) = (Xb-Xa)·(PX-Xa)
+            let mu_x = cmu2(el, xcp_a(), px_a(), xb_a(), mi_x);
+            let mi_y = cmi1(el, yc(cp()), py(), yc(pa()), ycp_eq);
+            let mu_y = cmu2(el, ycp_a(), py_a(), yb_a(), mi_y);
+            // (l_old + r_old) = (l_new + r_old)
+            let pl_l = cpl1(el, l_old(), l_new(), r_old(), mu_x);
+            // (l_new + r_old) = (l_new + r_new)
+            let pl_r = cpl2(el, r_old(), r_new(), l_new(), mu_y);
+            let dotc_lc = eqtr3(
+                el,
+                pl(el, l_old(), r_old()),
+                pl(el, l_new(), r_old()),
+                pl(el, l_new(), r_new()),
+                pl_l,
+                pl_r,
+            ); // |- dotc = LC
+            let lc = || pl(el, l_new(), r_new());
+
+            // ---- 4. ring identity  LC = s · ( df-dot coords of a b c ) -
+            let xcc_a = || mi(el, xc(pc()), xc(pa()));
+            let ycc_a = || mi(el, yc(pc()), yc(pa()));
+            let dabc_co = || {
+                pl(
+                    el,
+                    mu(el, xb_a(), xcc_a()),
+                    mu(el, yb_a(), ycc_a()),
+                )
+            }; // df-dot RHS of ( dot a b c )
+            let core = ring_eq(el, &lc(), &mu(el, s(), dabc_co())); // LC = s·dabc_co
+
+            // ---- 5. fold df-dot back :  s·dabc_co = s·( dot a b c ) ---
+            let df_dot_abc = el
+                .app(
+                    "df-dot",
+                    &[("o", pa()), ("p", pb()), ("q", pc())],
+                    &[],
+                )
+                .unwrap(); // |- ( dot a b c ) = dabc_co
+            let dabc_co_back = eqcomm(
+                el,
+                dot(pa(), pb(), pc()),
+                dabc_co(),
+                df_dot_abc,
+            ); // |- dabc_co = ( dot a b c )
+            let s_fold = cmu2(
+                el,
+                dabc_co(),
+                dot(pa(), pb(), pc()),
+                s(),
+                dabc_co_back,
+            ); // |- ( s·dabc_co ) = ( s·( dot a b c ) )
+
+            // ---- 6. chain everything ---------------------------------
+            // ( dot a b Cp ) = dotc = LC = s·dabc_co = s·( dot a b c )
+            let g1 = eqtr3(
+                el,
+                dot(pa(), pb(), cp()),
+                dotc(),
+                lc(),
+                df_dot_cp,
+                dotc_lc,
+            ); // |- ( dot a b Cp ) = LC
+            let g2 = eqtr3(
+                el,
+                dot(pa(), pb(), cp()),
+                lc(),
+                mu(el, s(), dabc_co()),
+                g1,
+                core,
+            ); // |- ( dot a b Cp ) = s·dabc_co
+            let g = eqtr3(
+                el,
+                dot(pa(), pb(), cp()),
+                mu(el, s(), dabc_co()),
+                mu(el, s(), dot(pa(), pb(), pc())),
+                g2,
+                s_fold,
+            ); // |- ( dot a b Cp ) = ( s · ( dot a b c ) )
+
+            Lemma {
+                name: "g3a-dotprop".into(),
+                ess: vec![],
                 goal: g,
             }
         }

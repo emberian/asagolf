@@ -179,105 +179,103 @@ fn main() {
         max_zfc - min_zfc
     );
 
-    // ---- TASK #9: mechanically attribute resqrtth's ℝ-construction cost ---
-    //   completion-construction subtree (a)  vs  ℤ→ℚ-construction core (b).
+    // ---- RCF / real-closed-field substrate floor -----------------------
+    // The "minimal Euclidean" figure above still measures set.mm theorem
+    // proofs (msqge0 etc.) that are themselves built over the FULL analytic
+    // ℝ tower. A real-closed-field model needs only that a *constructed
+    // ordered field* satisfy the F1 axioms — i.e. the set.mm CONSTRUCTED
+    // real-axiom twins (axFOO `$p`, built from ZF), and NOT completeness
+    // (ax-pre-sup) and NOT set.mm's analytic √ build (resqrtth). Each twin's
+    // own ZFC-grounded proof size is the exact per-axiom model-construction
+    // cost. The RCF floor is the max over the RCF-NEEDED twins; a strict
+    // lower bound is the min over them (no ordered-field model can be
+    // cheaper than its cheapest constituent axiom's construction).
+    println!("\n=== RCF / real-closed-field substrate floor (exact, from DAG) ===");
+    // set.mm real-axiom roster, split by what an RCF model needs.
+    // ordered-field + order axioms: REQUIRED by any F1 (ordered field) model.
+    let rcf_needed: &[&str] = &[
+        "ax-resscn", "ax-1cn", "ax-icn", "ax-addcl", "ax-addrcl",
+        "ax-mulcl", "ax-mulrcl", "ax-mulcom", "ax-addass", "ax-mulass",
+        "ax-distr", "ax-i2m1", "ax-1ne0", "ax-1rid", "ax-rnegex",
+        "ax-rrecex", "ax-cnre", "ax-pre-lttri", "ax-pre-lttrn",
+        "ax-pre-ltadd", "ax-pre-mulgt0",
+    ];
+    // completeness: NOT needed by an RCF model (RCF ⊉ Dedekind-complete).
+    let rcf_excluded: &[&str] = &["ax-pre-sup"];
+    // analytic-√ proof root in set.mm (the sup-built sqrt-of-nonneg).
+    let sqrt_root = db.index("resqrtth");
+
+    let twin_of = |axname: &str| -> Option<(usize, usize)> {
+        let ai = db.index(axname)?;
+        let ti = *alias.get(&ai)?;
+        Some((ai, ti))
+    };
+
     println!(
-        "\n=== Task #9: resqrtth ℝ-construction attribution (completion vs ℤ→ℚ core) ==="
+        "{:<14} {:<6} {:>13}  {:>4}  {}",
+        "constructed", "need", "twin-ZFC", "gax", "completeness-dep"
     );
-    let resqrtth_total = db
-        .index("resqrtth")
-        .map(|i| zfc[i].clone())
-        .unwrap_or_else(number::ProofSize::one);
-    if let Some((total, comp, core, anch_found, anch_miss, nl_c, nl_z)) =
-        db.resqrtth_completion_split("resqrtth", &alias, &resqrtth_total)
-    {
-        let lt = total.log10();
-        let lc = comp.log10();
-        let lz = core.log10();
-        // Internal consistency: completion + core must equal the total
-        // (exact bignum equality), and total must equal expanded_zfc[resqrtth].
-        let recomposed = comp.add(&core);
-        let sum_ok = recomposed.log10() == lt; // ProofSize is exact; log eq ⟺ eq
-        let zfc_total = db
-            .index("resqrtth")
-            .map(|i| zfc[i].log10())
-            .unwrap_or(f64::NAN);
-        println!(
-            "  classification rule: OCCURRENCE-LEVEL bipartition over the ZFC\n\
-             DAG. The entire expanded ZFC subtree reached THROUGH a completion\n\
-             anchor (Dedekind-cut positive reals df-np/1p/plp/mp/ltp; signed\n\
-             reals df-nr/enr/plr/mr/ltr/0r/1r; LUB df-sup/df-inf/axsup/\n\
-             ax-pre-sup; analytic limit/Cauchy df-clim/rlim/cau/limsup/lm) is\n\
-             charged to (a) COMPLETION; every other leaf occurrence is (b)\n\
-             ℤ→ℚ-core + FOL/set glue. Attribution is by OCCURRENCE PATH (a\n\
-             lemma reused both under and outside the completion layer splits\n\
-             its occurrences), so (a)+(b) == total EXACTLY — not a bound."
-        );
-        println!(
-            "  completion anchors found in DB ({}): {}",
-            anch_found.len(),
-            anch_found.join(" ")
-        );
-        if !anch_miss.is_empty() {
-            println!(
-                "  anchors absent from this set.mm (skipped): {}",
-                anch_miss.join(" ")
-            );
+    let mut rcf_max = f64::MIN; // achievable RCF floor (set.mm construction)
+    let mut rcf_min = f64::MAX; // strict lower bound (cheapest needed twin)
+    let mut excl_max = f64::MIN; // completeness twin cost (for contrast)
+    for ax in rcf_needed.iter().chain(rcf_excluded.iter()) {
+        let needed = rcf_needed.contains(ax);
+        match twin_of(ax) {
+            Some((_ai, ti)) => {
+                let z = zfc[ti].log10();
+                let ga = db.genuine_axioms_reachable(ti, &alias);
+                let dep_comp = ga.iter().any(|g| g == "ax-pre-sup");
+                if needed && z.is_finite() {
+                    rcf_max = rcf_max.max(z);
+                    rcf_min = rcf_min.min(z);
+                } else if !needed && z.is_finite() {
+                    excl_max = excl_max.max(z);
+                }
+                println!(
+                    "{:<14} {:<6} {:>13}  {:>4}  {}",
+                    db.statements[ti].label,
+                    if needed { "YES" } else { "no" },
+                    log10(&zfc[ti]),
+                    ga.len(),
+                    if dep_comp { "reaches ax-pre-sup" } else { "none" },
+                );
+            }
+            None => println!("{:<14} {:<6}  (no constructed twin found)", ax, "?"),
         }
-        println!(
-            "  distinct leaves reached from resqrtth (diagnostic): only-through-anchor={nl_c}  completion-free-reachable={nl_z}"
-        );
-        let frac_c = if lt.is_finite() {
-            10f64.powf(lc - lt) * 100.0
-        } else {
-            f64::NAN
-        };
-        let frac_z = if lt.is_finite() {
-            10f64.powf(lz - lt) * 100.0
-        } else {
-            f64::NAN
-        };
-        println!(
-            "\n  resqrtth total (ZFC-grounded √-of-nonneg)        : ~10^{lt:.2}\n\
-             (a) completion-construction subtree (Cauchy/Dedekind/\n\
-             \u{a0}\u{a0}\u{a0}\u{a0}sup/limit — removable by a Euclidean/RCF model): ~10^{lc:.2}  ({frac_c:.1}% of total)\n\
-             (b) ℤ→ℚ-construction core + FOL/set glue (irreducible\n\
-             \u{a0}\u{a0}\u{a0}\u{a0}pair-plumbing any construction needs)         : ~10^{lz:.2}  ({frac_z:.1}% of total)\n\
-             internal check  (a)+(b) == total                 : {}\n\
-             cross-check     total == expanded_zfc[resqrtth]   : {} (zfc={zfc_total:.2})",
-            if sum_ok { "PASS" } else { "FAIL" },
-            if (lt - zfc_total).abs() < 1e-9 { "PASS" } else { "FAIL" }
-        );
-        // Two ORTHOGONAL "remove completion" measures, both mechanical:
-        //  (i)  within-resqrtth: zero out the anchor subtree but keep the
-        //       rest of resqrtth's proof → leaves max(a,b) ≈ (b) (log of a
-        //       sum is the max), i.e. the √ term stays ~10^lz because the
-        //       ℤ→ℚ/FOL plumbing (b) dominates the anchor defs (a).
-        //  (ii) wholesale (the established Euclidean-primitive measure,
-        //       printed above): replace resqrtth ENTIRELY by a model
-        //       primitive → the F1 √ term collapses to the next-heaviest
-        //       substrate fact, ~10^{min_zfc:.2} (msqge0). That 10^{:.2}
-        //       drop is the true "cost of the analytic √ build".
-        println!(
-            "\n  CONCLUSION: of resqrtth's ~10^{lt:.2} ZFC leaf cost, the\n\
-             completion-DEFINITION subtree (Dedekind cuts / signed reals /\n\
-             LUB-sup / analytic limit) accounts for ~10^{lc:.2} ({frac_c:.1}%)\n\
-             — a SMALL fraction. The remaining ~10^{lz:.2} ({frac_z:.1}%) is\n\
-             ℤ→ℚ pair-plumbing + FOL/equality/set-theoretic multiplicity that\n\
-             wraps EVERY field-arithmetic step over ANY constructed ℝ (a\n\
-             real-closed / Euclidean model still pays this). So resqrtth's\n\
-             10^{lt:.2} is NOT mostly the Dedekind/Cauchy/sup definitional\n\
-             subtree: it is irreducible construction plumbing. The genuine\n\
-             completion lever is WHOLESALE √-as-primitive (the Euclidean\n\
-             model above): that drops the F1 √ term from ~10^{lt:.2} to\n\
-             ~10^{min_zfc:.2} (≈10^{:.2} orders), confirming the analytic-√\n\
-             multiplicity — not the completion DEFINITIONS, and not\n\
-             completeness — is the removable mass.",
-            lt - min_zfc
-        );
-    } else {
-        println!("  resqrtth not found in this set.mm — skipped.");
     }
+    // Is the analytic-√ build inside any RCF-needed twin? (It must NOT be,
+    // for the floor to legitimately drop the resqrtth multiplicity.)
+    let mut sqrt_in_needed = false;
+    if let Some(sr) = sqrt_root {
+        for ax in rcf_needed {
+            if let Some((_, ti)) = twin_of(ax) {
+                if db.proof_reaches(ti, sr) { sqrt_in_needed = true; }
+            }
+        }
+    }
+    // Adversarial check: print the actual genuine-axiom base of the
+    // dominant needed twin and of the excluded completeness twin, so the
+    // "completeness-dep: none" verdict is auditable, not asserted.
+    for nm in ["axmulass", "axpre-sup"] {
+        if let Some(i) = db.index(nm) {
+            let ga = db.genuine_axioms_reachable(i, &alias);
+            println!("  genuine-axiom base of {nm}: {}", ga.join(" "));
+        }
+    }
+    println!(
+        "\n  RCF model needs {}/{} real axioms; completeness (ax-pre-sup)\n  is NOT among them. Analytic-√ (resqrtth) reachable from a needed\n  twin: {}.\n\
+         \n  achievable RCF floor (set.mm constructed twins, no completeness,\n  no analytic-√): ~10^{rcf_max:.2}  (max needed-twin own ZFC build)\n\
+         strict lower bound (cheapest needed twin's construction)        : ~10^{rcf_min:.2}\n\
+         completeness twin (ax-pre-sup, EXCLUDED by RCF)                 : ~10^{excl_max:.2}\n\
+         prior 'minimal Euclidean' figure (msqge0, analytic ℝ proof)     : ~10^{min_zfc:.2}\n\
+         reduction RCF vs minimal-Euclidean: 10^{:.2}   RCF vs full-ℝ: 10^{:.2}",
+        rcf_needed.len(),
+        rcf_needed.len(),
+        if sqrt_in_needed { "YES (floor argument INVALID — investigate)" }
+            else { "no (analytic-√ multiplicity legitimately removed)" },
+        min_zfc - rcf_max,
+        max_zfc - rcf_max,
+    );
 
     let g0 = 1035.0_f64.log10(); // kernel-verified grounded G0 cong-sub
     let g3c = 320.0_f64.log10(); // kernel-verified grounded G3c rayline

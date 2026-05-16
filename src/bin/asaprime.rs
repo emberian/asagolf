@@ -191,6 +191,9 @@ fn main() {
             "G0-congsub", "G3c-rayline", "G3a-rayangle", "G4-sas",
             "G2-incid", "G1b-rulerd", "G1a-rulerr", "G3bp-protuniq-oriented",
             "g4a-sss", "g4a-dot", "sqd-sym",
+            // newly relied-on derived $p that close the sole open leaf
+            // asap.s4 (vertex-a acong-transitivity, CASE-FREE):
+            "g3a-dotprop", "sqdnn", "recipnn",
         ];
         for w in want {
             let st = db0.stmts.iter().find(|s| s.label == w);
@@ -578,6 +581,518 @@ fn main() {
     let sfe = sqd(_pf.clone(), pe.clone());
     let sfg = sqd(_pf.clone(), pg.clone());
 
+    // ======================================================================
+    //  CLOSE THE SOLE OPEN LEAF — asap.s4 = ( ACong a b Cp e f g ),
+    //  the vertex-a acong-transitivity output, CASE-FREE via g3a-dotprop.
+    // ======================================================================
+    //  Inputs (both genuine):
+    //    _s3 = ( ACong a b Cp a b c )  [G3a-rayangle on s1 = Ray a c Cp]
+    //    asa.h1 = ( ACong a b c e f g ) [the given angle@a]
+    //  Bridge: g3a-dotprop (verified $p) gives, for Cp = cp a c (sqd e g),
+    //    dotprop :  ( dot a b Cp ) = ( s * ( dot a b c ) ),
+    //    s = ( sqrt ( ( sqd e g ) * ( inv ( sqd a c ) ) ) ) ,  0 ≤ s.
+    //  df-acong unfolds both s3 and h1 to ( EQ /\ SGN ):
+    //    EQ_h1 : (dabc·dabc)·(sef·seg) = (defg·defg)·(sab·sac)
+    //    SGN_h1: 0 ≤ ( dabc · defg )
+    //  Target ( ACong a b Cp e f g ) ; df-acong(o:=a,p:=b,q:=Cp,a:=e,e:=f,
+    //  f:=g) :
+    //    EQ_s4 : (dabCp·dabCp)·(sef·seg) = (defg·defg)·(sab·saCp)
+    //    SGN_s4: 0 ≤ ( dabCp · defg )
+    //  • SGN_s4 : dabCp·defg = s·(dabc·defg) ≥ 0 by of-lemul0 of 0≤s and
+    //    SGN_h1 — NO dot≠0, NO right-angle exclusion (case-free).
+    //  • EQ_s4  : substitute dabCp = s·dabc, regroup, apply EQ_h1, then
+    //    ( s·s )·( sqd a c ) = ( sqd e g ) [ax-sqrt + of-recip] and
+    //    ( sqd a Cp ) = ( sqd e g ) [s2] — cancels NOTHING; faithful.
+    // mul congruence / assoc / comm helpers (reuses the file's cong_mu1/2,
+    // dot, mu, le, wa, wi defined above).
+    let mass = |a: Pt, b: Pt, c: Pt| {
+        // |- ( ( a * b ) * c ) = ( a * ( b * c ) )
+        el.app("of-mulass", &[("u", a), ("v", b), ("w", c)], &[]).unwrap()
+    };
+    let mcom = |a: Pt, b: Pt| {
+        // |- ( a * b ) = ( b * a )
+        el.app("of-mulcom", &[("u", a), ("v", b)], &[]).unwrap()
+    };
+    let inv = |t: Pt| el.app("tinv", &[("u", t)], &[]).unwrap();
+    let sqrt = |t: Pt| el.app("tsqrt", &[("u", t)], &[]).unwrap();
+
+    let dabcp = dot(pa.clone(), pb.clone(), cp.clone()); // dot a b Cp
+    let dabc = dot(pa.clone(), pb.clone(), pc.clone()); // dot a b c
+    let defg = dot(pe.clone(), _pf.clone(), pg.clone()); // dot e f g
+    let sab = sqd(pa.clone(), pb.clone());
+    let sac = sqd(pa.clone(), pc.clone());
+    let sacp = sqd(pa.clone(), cp.clone());
+    let sef = sqd(pe.clone(), _pf.clone());
+    let seg = sqd(pe.clone(), pg.clone());
+    let sval = sqrt(mu(seg.clone(), inv(sac.clone()))); // s = sqrt( seg * inv sac )
+
+    // ---- g3a-dotprop instance : ( dot a b Cp ) = ( s * ( dot a b c ) ) ---
+    //   g3a-dotprop ( va:=a, vb:=b, vc:=c, vu:=( sqd e g ) ); its ( cp va vc
+    //   vu ) is exactly asaprime's Cp = ( cp a c ( sqd e g ) ).
+    let dotprop = el
+        .app(
+            "g3a-dotprop",
+            &[("a", pa.clone()), ("b", pb.clone()), ("c", pc.clone()), ("u", seg.clone())],
+            &[],
+        )
+        .unwrap(); // |- ( dot a b Cp ) = ( s * ( dot a b c ) )
+
+    // ---- 0 ≤ s  (of-sqrtnn ∘ of-lemul0 ∘ sqdnn ∘ recipnn) ---------------
+    //   seg_nn = u_le ( 0 ≤ ( sqd e g ) ) ; sac_nn via `sqdnn` (real $p);
+    //   invsac_nn via `recipnn` ( asa.a1, sac_nn ) ; product via of-lemul0;
+    //   0 ≤ sqrt via of-sqrtnn.  All faithful — only asa.a1 / asa.n2.
+    let seg_nn = u_le.clone(); // |- ( 0 <_ ( sqd e g ) )
+    let sac_nn = el
+        .app("sqdnn", &[("a", pa.clone()), ("b", pc.clone())], &[])
+        .unwrap(); // |- ( 0 <_ ( sqd a c ) )
+    let invsac_nn = el
+        .app(
+            "recipnn",
+            &[("x", sac.clone())],
+            &[leaf("asa.a1"), sac_nn.clone()],
+        )
+        .unwrap(); // |- ( 0 <_ ( inv ( sqd a c ) ) )
+    let prod_nn = {
+        // of-lemul0 : ( ( 0<_u ) /\ ( 0<_v ) ) -> ( 0<_( u*v ) )
+        let conj = el
+            .app(
+                "pm3.2",
+                &[("ph", le(z(), seg.clone())), ("ps", le(z(), inv(sac.clone())))],
+                &[],
+            )
+            .unwrap(); // ( (0<_seg) -> ( (0<_inv sac) -> ( (0<_seg)/\(0<_inv sac) ) ) )
+        let c1 = mp(le(z(), seg.clone()), wi(le(z(), inv(sac.clone())), wa(le(z(), seg.clone()), le(z(), inv(sac.clone())))), seg_nn.clone(), conj);
+        let conjp = mp(le(z(), inv(sac.clone())), wa(le(z(), seg.clone()), le(z(), inv(sac.clone()))), invsac_nn.clone(), c1);
+        let lemul0 = el
+            .app("of-lemul0", &[("u", seg.clone()), ("v", inv(sac.clone()))], &[])
+            .unwrap(); // ( ( (0<_seg)/\(0<_inv sac) ) -> ( 0<_( seg*inv sac ) ) )
+        mp(
+            wa(le(z(), seg.clone()), le(z(), inv(sac.clone()))),
+            le(z(), mu(seg.clone(), inv(sac.clone()))),
+            conjp,
+            lemul0,
+        )
+    }; // |- ( 0 <_ ( ( sqd e g ) * ( inv ( sqd a c ) ) ) )
+    let s_nn = {
+        let sqrtnn = el
+            .app("of-sqrtnn", &[("u", mu(seg.clone(), inv(sac.clone())))], &[])
+            .unwrap(); // ( ( 0<_( seg*inv sac ) ) -> ( 0<_( sqrt( seg*inv sac ) ) ) )
+        mp(
+            le(z(), mu(seg.clone(), inv(sac.clone()))),
+            le(z(), sval.clone()),
+            prod_nn.clone(),
+            sqrtnn,
+        )
+    }; // |- ( 0 <_ s )
+
+    // ---- unfold h1 = ( ACong a b c e f g ) via df-acong -----------------
+    let dfac_h1 = el
+        .app(
+            "df-acong",
+            &[
+                ("o", pa.clone()), ("p", pb.clone()), ("q", pc.clone()),
+                ("a", pe.clone()), ("e", _pf.clone()), ("f", pg.clone()),
+            ],
+            &[],
+        )
+        .unwrap(); // |- ( ACong a b c e f g <-> ( EQ_h1 /\ SGN_h1 ) )
+    let dd_abc = mu(dabc.clone(), dabc.clone());
+    let dd_efg = mu(defg.clone(), defg.clone());
+    let eqh1_l = mu(dd_abc.clone(), mu(sef.clone(), seg.clone()));
+    let eqh1_r = mu(dd_efg.clone(), mu(sab.clone(), sac.clone()));
+    let eqh1 = weq(eqh1_l.clone(), eqh1_r.clone());
+    let sgnh1 = le(z(), mu(dabc.clone(), defg.clone()));
+    let conj_h1 = wa(eqh1.clone(), sgnh1.clone());
+    let body_h1 = el.bi_fwd(dfac_h1.clone(), leaf("asa.h1")).unwrap(); // |- ( EQ_h1 /\ SGN_h1 )
+    let eqh1_pf = mp(
+        conj_h1.clone(), eqh1.clone(), body_h1.clone(),
+        el.app("simpl", &[("ph", eqh1.clone()), ("ps", sgnh1.clone())], &[]).unwrap(),
+    ); // |- EQ_h1
+    let sgnh1_pf = mp(
+        conj_h1.clone(), sgnh1.clone(), body_h1.clone(),
+        el.app("simpr", &[("ph", eqh1.clone()), ("ps", sgnh1.clone())], &[]).unwrap(),
+    ); // |- SGN_h1 :  0 <_ ( dabc * defg )
+
+    // ---- SGN_s4 : 0 ≤ ( dabCp * defg ) — CASE-FREE ----------------------
+    //   of-lemul0( 0≤s , SGN_h1 ) : 0 ≤ ( s * ( dabc * defg ) )
+    //   = ( ( s * dabc ) * defg )  [of-mulass, reversed]
+    //   = ( dabCp * defg )         [dotprop, cong-mu1, reversed]
+    let sgn_prod = {
+        let conj = el
+            .app(
+                "pm3.2",
+                &[("ph", le(z(), sval.clone())), ("ps", sgnh1.clone())],
+                &[],
+            )
+            .unwrap();
+        let c1 = mp(le(z(), sval.clone()), wi(sgnh1.clone(), wa(le(z(), sval.clone()), sgnh1.clone())), s_nn.clone(), conj);
+        let conjp = mp(sgnh1.clone(), wa(le(z(), sval.clone()), sgnh1.clone()), sgnh1_pf.clone(), c1);
+        let lemul0 = el
+            .app("of-lemul0", &[("u", sval.clone()), ("v", mu(dabc.clone(), defg.clone()))], &[])
+            .unwrap();
+        mp(
+            wa(le(z(), sval.clone()), sgnh1.clone()),
+            le(z(), mu(sval.clone(), mu(dabc.clone(), defg.clone()))),
+            conjp,
+            lemul0,
+        )
+    }; // |- 0 <_ ( s * ( dabc * defg ) )
+    // ( s * ( dabc * defg ) ) = ( ( s * dabc ) * defg )   [eqcom of-mulass]
+    let s_assoc_back = eqcom(
+        mu(mu(sval.clone(), dabc.clone()), defg.clone()),
+        mu(sval.clone(), mu(dabc.clone(), defg.clone())),
+        mass(sval.clone(), dabc.clone(), defg.clone()),
+    ); // |- ( s*(dabc*defg) ) = ( (s*dabc)*defg )
+    // ( s * dabc ) = ( dot a b Cp )   [eqcom dotprop]
+    let sdabc_eq_dabcp = eqcom(dabcp.clone(), mu(sval.clone(), dabc.clone()), dotprop.clone());
+    // ( ( s*dabc )*defg ) = ( dabCp * defg )
+    let to_dabcp = cong_mu1(mu(sval.clone(), dabc.clone()), dabcp.clone(), defg.clone(), sdabc_eq_dabcp);
+    // chain 0 ≤ : ( s*(dabc*defg) ) = ( (s*dabc)*defg ) = ( dabCp*defg )
+    let prod_eq_sgn = eqtr(
+        mu(sval.clone(), mu(dabc.clone(), defg.clone())),
+        mu(mu(sval.clone(), dabc.clone()), defg.clone()),
+        mu(dabcp.clone(), defg.clone()),
+        s_assoc_back,
+        to_dabcp,
+    ); // |- ( s*(dabc*defg) ) = ( dabCp*defg )
+    let sgns4_pf = cong_le2(
+        mu(sval.clone(), mu(dabc.clone(), defg.clone())),
+        mu(dabcp.clone(), defg.clone()),
+        z(),
+        prod_eq_sgn,
+        sgn_prod,
+    ); // |- 0 <_ ( dabCp * defg )  = SGN_s4
+
+    // ---- ( s * s ) * ( sqd a c ) = ( sqd e g )  [ax-sqrt + of-recip] ----
+    //   ax-sqrt : ( 0<_w ) -> ( ( sqrt w )*( sqrt w ) ) = w  ;  w=seg*inv sac
+    //   ⇒ s*s = seg*inv sac ;  ( s*s )*sac = ( seg*inv sac )*sac
+    //   = seg*( inv sac * sac ) = seg*( sac*inv sac ) = seg*1 = seg.
+    let ss_eq_w = {
+        let axs = el
+            .app("ax-sqrt", &[("u", mu(seg.clone(), inv(sac.clone())))], &[])
+            .unwrap(); // ( ( 0<_w ) -> ( ( sqrt w )*( sqrt w ) ) = w )
+        mp(
+            le(z(), mu(seg.clone(), inv(sac.clone()))),
+            weq(mu(sval.clone(), sval.clone()), mu(seg.clone(), inv(sac.clone()))),
+            prod_nn.clone(),
+            axs,
+        )
+    }; // |- ( s*s ) = ( seg * inv sac )
+    let sac_ne0 = leaf("asa.a1"); // |- -. ( sqd a c ) = 0
+    let recip = {
+        let ax = el
+            .app("of-recip", &[("u", sac.clone())], &[])
+            .unwrap(); // ( -.( sac=0 ) -> ( sac*inv sac )=1 )
+        mp(
+            el.app("wn", &[("ph", weq(sac.clone(), z()))], &[]).unwrap(),
+            weq(mu(sac.clone(), inv(sac.clone())), el.app("t1", &[], &[]).unwrap()),
+            sac_ne0,
+            ax,
+        )
+    }; // |- ( sac * inv sac ) = 1
+    let one = || el.app("t1", &[], &[]).unwrap();
+    // ( s*s )*sac = ( seg*inv sac )*sac
+    let st1 = cong_mu1(
+        mu(sval.clone(), sval.clone()),
+        mu(seg.clone(), inv(sac.clone())),
+        sac.clone(),
+        ss_eq_w.clone(),
+    );
+    // ( seg*inv sac )*sac = seg*( inv sac * sac )   [of-mulass]
+    let st2 = mass(seg.clone(), inv(sac.clone()), sac.clone());
+    // ( inv sac * sac ) = ( sac * inv sac )         [of-mulcom]
+    let st3 = mcom(inv(sac.clone()), sac.clone());
+    // seg*( inv sac * sac ) = seg*( sac*inv sac )
+    let st4 = cong_mu2(mu(inv(sac.clone()), sac.clone()), mu(sac.clone(), inv(sac.clone())), seg.clone(), st3);
+    // seg*( sac*inv sac ) = seg*1                   [recip, cong-mu2]
+    let st5 = cong_mu2(mu(sac.clone(), inv(sac.clone())), one(), seg.clone(), recip);
+    // seg*1 = seg                                   [of-mul1]
+    let st6 = el.app("of-mul1", &[("u", seg.clone())], &[]).unwrap();
+    // chain : ( s*s )*sac = ... = seg
+    let ssac_a = eqtr(
+        mu(mu(sval.clone(), sval.clone()), sac.clone()),
+        mu(mu(seg.clone(), inv(sac.clone())), sac.clone()),
+        mu(seg.clone(), mu(inv(sac.clone()), sac.clone())),
+        st1, st2,
+    );
+    let ssac_b = eqtr(
+        mu(mu(sval.clone(), sval.clone()), sac.clone()),
+        mu(seg.clone(), mu(inv(sac.clone()), sac.clone())),
+        mu(seg.clone(), mu(sac.clone(), inv(sac.clone()))),
+        ssac_a, st4,
+    );
+    let ssac_c = eqtr(
+        mu(mu(sval.clone(), sval.clone()), sac.clone()),
+        mu(seg.clone(), mu(sac.clone(), inv(sac.clone()))),
+        mu(seg.clone(), one()),
+        ssac_b, st5,
+    );
+    let ssac = eqtr(
+        mu(mu(sval.clone(), sval.clone()), sac.clone()),
+        mu(seg.clone(), one()),
+        seg.clone(),
+        ssac_c, st6,
+    ); // |- ( ( s*s ) * ( sqd a c ) ) = ( sqd e g )
+
+    // ---- EQ_s4 : (dabCp·dabCp)·(sef·seg) = (defg·defg)·(sab·saCp) -------
+    //   step A : dabCp → s·dabc  (dotprop, both factors)
+    //   step B : ((s·dabc)·(s·dabc))·(sef·seg) = (s·s)·((dabc·dabc)·(sef·seg))
+    //   step C : EQ_h1 :  (dabc·dabc)·(sef·seg) = (defg·defg)·(sab·sac)
+    //   step D : (s·s)·((defg·defg)·(sab·sac)) = ((s·s)·sac)·((defg·defg)·sab)
+    //   step E : ((s·s)·sac) = seg   [ssac]
+    //   step F : seg·((defg·defg)·sab) = (defg·defg)·(sab·seg)
+    //   step G : seg → saCp via eqcom s2  →  (defg·defg)·(sab·saCp)
+    let eqs4_l = mu(mu(dabcp.clone(), dabcp.clone()), mu(sef.clone(), seg.clone()));
+    let eqs4_r = mu(dd_efg.clone(), mu(sab.clone(), sacp.clone()));
+    // A: dabCp*dabCp = (s*dabc)*(s*dabc)
+    let sd = || mu(sval.clone(), dabc.clone());
+    let a1 = cong_mu1(dabcp.clone(), sd(), dabcp.clone(), dotprop.clone()); // (dabCp*dabCp)=((s*dabc)*dabCp)
+    let a2 = cong_mu2(dabcp.clone(), sd(), sd(), dotprop.clone()); // ((s*dabc)*dabCp)=((s*dabc)*(s*dabc))
+    let ddcp_eq = eqtr(
+        mu(dabcp.clone(), dabcp.clone()),
+        mu(sd(), dabcp.clone()),
+        mu(sd(), sd()),
+        a1, a2,
+    ); // (dabCp*dabCp) = ((s*dabc)*(s*dabc))
+    let lA = cong_mu1(
+        mu(dabcp.clone(), dabcp.clone()),
+        mu(sd(), sd()),
+        mu(sef.clone(), seg.clone()),
+        ddcp_eq,
+    ); // eqs4_l = ((s*dabc)*(s*dabc))*(sef*seg)
+    // B: ((s*dabc)*(s*dabc))*E = (s*s)*((dabc*dabc)*E)   (E = sef*seg)
+    //    proven by an explicit assoc/comm tower.
+    let ee = || mu(sef.clone(), seg.clone());
+    // (s*dabc)*(s*dabc) = s*( dabc*(s*dabc) )           [of-mulass]
+    let b1 = mass(sval.clone(), dabc.clone(), sd());
+    // dabc*(s*dabc) = (dabc*s)*dabc                     [eqcom of-mulass]
+    let b2 = eqcom(
+        mu(mu(dabc.clone(), sval.clone()), dabc.clone()),
+        mu(dabc.clone(), mu(sval.clone(), dabc.clone())),
+        mass(dabc.clone(), sval.clone(), dabc.clone()),
+    );
+    // dabc*s = s*dabc                                   [of-mulcom]
+    let b3 = mcom(dabc.clone(), sval.clone());
+    // (dabc*s)*dabc = (s*dabc)*dabc                     [cong-mu1]
+    let b3c = cong_mu1(mu(dabc.clone(), sval.clone()), sd(), dabc.clone(), b3);
+    // dabc*(s*dabc) = (s*dabc)*dabc
+    let b23 = eqtr(
+        mu(dabc.clone(), sd()),
+        mu(mu(dabc.clone(), sval.clone()), dabc.clone()),
+        mu(sd(), dabc.clone()),
+        b2, b3c,
+    );
+    // (s*dabc)*dabc = s*(dabc*dabc)                     [of-mulass]
+    let b4 = mass(sval.clone(), dabc.clone(), dabc.clone());
+    // dabc*(s*dabc) = s*(dabc*dabc)
+    let b234 = eqtr(
+        mu(dabc.clone(), sd()),
+        mu(sd(), dabc.clone()),
+        mu(sval.clone(), dd_abc.clone()),
+        b23, b4,
+    );
+    // s*( dabc*(s*dabc) ) = s*( s*(dabc*dabc) )         [cong-mu2]
+    let b5 = cong_mu2(mu(dabc.clone(), sd()), mu(sval.clone(), dd_abc.clone()), sval.clone(), b234);
+    // (s*dabc)*(s*dabc) = s*( s*(dabc*dabc) )
+    let bsq = eqtr(
+        mu(sd(), sd()),
+        mu(sval.clone(), mu(dabc.clone(), sd())),
+        mu(sval.clone(), mu(sval.clone(), dd_abc.clone())),
+        b1, b5,
+    );
+    // s*( s*(dabc*dabc) ) = (s*s)*(dabc*dabc)           [eqcom of-mulass]
+    let bsq2 = eqcom(
+        mu(mu(sval.clone(), sval.clone()), dd_abc.clone()),
+        mu(sval.clone(), mu(sval.clone(), dd_abc.clone())),
+        mass(sval.clone(), sval.clone(), dd_abc.clone()),
+    );
+    // (s*dabc)*(s*dabc) = (s*s)*(dabc*dabc)
+    let bsq_full = eqtr(
+        mu(sd(), sd()),
+        mu(sval.clone(), mu(sval.clone(), dd_abc.clone())),
+        mu(mu(sval.clone(), sval.clone()), dd_abc.clone()),
+        bsq, bsq2,
+    );
+    // ((s*dabc)*(s*dabc))*E = ((s*s)*(dabc*dabc))*E     [cong-mu1]
+    let lB1 = cong_mu1(
+        mu(sd(), sd()),
+        mu(mu(sval.clone(), sval.clone()), dd_abc.clone()),
+        ee(),
+        bsq_full,
+    );
+    // ((s*s)*(dabc*dabc))*E = (s*s)*((dabc*dabc)*E)     [of-mulass]
+    let lB2 = mass(mu(sval.clone(), sval.clone()), dd_abc.clone(), ee());
+    let lB = eqtr(
+        mu(mu(sd(), sd()), ee()),
+        mu(mu(mu(sval.clone(), sval.clone()), dd_abc.clone()), ee()),
+        mu(mu(sval.clone(), sval.clone()), mu(dd_abc.clone(), ee())),
+        lB1, lB2,
+    ); // ((s*dabc)*(s*dabc))*E = (s*s)*((dabc*dabc)*E)
+    // C: (dabc*dabc)*E = (defg*defg)*(sab*sac)          [EQ_h1]
+    let lC = cong_mu2(
+        eqh1_l.clone(),
+        eqh1_r.clone(),
+        mu(sval.clone(), sval.clone()),
+        eqh1_pf.clone(),
+    ); // (s*s)*((dabc*dabc)*E) = (s*s)*((defg*defg)*(sab*sac))
+    // D: (s*s)*( (defg*defg)*(sab*sac) ) = ((s*s)*sac)*((defg*defg)*sab)
+    //    explicit assoc/comm tower.
+    let pp = || mu(dd_efg.clone(), sab.clone()); // (defg*defg)*sab  [= K]
+    // (defg*defg)*(sab*sac) = ((defg*defg)*sab)*sac     [eqcom of-mulass]
+    let d1 = eqcom(
+        mu(pp(), sac.clone()),
+        mu(dd_efg.clone(), mu(sab.clone(), sac.clone())),
+        mass(dd_efg.clone(), sab.clone(), sac.clone()),
+    );
+    // (s*s)*( (defg*defg)*(sab*sac) ) = (s*s)*( K*sac ) [cong-mu2]
+    let d2 = cong_mu2(
+        mu(dd_efg.clone(), mu(sab.clone(), sac.clone())),
+        mu(pp(), sac.clone()),
+        mu(sval.clone(), sval.clone()),
+        d1,
+    );
+    // (s*s)*( K*sac ) = ((s*s)*K)*sac                   [eqcom of-mulass]
+    let d3 = eqcom(
+        mu(mu(mu(sval.clone(), sval.clone()), pp()), sac.clone()),
+        mu(mu(sval.clone(), sval.clone()), mu(pp(), sac.clone())),
+        mass(mu(sval.clone(), sval.clone()), pp(), sac.clone()),
+    );
+    // ((s*s)*K)*sac = (s*s)*(K*sac)?  we need ((s*s)*sac)*K.
+    //   ((s*s)*K)*sac = ((s*s)*sac)*K  via comm/assoc:
+    //   ((s*s)*K)*sac = (s*s)*(K*sac)   [of-mulass]
+    //   (K*sac) = (sac*K)               [of-mulcom]
+    //   (s*s)*(sac*K) = ((s*s)*sac)*K   [eqcom of-mulass]
+    let d4 = mass(mu(sval.clone(), sval.clone()), pp(), sac.clone()); // ((s*s)*K)*sac = (s*s)*(K*sac)
+    let d5 = mcom(pp(), sac.clone()); // (K*sac)=(sac*K)
+    let d5c = cong_mu2(mu(pp(), sac.clone()), mu(sac.clone(), pp()), mu(sval.clone(), sval.clone()), d5); // (s*s)*(K*sac)=(s*s)*(sac*K)
+    let d6 = eqcom(
+        mu(mu(mu(sval.clone(), sval.clone()), sac.clone()), pp()),
+        mu(mu(sval.clone(), sval.clone()), mu(sac.clone(), pp())),
+        mass(mu(sval.clone(), sval.clone()), sac.clone(), pp()),
+    ); // (s*s)*(sac*K) = ((s*s)*sac)*K
+    // assemble D : (s*s)*((defg*defg)*(sab*sac)) = ((s*s)*sac)*K
+    let dA = eqtr(
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        mu(mu(sval.clone(), sval.clone()), mu(pp(), sac.clone())),
+        mu(mu(mu(sval.clone(), sval.clone()), pp()), sac.clone()),
+        d2, d3,
+    ); // = ((s*s)*K)*sac
+    let dB = eqtr(
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        mu(mu(mu(sval.clone(), sval.clone()), pp()), sac.clone()),
+        mu(mu(sval.clone(), sval.clone()), mu(pp(), sac.clone())),
+        dA, d4,
+    ); // = (s*s)*(K*sac)
+    let dC = eqtr(
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        mu(mu(sval.clone(), sval.clone()), mu(pp(), sac.clone())),
+        mu(mu(sval.clone(), sval.clone()), mu(sac.clone(), pp())),
+        dB, d5c,
+    ); // = (s*s)*(sac*K)
+    let dD = eqtr(
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        mu(mu(sval.clone(), sval.clone()), mu(sac.clone(), pp())),
+        mu(mu(mu(sval.clone(), sval.clone()), sac.clone()), pp()),
+        dC, d6,
+    ); // (s*s)*((defg*defg)*(sab*sac)) = ((s*s)*sac)*K
+    // E: ((s*s)*sac) = seg  [ssac]  →  ((s*s)*sac)*K = seg*K
+    let dE = cong_mu1(
+        mu(mu(sval.clone(), sval.clone()), sac.clone()),
+        seg.clone(),
+        pp(),
+        ssac.clone(),
+    ); // ((s*s)*sac)*K = seg*K
+    // F: seg*K = seg*((defg*defg)*sab) = (defg*defg)*(sab*seg)
+    //    seg*K = seg*( (defg*defg)*sab )
+    //          = ( (defg*defg)*sab )*seg   [of-mulcom]
+    //          = (defg*defg)*( sab*seg )   [of-mulass]
+    let f1 = mcom(seg.clone(), pp()); // seg*K = K*seg
+    let f2 = mass(dd_efg.clone(), sab.clone(), seg.clone()); // (defg*defg)*sab)*seg = (defg*defg)*(sab*seg)
+    let dF = eqtr(
+        mu(seg.clone(), pp()),
+        mu(pp(), seg.clone()),
+        mu(dd_efg.clone(), mu(sab.clone(), seg.clone())),
+        f1, f2,
+    ); // seg*K = (defg*defg)*(sab*seg)
+    // G: ( sqd a Cp ) = ( sqd e g )  is s2  →  seg → saCp
+    let seg_eq_sacp = eqcom(sacp.clone(), seg.clone(), s2.clone()); // ( sqd e g ) = ( sqd a Cp )
+    let dG = cong_mu2(seg.clone(), sacp.clone(), sab.clone(), seg_eq_sacp); // sab*seg = sab*saCp
+    let dG2 = cong_mu2(
+        mu(sab.clone(), seg.clone()),
+        mu(sab.clone(), sacp.clone()),
+        dd_efg.clone(),
+        dG,
+    ); // (defg*defg)*(sab*seg) = (defg*defg)*(sab*saCp)
+    // ---- assemble EQ_s4 -------------------------------------------------
+    // eqs4_l = ((s*dabc)*(s*dabc))*E              [lA]
+    //        = (s*s)*((dabc*dabc)*E)              [lB]
+    //        = (s*s)*((defg*defg)*(sab*sac))      [lC]
+    //        = ((s*s)*sac)*K                      [dD]
+    //        = seg*K                              [dE]
+    //        = (defg*defg)*(sab*seg)              [dF]
+    //        = (defg*defg)*(sab*saCp) = eqs4_r    [dG2]
+    let q1 = eqtr(
+        eqs4_l.clone(),
+        mu(mu(sd(), sd()), ee()),
+        mu(mu(sval.clone(), sval.clone()), mu(dd_abc.clone(), ee())),
+        lA, lB,
+    );
+    let q2 = eqtr(
+        eqs4_l.clone(),
+        mu(mu(sval.clone(), sval.clone()), mu(dd_abc.clone(), ee())),
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        q1, lC,
+    );
+    let q3 = eqtr(
+        eqs4_l.clone(),
+        mu(mu(sval.clone(), sval.clone()), mu(dd_efg.clone(), mu(sab.clone(), sac.clone()))),
+        mu(mu(mu(sval.clone(), sval.clone()), sac.clone()), pp()),
+        q2, dD,
+    );
+    let q4 = eqtr(
+        eqs4_l.clone(),
+        mu(mu(mu(sval.clone(), sval.clone()), sac.clone()), pp()),
+        mu(seg.clone(), pp()),
+        q3, dE,
+    );
+    let q5 = eqtr(
+        eqs4_l.clone(),
+        mu(seg.clone(), pp()),
+        mu(dd_efg.clone(), mu(sab.clone(), seg.clone())),
+        q4, dF,
+    );
+    let eqs4_pf = eqtr(
+        eqs4_l.clone(),
+        mu(dd_efg.clone(), mu(sab.clone(), seg.clone())),
+        eqs4_r.clone(),
+        q5, dG2,
+    ); // |- EQ_s4
+
+    // ---- repack ( EQ_s4 /\ SGN_s4 ) and bi_rev target df-acong ----------
+    let sgns4 = le(z(), mu(dabcp.clone(), defg.clone()));
+    let conj_s4 = wa(weq(eqs4_l.clone(), eqs4_r.clone()), sgns4.clone());
+    let pm32 = el
+        .app("pm3.2", &[("ph", weq(eqs4_l.clone(), eqs4_r.clone())), ("ps", sgns4.clone())], &[])
+        .unwrap();
+    let pm32a = mp(
+        weq(eqs4_l.clone(), eqs4_r.clone()),
+        wi(sgns4.clone(), conj_s4.clone()),
+        eqs4_pf,
+        pm32,
+    );
+    let body_s4 = mp(sgns4.clone(), conj_s4.clone(), sgns4_pf, pm32a); // |- ( EQ_s4 /\ SGN_s4 )
+    let dfac_s4 = el
+        .app(
+            "df-acong",
+            &[
+                ("o", pa.clone()), ("p", pb.clone()), ("q", cp.clone()),
+                ("a", pe.clone()), ("e", _pf.clone()), ("f", pg.clone()),
+            ],
+            &[],
+        )
+        .unwrap(); // |- ( ACong a b Cp e f g <-> ( EQ_s4 /\ SGN_s4 ) )
+    let asap_s4 = el.bi_rev(dfac_s4, body_s4).unwrap(); // |- ( ACong a b Cp e f g )
+
     // ---- E1 : ( sqd f e ) = ( sqd b a )  [sqd-sym ∘ asa.h2 ∘ sqd-sym] -----
     //   asa.h2 : ( sqd a b ) = ( sqd e f )
     //   sqd-sym(a,b) : ( sqd a b ) = ( sqd b a )  ⇒  ( sqd b a ) = ( sqd a b )
@@ -608,7 +1123,7 @@ fn main() {
                 ("a", pa.clone()), ("b", pb.clone()), ("c", cp.clone()),
                 ("e", pe.clone()), ("f", _pf.clone()), ("g", pg.clone()),
             ],
-            &[leaf("asa.h2"), s2.clone(), leaf("asap.s4"), leaf("asa.n1"), _b1.clone()],
+            &[leaf("asa.h2"), s2.clone(), asap_s4.clone(), leaf("asa.n1"), _b1.clone()],
         )
         .unwrap(); // |- ( sqd b Cp ) = ( sqd f g )
     let e2 = eqcom(sbcp.clone(), sfg.clone(), g4sas_bcp.clone()); // E2 : ( sqd f g ) = ( sqd b Cp )
@@ -828,13 +1343,13 @@ fn main() {
             ("asa.h3".into(), toks(&["|-", "(", "ACong", "b", "a", "c", "f", "e", "g", ")"])),
             ("asa.ht".into(), toks(&["|-", "(", "Tri", "a", "b", "c", ")"])),
             ("asa.ho".into(), toks(&["|-", "(", "0", "<_", "(", "crs", "b", "a", "c", "b", "a", "(", "cp", "a", "c", "(", "sqd", "e", "g", ")", ")", ")", ")"])),
-            // -- THE single residual open leaf (sharp): the vertex-a
-            //    acong-transitivity output  s4 = ( ACong a b Cp e f g )
-            //    (F0's `m b a Cp = m f e g`).  EVERYTHING else below is
-            //    kernel-derived from it via genuine $p — no dot≠0, no
-            //    unfaithful precondition.  See the final report for why
-            //    its SGN cannot be discharged within this file's mandate.
-            ("asap.s4".into(), toks(&["|-", "(", "ACong", "a", "b", "(", "cp", "a", "c", "(", "sqd", "e", "g", ")", ")", "e", "f", "g", ")"])),
+            // -- the given angle@a (faithful Birkhoff ASA hypothesis):
+            //    asa.h1 = ( ACong a b c e f g ).  asap.s4 = ( ACong a b Cp
+            //    e f g ) is now DERIVED in-file (vertex-a acong-transitivity
+            //    of _s3=G3a-rayangle and asa.h1) CASE-FREE via the verified
+            //    g3a-dotprop — NO open leaf, NO dot≠0, NO right-angle
+            //    exclusion, NO 0<sqd cancellation.
+            ("asa.h1".into(), toks(&["|-", "(", "ACong", "a", "b", "c", "e", "f", "g", ")"])),
         ],
         goal: asa_tail_goal,
     };
@@ -852,102 +1367,57 @@ fn main() {
     match full.verify() {
         Ok(()) => println!(
             "Kernel: ASA' built on the REAL verified substrate — \
-             {} statements; s1/s2/s3/b1/s8 + the FULL g4a-dot/sqd-sym vertex-b \
-             transport (E1/E2/E3 → ( ACong b a c b a Cp ) → G3bp → Ray b c Cp \
-             → G3c → On Cp(Ln b c) → G2-incid → Cp=c) + the closing algebra \
-             kernel-verified against genuine $p (no PENDING $a; the ONLY open \
-             leaf is the sharp asap.s4 = ( ACong a b Cp e f g )).",
+             {} statements; s1/s2/s3/b1/s8 + asap.s4 = ( ACong a b Cp e f g ) \
+             now DERIVED in-file (vertex-a acong-transitivity of _s3=G3a-rayangle \
+             and asa.h1, CASE-FREE via the verified g3a-dotprop) + the FULL \
+             g4a-dot/sqd-sym vertex-b transport (E1/E2/E3 → ( ACong b a c b a Cp ) \
+             → G3bp → Ray b c Cp → G3c → On Cp(Ln b c) → G2-incid → Cp=c) + the \
+             closing algebra kernel-verified against ONLY genuine $p — NO PENDING \
+             $a, NO open leaf, NO dot≠0, NO right-angle exclusion, NO 0<sqd \
+             cancellation.",
             full.stmts.len()
         ),
         Err(e) => die("KERNEL REJECTED", e),
     }
 
-    // ---- the honest verdict ----------------------------------------------
+    // ---- the verdict — GENUINE no-cheating closure ------------------------
     println!("\n=== ASA' NO-CHEATING STATUS ===");
-    println!("  substrate          : data/grounded.out.mm (all 90 staged $p, kernel-✔)");
-    println!("  no-cheating guard  : PASS (11/11 relied-on postulates are real $p, none $a)");
+    println!("  substrate          : data/grounded.out.mm (all 91 staged $p, kernel-✔)");
+    println!("  no-cheating guard  : PASS (14/14 relied-on postulates are real $p, none $a)");
     println!("  WIRED to real $p   : G1a-rulerr, G1b-rulerd, G3a-rayangle, G4-sas,");
     println!("                       G3c-rayline, G2-incid, G3bp-protuniq-oriented,");
-    println!("                       G0-congsub, g4a-sss, g4a-dot, sqd-sym, eqtr,");
-    println!("                       df-acong, cong-mu1/2, cong-le2, cong-lt2, ...");
+    println!("                       G0-congsub, g4a-sss, g4a-dot, sqd-sym,");
+    println!("                       g3a-dotprop, sqdnn, recipnn, eqtr, df-acong,");
+    println!("                       cong-mu1/2, cong-le2, of-mulass/com, ...");
     println!("  derived tiny $p    : asap-cong-lt, asap-acong-sym  — BOTH VERIFIED");
-    println!("  g4a-dot + sqd-sym  : present & verified — CLOSE the vertex-b");
-    println!("                       acong-transport the prior pass named as the");
-    println!("                       open RESIDUE-A/B.  That residue is GONE:");
-    println!("                       ( ACong b a c b a Cp ) is now built by PURE");
-    println!("                       congruence-substitution of E1,E2,E3 into");
-    println!("                       asa.h3 — its SGN is E3-substituted h3.SGN");
-    println!("                       (NO dot(f,e,g)≠0), its EQ needs NO 0<sqd");
-    println!("                       cancellation at all.  G3bp/G3c/G2-incid then");
-    println!("                       give Cp=c.  ALL kernel-verified.");
+    println!("  asap.s4 closed     : the LAST open leaf is GONE.  asap.s4 =");
+    println!("                       ( ACong a b Cp e f g ) is now kernel-derived");
+    println!("                       in-file as the vertex-a acong-transitivity of");
+    println!("                       _s3 = ( ACong a b Cp a b c ) [G3a-rayangle on");
+    println!("                       Ray a c Cp] and asa.h1 = ( ACong a b c e f g ),");
+    println!("                       CASE-FREE: g3a-dotprop gives dot(a,b,Cp) =");
+    println!("                       s·dot(a,b,c) with 0≤s (s = sqrt((sqd e g)·");
+    println!("                       inv(sqd a c)), of-sqrtnn).  SGN_s4 = of-lemul0");
+    println!("                       of 0≤s and asa.h1's SGN — NO dot≠0, NO right");
+    println!("                       angle excluded.  EQ_s4 from EQ_h1 + (s·s)·");
+    println!("                       (sqd a c)=(sqd e g) [ax-sqrt+of-recip] + s2 —");
+    println!("                       cancels NOTHING.  Birkhoff ASA NOT weakened.");
 
     println!(
-        "\nASA' is NOT yet a no-cheating closure — but the residue is now\n\
-         ONE precise, named gap, strictly smaller than every prior pass\n\
-         (reported, not faked):"
-    );
-    println!(
-        "\n  THE SOLE RESIDUE — vertex-a acong-transitivity AT-1's SGN.\n\
-         \x20  The single open leaf is  asap.s4 = ( ACong a b Cp e f g )\n\
-         \x20  (F0's s4 = `m b a Cp = m f e g`), G4-sas's included angle.\n\
-         \x20  It is the vertex-a transitivity of two genuine facts:\n\
-         \x20    s3  = ( ACong a b Cp a b c )   [G3a-rayangle on Ray a c Cp,\n\
-         \x20          a SAME-RAY angle equality — Cp ∈ ray a→c — REAL $p]\n\
-         \x20    h1  = ( ACong a b c e f g )    [asa.h1, the given angle@a]\n\
-         \x20  through the triple ( a b c ).  Splitting df-acong:\n\
-         \x20    • EQ_AT1  — FAITHFUL.  Cancels only ( sqd a b )·( sqd a c ),\n\
-         \x20      i.e. the genuine-triangle non-degeneracies 0<sqd a b\n\
-         \x20      (asa.n1) and 0<sqd a c (asa.a1 ⇒, via sqdnn).  Exactly\n\
-         \x20      the mission's `0 < sqd` collapse.\n\
-         \x20    • SGN_AT1 — the genuine residue.  Want\n\
-         \x20         0 ≤ dot(a,b,Cp)·dot(e,f,g)   from\n\
-         \x20         0 ≤ dot(a,b,Cp)·dot(a,b,c)   (s3.SGN)  and\n\
-         \x20         0 ≤ dot(a,b,c)·dot(e,f,g)    (h1.SGN).\n\
-         \x20      In an ordered field this FAILS precisely when\n\
-         \x20      dot(a,b,c)=0 (∠bac a RIGHT angle): s3.SGN ∧ h1.SGN then\n\
-         \x20      give 0≤0 with NO constraint on sign(dot a b Cp) or\n\
-         \x20      sign(dot e f g), so the product can be negative.\n\
-         \x20      Birkhoff ASA does NOT exclude right ∠bac, so threading\n\
-         \x20      dot(a,b,c)≠0 would WEAKEN the theorem — REFUSED."
-    );
-    println!(
-        "\n  WHY g4a-dot CANNOT bridge AT-1 (unlike vertex-b).  The b-vertex\n\
-         \x20  SGN was bridged by g4a-dot giving the EQUALITY E3\n\
-         \x20  ( dot f e g ) = ( dot b a Cp ) from the SSS of (b,a,Cp)≅\n\
-         \x20  (f,e,g) — all three sides non-circular (E1=sqd-sym∘h2,\n\
-         \x20  E2=G4-sas, sqd a Cp=sqd e g = s2).  The analogous AT-1 bridge\n\
-         \x20  would need E0 = ( dot a b c ) = ( dot e f g ) via g4a-dot on\n\
-         \x20  (a,b,c)≅(e,f,g), whose third side is sqd a c = sqd e g —\n\
-         \x20  THE GOAL ITSELF.  Circular.  The only non-circular constraint\n\
-         \x20  on the c-side is asa.h3 (an ACong, squared-cosine — strictly\n\
-         \x20  weaker than a dot-equality), which is exactly why the c-side\n\
-         \x20  cannot yield a sign-free dot bridge."
-    );
-    println!(
-        "\n  THE FAITHFUL FIX (precise, OUTSIDE this file's mandate).  s3\n\
-         \x20  comes from G3a-rayangle on ( Ray a c Cp ): Cp ∈ ray a→c, so\n\
-         \x20  Cp−a = s·(c−a) with s≥0 (s>0 since sqd a Cp = sqd e g > 0).\n\
-         \x20  Hence dot(a,b,Cp) = s·dot(a,b,c): the two share a sign and,\n\
-         \x20  crucially, dot(a,b,c)=0 ⇒ dot(a,b,Cp)=0 ⇒ the product 0≥0.\n\
-         \x20  That collinearity→dot-proportionality is EXACTLY G3a-rayangle's\n\
-         \x20  internal content but is NOT exported as a $p; obtaining it is\n\
-         \x20  a one-lemma `g3a-dotprop` ( ( Ray a c x ) ⊢ 0 ≤ ( dot a b x )·\n\
-         \x20  ( dot a b c ) WITH the strengthening to a sign-free transport,\n\
-         \x20  e.g. ( dot a b x ) = ( ( inv ... ) * ( dot a b c ) ) ) in\n\
-         \x20  proof_g3.rs — OUTSIDE this task's mandate (proof_g4a.rs /\n\
-         \x20  asaprime.rs only).  With it, AT-1 closes faithfully and ASA'\n\
-         \x20  is a complete no-cheating closure (the rest is DONE & verified)."
-    );
-    println!(
-        "\n(\"Reported, not faked.\"  g4a-dot + sqd-sym were the correct,\n\
-         needed bridges and DID close the previously-named vertex-b\n\
-         obstruction faithfully — the {} -statement sub-tree above, with\n\
-         the full vertex-b transport + G3bp + G3c + G2-incid + closing\n\
-         algebra, is kernel-verified against ONLY genuine $p with NO\n\
-         dot≠0 and NO unfaithful precondition, leaving the SINGLE sharp\n\
-         leaf asap.s4 whose SGN residue and its exact faithful fix are\n\
-         stated above.  A named gap beats a fake green.)",
+        "\nASA' IS A COMPLETE NO-CHEATING CLOSURE of the goal\n\
+         \x20  ( sqd a c ) = ( sqd e g )\n\
+         against ONLY the verified $p substrate + the faithful Birkhoff ASA\n\
+         hypotheses (asa.h1 angle@a, asa.h2 side a-b, asa.h3 angle@b,\n\
+         asa.ht Tri a b c, asa.a1 a≠c, asa.n1/n2 side non-degeneracies,\n\
+         asa.ho construction orientation) — every one a genuine ASA given\n\
+         or a faithful non-degeneracy precondition.  NO PENDING $a, NO\n\
+         `asap.cpc`/`asap.s4` postulate, NO unfaithful dot≠0, NO\n\
+         right-angle exclusion, NO 0<sqd cancellation: the no-cheating\n\
+         guard passes 14/14 and the {} -statement DB is kernel-verified\n\
+         end-to-end.  The four prior passes' named gaps are all closed;\n\
+         the sole remaining cost is the ℝ-construction blow-up (out of\n\
+         scope here).  Genuine green — not faked.",
         full.stmts.len()
     );
-    exit(2);
+    exit(0);
 }

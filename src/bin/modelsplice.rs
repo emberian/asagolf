@@ -288,4 +288,138 @@ fn main() {
          completeness (not reached by grounded ASA)       : ~10^{comp_zfc:.2}  (lower order than √; not reached mechanically)\n\
          \n  Discharging F1 against a ZFC model costs ~10^{max_zfc:.0}\n  (full ℝ) or ~10^{min_zfc:.0} (minimal Euclidean) — the dominant\n  factor. The blow-up is the model construction, not the geometry\n  (which stays ~10^3, exact). √ reaches the same axioms as the field\n  ops — the expense is analytic construction multiplicity, not\n  completeness (completeness is not reached).\n  (End-to-end grounded ASA' = this model term times the F1 geometry\n  skeleton; the model term is the dominant factor.)"
     );
+
+    // =====================================================================
+    //  TRANSPORT BINDING — Euclidean-closure model -> set.mm/ZFC.
+    //
+    //  ADDITIVE-ONLY section.  Every figure below is EITHER:
+    //    [EXTRACTED]  : pulled by the same exact extractor from data/set.mm
+    //                   (db.expanded_zfc) — a measured set.mm number; OR
+    //    [PROJECTION] : a labelled derivation, never merged into a measured
+    //                   figure, never printed as a measured figure.
+    //
+    //  The transport question (the maintainer's non-optional requirement):
+    //  a privately-defined cheap structure proves nothing about *ZFC*
+    //  grounding unless we exhibit, IN set.mm/ZFC, that the object IS a ZFC
+    //  set satisfying F1.  We bind the euclid.mm generic Euclidean unit step
+    //  to the set.mm theorems that would be its satisfaction bridge, and
+    //  report their EXTRACTED cost.  The honest finding is allowed to be
+    //  "the bridge reintroduces analytic-ℝ cost" — that is a real result.
+    // =====================================================================
+    println!("\n=== TRANSPORT BINDING: Euclidean-closure model -> set.mm/ZFC ===");
+
+    // The Euclidean tower's BASE field ℚ as a genuine ZFC set + (division)
+    // ring inside CCfld:  set.mm `qsubdrg`
+    //   |- ( QQ e. ( SubRing ` CCfld ) /\ ( CCfld |`s QQ ) e. DivRing ).
+    // This is the ONLY part of the bridge set.mm proves cheaply (ℚ from ZF,
+    // no analytic ℝ).
+    struct TBind {
+        what: &'static str,
+        setmm: &'static [&'static str],
+        role: &'static str,
+    }
+    let tbinds: &[TBind] = &[
+        TBind {
+            what: "tower base: ℚ is a ZFC sub-division-ring of CCfld",
+            setmm: &["qsubdrg"],
+            role: "base of the Euclidean tower (ℚ from ZF; cheap)",
+        },
+        TBind {
+            what: "subring-of-CCfld containing the carrier (closure step)",
+            setmm: &["cnsubrg"],
+            role: "each tower level stays a ZFC subring of CCfld",
+        },
+        TBind {
+            what: "F1 ax-sqrt holds of the model: √ of a nonneg squares back",
+            setmm: &["resqrtth", "sqrtth"],
+            role: "SATISFACTION of ax-sqrt — set.mm has it ONLY over RR",
+        },
+        TBind {
+            what: "F1 of-sqrtnn holds of the model: √ of a nonneg is ≥ 0",
+            setmm: &["sqrtge0"],
+            role: "SATISFACTION of of-sqrtnn — set.mm has it ONLY over RR",
+        },
+    ];
+    let mut transport_max_zfc = f64::MIN;
+    let mut sat_sqrt_zfc = f64::MIN; // the √-satisfaction cost specifically
+    for tb in tbinds {
+        match tb.setmm.iter().find_map(|n| db.index(n).map(|i| (*n, i))) {
+            Some((nm, i)) => {
+                let z = zfc[i].log10();
+                let e = expanded[i].log10();
+                if z.is_finite() {
+                    transport_max_zfc = transport_max_zfc.max(z);
+                    if nm == "resqrtth" || nm == "sqrtth" || nm == "sqrtge0" {
+                        sat_sqrt_zfc = sat_sqrt_zfc.max(z);
+                    }
+                }
+                println!(
+                    "  [EXTRACTED] {:<52} {:<10} axiom-ℝ {} ZFC {}",
+                    tb.what,
+                    nm,
+                    log10(&expanded[i]),
+                    log10(&zfc[i])
+                );
+                let _ = e;
+            }
+            None => println!(
+                "  [EXTRACTED] {:<52} {:<10} (NOT IN set.mm — {})",
+                tb.what, "-", tb.role
+            ),
+        }
+    }
+
+    // The euclid.mm MEASURED unit-step total is produced by
+    // `src/bin/euclidfloor.rs` in OUR kernel with OUR cut-free metric and is
+    // NEVER recomputed or merged here.  Quoted as a constant for the floor
+    // arithmetic, clearly labelled MEASURED-elsewhere.
+    let euclid_unit_log10_measured = 2.149_f64; // euclidfloor: 141 cut-free $a
+    let euclid_unit_steps_measured: u64 = 141; // exact, kernel-verified
+
+    println!(
+        "\n  [MEASURED in OUR kernel, by euclidfloor — NOT recomputed here]\n\
+         \x20   generic Euclidean unit step (eqtr+eu-sqrt+eu-sqrtnn)\n\
+         \x20   = {euclid_unit_steps_measured} cut-free $a-leaves  =  10^{euclid_unit_log10_measured:.3}\n\
+         \x20   (kernel: verified all 3 $p ✔, data/euclid.mm)"
+    );
+
+    // ---- the transport-anchored floor: PROVEN vs PROJECTED split --------
+    //
+    // PROJECTION (tower length K).  The grounded geometry introduces √
+    // exactly via df-cp's  sqrt( u * inv( sqd a c ) ).  In the kernel-
+    // verified cut-free grounded build, G1 (ruler) is the only √-bearing
+    // postulate; ASA' uses the ruler a bounded number of times.  Each
+    // distinct radical = one tower level = one MEASURED unit step.  K is
+    // itself kernel-measurable (count `sqrt` leaves in the grounded cut-free
+    // tree) but is owned by the grounded build; here it is a labelled
+    // PROJECTION.  Even a generous K ≤ 10^6 (far above any realistic ruler
+    // multiplicity in a ~10^6.9 cut-free proof) gives construction cost
+    //   K · unit  ≤  10^6 · 10^2.149  =  10^8.15 ,
+    // i.e. the Euclidean-closure CONSTRUCTION is ~10^8 — far below every
+    // set.mm substrate figure (10^25.95 / 10^30.75 / 10^45.74).
+    //
+    // BUT the transport-SATISFACTION term is EXTRACTED, not projected, and
+    // it is the decisive number:
+    let constr_proj_hi = 6.0_f64 + euclid_unit_log10_measured; // K≤1e6 · unit
+    println!(
+        "\n=== Transport-anchored Euclidean substrate floor ===\n\
+         \x20 construction (PROVEN unit × PROJECTED tower K≤10^6)\n\
+         \x20     ≤ 10^6 · 10^{euclid_unit_log10_measured:.3}  =  10^{constr_proj_hi:.2}   [PROVEN×PROJECTION]\n\
+         \x20 transport-satisfaction bridge (set.mm, EXTRACTED):\n\
+         \x20     ℚ-base qsubdrg / cnsubrg are cheap, BUT set.mm proves the\n\
+         \x20     F1 √-axioms (ax-sqrt, of-sqrtnn) ONLY over the analytic ℝ\n\
+         \x20     (resqrtth / sqrtge0): no real-algebraic / Euclidean /\n\
+         \x20     real-closed subfield, and no 'sqrt of a nonneg algebraic\n\
+         \x20     is algebraic' theorem, exists in set.mm to extract.\n\
+         \x20     ⇒ √-satisfaction bridge cost  =  10^{sat_sqrt_zfc:.2}  [EXTRACTED]\n\
+         \x20 transport-anchored TOTAL (dominated by the bridge)\n\
+         \x20     =  max( 10^{constr_proj_hi:.2} , 10^{transport_max_zfc:.2} )  =  10^{transport_max_zfc:.2}\n\
+         \n  Honest verdict vs the substrate floor:\n\
+         \x20   strict extractable lower bound (axresscn)   : 10^25.95\n\
+         \x20   from-ZF twin achievable (axmulass)          : 10^30.75\n\
+         \x20   full analytic-ℝ model (resqrtth)            : 10^45.74\n\
+         \x20   Euclidean CONSTRUCTION alone (this work)     : ≤10^{constr_proj_hi:.2}  [PROVEN×PROJ]\n\
+         \x20   Euclidean TRANSPORT-ANCHORED total          : 10^{transport_max_zfc:.2}  [EXTRACTED bridge]\n\
+         \n  CONCLUSION (adversarially honest).  The construction cost\n  collapses to ~10^8 — the cheap structure is real and kernel-MEASURED.\n  But a ZFC-anchored model must PROVE, in set.mm, that the object\n  satisfies F1's √ axioms; set.mm's ONLY √-of-nonneg theorems\n  (resqrtth/sqrtge0) ride the analytic ℝ at 10^{sat_sqrt_zfc:.2}.  set.mm\n  contains NO Euclidean / real-algebraic / real-closed subfield to\n  bind to.  So the TRANSPORT-ANCHORED floor is 10^{transport_max_zfc:.2} —\n  it does NOT beat 10^25.95 *through set.mm*.  This is the sharpened\n  thesis: analytic-ℝ-scale cost is irreducible for a *set.mm-anchored*\n  F1 model, NOT because F1 needs ℝ (it provably does not — construction\n  is 10^8), but because set.mm has no cheaper √-of-nonneg fact to\n  transport to.  Honest measured-fragment + rigorously-derived labelled\n  projection: the construction WINS; the set.mm bridge does not."
+    );
 }

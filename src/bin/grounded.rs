@@ -80,6 +80,54 @@ fn toks(v: &[&str]) -> Vec<String> {
     v.iter().map(|s| s.to_string()).collect()
 }
 
+/// Metasearcher component #1: cut-free cost attribution. For a `$p`,
+/// attribute its fully-inlined `expand()` total to each distinct label
+/// it references (occurrences × that label's own inlined size), sorted
+/// by contribution. This is the read-only profiler that tells the
+/// generic-factoring search *where* the mass is (it localised loclink's
+/// 3.18M to one dense ring_eq; now points at the next target). Untrusted
+/// convenience — the `verified all N ✔` run remains the sole authority.
+fn profile_lemma(db: &kernel::Db, name: &str, memo: &mut HashMap<String, ProofSize>) {
+    let st = match db.get(name) {
+        Some(s) => s,
+        None => {
+            eprintln!("--profile: unknown label `{name}`");
+            return;
+        }
+    };
+    let total = expand(db, name, memo);
+    let mut occ: HashMap<String, u64> = HashMap::new();
+    for l in &st.proof {
+        *occ.entry(l.clone()).or_insert(0) += 1;
+    }
+    let mut rows: Vec<(String, u64, ProofSize)> = occ
+        .iter()
+        .map(|(l, c)| (l.clone(), *c, expand(db, l, memo).mul_u64(*c)))
+        .collect();
+    rows.sort_by(|a, b| b.2.log10().partial_cmp(&a.2.log10()).unwrap());
+    let tl = total.log10();
+    println!(
+        "\n=== --profile {name} : total {} (log10 {:.3}; {} proof steps, {} distinct labels) ===",
+        total.pretty(),
+        tl,
+        st.proof.len(),
+        occ.len()
+    );
+    println!("  {:>7}  {:<18} {:>5}  {:>14}  contribution", "share", "label", "x", "each");
+    for (l, c, contrib) in rows.iter().take(20) {
+        let share = 100.0 * 10f64.powf(contrib.log10() - tl);
+        let each = expand(db, l, memo);
+        println!(
+            "  {:>6.2}%  {:<18} {:>5}  {:>14}  {}",
+            share,
+            l,
+            c,
+            each.pretty(),
+            contrib.pretty()
+        );
+    }
+}
+
 // ===================================================================
 //  Additive-AC normalizer (kernel-checked tactic).
 //
@@ -5103,6 +5151,24 @@ fn main() {
     );
 
     let mut memo = HashMap::new();
+    // `--profile <lemma>` / `--profile=<lemma>`: cost-attribution report
+    // (metasearcher component; non-authoritative debug aid). Runs after
+    // full staging so every $p is present, then exits.
+    {
+        let args: Vec<String> = std::env::args().collect();
+        let mut tgt: Option<String> = None;
+        for (i, a) in args.iter().enumerate() {
+            if let Some(n) = a.strip_prefix("--profile=") {
+                tgt = Some(n.to_string());
+            } else if a == "--profile" {
+                tgt = args.get(i + 1).cloned();
+            }
+        }
+        if let Some(t) = tgt {
+            profile_lemma(&db, &t, &mut memo);
+            std::process::exit(0);
+        }
+    }
     let simpl = expand(&db, "simpl", &mut memo);
     let g3c = expand(&db, "G3c-rayline", &mut memo);
     let eqtrd = expand(&db, "eqtrd", &mut memo);

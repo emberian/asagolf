@@ -13,7 +13,7 @@ verifier never reach the browser.
     "g4_sas_inlined": 7251714,// no-cheating G4 SAS, fully inlined
     "g4_sas_log10": 6.86,
     "lemmas": 57,             // staged kernel-verified lemmas
-    "db_statements": 189,     // statements in the assembled, re-verified db
+    "db_statements": 195,     // statements in the assembled, re-verified db
     "shared_total": 0         // sound DAG-CSE minimal shared size (cruncher v1)
   },
   "models": [
@@ -50,7 +50,7 @@ verifier never reach the browser.
     }
     // ...
   ],
-  // shared proof DAG over lemmas/axioms (small: ~189 nodes)
+  // shared proof DAG over lemmas/axioms (small: ~195 nodes)
   "dag": {
     "nodes": [ { "id": "loclink", "size": 3179167, "kind": "lemma" } ],
     "edges": [ { "from": "G4-sas", "to": "loclink" } ]

@@ -1,6 +1,6 @@
 {
-  "generated": "unix:1778883467",
-  "headline": {"f0_asa": 224, "g4_sas_inlined": 7251714, "g4_sas_log10": 6.8604, "lemmas": 57, "db_statements": 189, "shared_total": 4931739},
+  "generated": "unix:1778892527",
+  "headline": {"f0_asa": 224, "g4_sas_inlined": 7251714, "g4_sas_log10": 6.8604, "lemmas": 57, "db_statements": 195, "shared_total": 4931739},
   "models": [
     {"id":"f1","label":"F1 axiomatic (kernel-exact)","kind":"geometry","log10":6.8604,"note":"ordered ring + one sqrt axiom; geometry skeleton, exact"},
     {"id":"euclid","label":"Minimal Euclidean-field model","kind":"substrate","log10":37.0,"note":"sqrt a model primitive; algebraic closure tower"},

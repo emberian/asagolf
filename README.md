@@ -111,7 +111,7 @@ The kernel re-checks every emitted proof object.
 
 The headline 7.25M is a deliberately cut-free, fully-inlined count with no
 lemma reuse; that is the metric. The shared-subexpression DAG is small
-(db = 191 statements). `loclink` (3.18M, invoked twice) and the
+(db = 195 statements). `loclink` (3.18M, invoked twice) and the
 no-common-subexpression ring normalizer dominate the inlined total. Sharper
 normalizer strategies, common-subexpression elimination in `ring_eq` output,
 and a more aggressive sound proof-DAG minimizer are the open directions.

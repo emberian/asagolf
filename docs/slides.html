@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asagolf slides - proof-size story</title>
+  <meta name="description"
+        content="A polished presentation deck for the asagolf Birkhoff proof-size measurement." />
+  <link rel="stylesheet" href="assets/slides.css" />
+</head>
+<body>
+
+<main class="deck" id="deck" aria-live="polite">
+  <section class="slide slide-cover is-current" id="slide-1" aria-labelledby="slide-1-title">
+    <div class="slide-copy">
+      <p class="eyebrow">asagolf / proof-size measurement</p>
+      <h1 id="slide-1-title">The poll said <span>10<sup>1000</sup></span></h1>
+      <p class="lede">The kernel-checked geometry came back at <strong data-metric="g4-log">10^6.86</strong>.</p>
+    </div>
+
+    <div class="hero-number" aria-label="Exact inlined step count for G4 SAS">
+      <span data-metric="g4-exact">7,251,714</span>
+      <small>fully inlined primitive steps</small>
+    </div>
+
+    <div class="takeaway">
+      The surprise is not that formal proofs get big. It is where the size actually lives.
+    </div>
+  </section>
+
+  <section class="slide slide-ruler" id="slide-2" aria-labelledby="slide-2-title">
+    <div class="slide-copy">
+      <p class="eyebrow">the first punchline</p>
+      <h2 id="slide-2-title">Even the expensive route misses 10<sup>1000</sup></h2>
+      <p>
+        The derived geometry is small on the scale people guessed. If you also route
+        the substrate through the fully constructed real numbers in set.mm, the total
+        is still hundreds of orders of magnitude short.
+      </p>
+    </div>
+
+    <div class="order-ruler" id="order-ruler" role="img"
+         aria-label="Log scale comparing measured proof costs with the poll estimate">
+      <div class="ruler-axis"></div>
+    </div>
+
+    <div class="number-pair">
+      <div>
+        <span data-metric="full-zfc-log">10^52.56</span>
+        <small>geometry plus set.mm real model</small>
+      </div>
+      <div>
+        <span data-metric="poll-gap">~947</span>
+        <small>orders of magnitude below 10^1000</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide slide-question" id="slide-3" aria-labelledby="slide-3-title">
+    <div class="slide-copy">
+      <p class="eyebrow">what is being measured</p>
+      <h2 id="slide-3-title">A triangle theorem, expanded all the way down.</h2>
+      <p>
+        Start with a Birkhoff-style geometry theorem. Expand lemmas. Expand definitions.
+        Keep going until the proof is counted in primitive kernel steps.
+      </p>
+    </div>
+
+    <div class="ladder" aria-label="Proof expansion ladder">
+      <div class="ladder-step">
+        <strong>triangle congruence</strong>
+        <span>ASA / SAS geometry statement</span>
+      </div>
+      <div class="ladder-step">
+        <strong>Birkhoff postulates</strong>
+        <span>ruler, protractor, congruence machinery</span>
+      </div>
+      <div class="ladder-step">
+        <strong>ordered field substrate</strong>
+        <span>ring, order, square roots, equality logic</span>
+      </div>
+      <div class="ladder-step">
+        <strong>ZFC model route</strong>
+        <span>set.mm real-number construction</span>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      The metric is deliberately harsh: no hidden lemma reuse inside the inlined count.
+    </div>
+  </section>
+
+  <section class="slide slide-routes" id="slide-4" aria-labelledby="slide-4-title">
+    <div class="slide-copy">
+      <p class="eyebrow">the trap</p>
+      <h2 id="slide-4-title">Asserting geometry makes ASA tiny. Deriving it is the real test.</h2>
+    </div>
+
+    <div class="route-grid">
+      <article class="route-panel route-asserted">
+        <p class="route-label">assert postulates</p>
+        <h3 data-metric="f0-exact">224</h3>
+        <p>ASA is short because the hard geometric facts are treated as primitives.</p>
+      </article>
+
+      <article class="route-panel route-derived">
+        <p class="route-label">derive the hard postulate</p>
+        <h3 data-metric="g4-exact">7,251,714</h3>
+        <p>SAS is proved from ordered-ring algebra, definitions, and one square-root axiom.</p>
+      </article>
+    </div>
+
+    <div class="takeaway">
+      The interesting number is not the shortcut. It is the grounded derivation.
+    </div>
+  </section>
+
+  <section class="slide slide-definitions" id="slide-5" aria-labelledby="slide-5-title">
+    <div class="slide-copy">
+      <p class="eyebrow">why the proof stays small</p>
+      <h2 id="slide-5-title">Geometry becomes polynomial bookkeeping.</h2>
+      <p>
+        Points, lines, distances, dot products, and angle congruence are conservative
+        definitions over coordinates. The kernel is mostly checking algebra and order.
+      </p>
+    </div>
+
+    <div class="definition-map" aria-label="Definitions over coordinates">
+      <div class="def-node def-source">coordinates</div>
+      <div class="def-node">point</div>
+      <div class="def-node">line</div>
+      <div class="def-node">sqd</div>
+      <div class="def-node">dot</div>
+      <div class="def-node def-accent">angle congruence</div>
+      <div class="def-node def-base">ordered ring + sqrt</div>
+    </div>
+
+    <div class="formula-strip">
+      <code>sqd(a,b) = (ax - bx)^2 + (ay - by)^2</code>
+      <code>loclink: sqd(b,c) = sqd(a,b) + sqd(a,c) - 2 dot(a,b,c)</code>
+    </div>
+  </section>
+
+  <section class="slide slide-dag" id="slide-6" aria-labelledby="slide-6-title">
+    <div class="slide-copy">
+      <p class="eyebrow">what the kernel sees</p>
+      <h2 id="slide-6-title">A small proof DAG casts a long inlined shadow.</h2>
+      <p>
+        The library stores shared proof objects. The headline count intentionally
+        expands shared sub-proofs every time they are used.
+      </p>
+    </div>
+
+    <div class="dag-visual" aria-label="Proof DAG with highlighted bottlenecks">
+      <div class="dag-node dag-node-small">logic</div>
+      <div class="dag-node dag-node-small">ring</div>
+      <div class="dag-node dag-node-med">order</div>
+      <div class="dag-node dag-node-big">loclink</div>
+      <div class="dag-node dag-node-med">sqcong</div>
+      <div class="dag-node dag-node-final">G4-sas</div>
+      <span class="dag-edge edge-a"></span>
+      <span class="dag-edge edge-b"></span>
+      <span class="dag-edge edge-c"></span>
+      <span class="dag-edge edge-d"></span>
+      <span class="dag-edge edge-e"></span>
+    </div>
+
+    <div class="metric-row">
+      <div><span data-metric="lemma-count">57</span><small>verified lemmas</small></div>
+      <div><span data-metric="db-statements">195</span><small>database statements</small></div>
+      <div><span data-metric="shared-total">4,931,739</span><small>shared total</small></div>
+    </div>
+  </section>
+
+  <section class="slide slide-lemmas" id="slide-7" aria-labelledby="slide-7-title">
+    <div class="slide-copy">
+      <p class="eyebrow">where the expansion concentrates</p>
+      <h2 id="slide-7-title">The law-of-cosines bridge dominates.</h2>
+      <p>
+        The largest local cost is not a mysterious geometric axiom. It is the ring
+        normalizer proving the algebraic bridge that SAS needs twice.
+      </p>
+    </div>
+
+    <div class="lemma-bars" id="lemma-bars" aria-label="Largest proof-size contributors">
+      <div class="lemma-bar-row">
+        <span>loclink</span>
+        <strong>3,179,167</strong>
+        <div><i style="width: 44%"></i></div>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      Once distance is square-distance plus dot product, the hard move is cancellation.
+    </div>
+  </section>
+
+  <section class="slide slide-substrate" id="slide-8" aria-labelledby="slide-8-title">
+    <div class="slide-copy">
+      <p class="eyebrow">where the big numbers live</p>
+      <h2 id="slide-8-title">The ZFC cost is mostly the real-number model.</h2>
+      <p>
+        The geometry uses a Euclidean-field substrate. Discharging that substrate
+        against a full construction of the real numbers is the expensive part.
+      </p>
+    </div>
+
+    <div class="substrate-grid">
+      <article class="substrate-panel">
+        <p>minimal Euclidean-field model</p>
+        <h3 data-metric="minimal-total-log">10^43.86</h3>
+        <span>sqrt as a model primitive</span>
+      </article>
+      <article class="substrate-panel substrate-panel-hot">
+        <p>set.mm real-number model</p>
+        <h3 data-metric="full-zfc-log">10^52.56</h3>
+        <span>dominated by analytic sqrt machinery</span>
+      </article>
+      <article class="substrate-panel">
+        <p>poll estimate</p>
+        <h3>10<sup>1000</sup></h3>
+        <span>still far outside the measured scale</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="slide slide-transfer" id="slide-9" aria-labelledby="slide-9-title">
+    <div class="slide-copy">
+      <p class="eyebrow">why this transfers</p>
+      <h2 id="slide-9-title">The proof does not need completeness.</h2>
+      <p>
+        The grounded proof only uses the substrate axioms. That makes the theorem
+        portable to every Euclidean field where those axioms hold.
+      </p>
+    </div>
+
+    <div class="transfer-map" aria-label="Transfer from F1 axioms to models">
+      <div class="transfer-core">F1 axioms</div>
+      <div class="transfer-ring ring-a">real algebraic numbers</div>
+      <div class="transfer-ring ring-b">real numbers</div>
+      <div class="transfer-ring ring-c">real-closed fields</div>
+      <div class="transfer-ring ring-d">computable reals</div>
+    </div>
+
+    <div class="takeaway">
+      A proof that leaned on completeness would not transfer down. This one does.
+    </div>
+  </section>
+
+  <section class="slide slide-status" id="slide-10" aria-labelledby="slide-10-title">
+    <div class="slide-copy">
+      <p class="eyebrow">what is proved today</p>
+      <h2 id="slide-10-title">This is strong evidence with a clear remaining boundary.</h2>
+      <p>
+        The measured grounded work covers the hard SAS postulate and supporting
+        lemmas. A completely regrounded ASA route still has remaining Birkhoff
+        postulates to derive.
+      </p>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-item done">
+        <strong>done</strong>
+        <span>G3c ray-line lemma</span>
+      </div>
+      <div class="status-item done">
+        <strong>done</strong>
+        <span>G4 SAS from algebra</span>
+      </div>
+      <div class="status-item done">
+        <strong>done</strong>
+        <span>model splice to set.mm real field</span>
+      </div>
+      <div class="status-item next">
+        <strong>next</strong>
+        <span>remaining Birkhoff postulates for end-to-end ASA'</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide slide-close" id="slide-11" aria-labelledby="slide-11-title">
+    <div class="slide-copy">
+      <p class="eyebrow">the final line</p>
+      <h2 id="slide-11-title">The geometry is cheap. The representation is expensive.</h2>
+      <p>
+        The poll imagined a proof-size explosion inside elementary geometry. The
+        measurement points somewhere else: algebraic normalization and real-number
+        construction.
+      </p>
+    </div>
+
+    <div class="receipt-panel">
+      <h3>receipts</h3>
+      <code>cargo run --release --bin grounded</code>
+      <code>cargo run --release --bin asa</code>
+      <code>cargo run --release --bin modelsplice</code>
+      <code>cargo run --release --bin calibrate</code>
+    </div>
+
+    <div class="end-card">
+      <strong>asagolf</strong>
+      <span>kernel-verified proof sizes</span>
+      <small data-generated-date>generated from site data</small>
+    </div>
+  </section>
+</main>
+
+<nav class="deck-controls" aria-label="Slide controls">
+  <a class="deck-home" href="index.html">asagolf</a>
+  <button class="icon-button" type="button" id="prev-slide" title="Previous slide" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6" /></svg>
+  </button>
+  <span class="slide-status" id="slide-status">1 / 11</span>
+  <button class="icon-button" type="button" id="next-slide" title="Next slide" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+  </button>
+  <button class="icon-button" type="button" id="overview-toggle" title="Overview" aria-label="Toggle slide overview">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="4" width="6" height="6" rx="1" />
+      <rect x="14" y="4" width="6" height="6" rx="1" />
+      <rect x="4" y="14" width="6" height="6" rx="1" />
+      <rect x="14" y="14" width="6" height="6" rx="1" />
+    </svg>
+  </button>
+  <button class="icon-button" type="button" id="fullscreen-toggle" title="Fullscreen" aria-label="Toggle fullscreen">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 3H3v5" />
+      <path d="M16 3h5v5" />
+      <path d="M8 21H3v-5" />
+      <path d="M16 21h5v-5" />
+    </svg>
+  </button>
+  <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+</nav>
+
+<script type="module" src="assets/slides.js"></script>
+
+</body>
+</html>

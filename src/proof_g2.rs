@@ -36,11 +36,10 @@ use super::*;
 /// they stage tiny + kernel-✔, exactly as g3a-plk did). The full G2
 /// inference lemma is wired on top of these next.
 pub fn count() -> usize {
-    // 3 = the verified generic primitives (g2-elim-y/x, g2-sq).
-    // The idx-3 G2-incid inference arm is drafted but has a documented
-    // __G2_TODO__ tail (detPQ≠0⇒0<detPQ² → g2-sq → mulcposcan → sqz →
-    // subeq0 → ptext); gated off until it kernel-verifies. RESTORE TO 4.
-    3
+    // 4 = generics (g2-elim-y/x, g2-sq) + g2-posne (idx 3), all
+    // kernel-verifiable. idx-4 G2-incid inference arm drafted with a
+    // documented tail; gated off until it kernel-verifies. RESTORE TO 5.
+    4
 }
 
 /// Build local lemma `idx` against an `Elab` over the current db.
@@ -111,11 +110,72 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             }
         }
         // ====================================================================
-        // idx 3 : G2-incid  (INFERENCE)
+        // idx 3 : g2-posne  (INFERENCE, reusable)
+        //   ess  0 <_ u ,  -. ( u = 0 )      goal  ( 0 < u )
+        //   recipe: ltII + lein2 + con3i  (memory: posne)
+        3 => {
+            let u = || leaf("vu");
+            let n = |p: Pt| el.app("wn", &[("ph", p)], &[]).unwrap();
+            let mp = |pw: Pt, qw: Pt, mn: Pt, mj: Pt| {
+                el.app("ax-mp", &[("ph", pw), ("ps", qw)], &[mn, mj]).unwrap()
+            };
+            let syl = |p: Pt, q: Pt, r: Pt, s1: Pt, s2: Pt| {
+                el.app("syl", &[("ph", p), ("ps", q), ("ch", r)], &[s1, s2]).unwrap()
+            };
+            let imp = |p: Pt, q: Pt| el.app("wi", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let eqp = |s: Pt, t: Pt| el.app("weq", &[("x", s), ("y", t)], &[]).unwrap();
+            let le = |s: Pt, t: Pt| el.app("tle", &[("u", s), ("v", t)], &[]).unwrap();
+            let lt = |s: Pt, t: Pt| el.app("tlt", &[("u", s), ("v", t)], &[]).unwrap();
+            let z = || t0p(el);
+            let con3i = |ph: Pt, ps: Pt, p1: Pt| {
+                el.app("con3i", &[("ph", ph), ("ps", ps)], &[p1]).unwrap()
+            };
+            // ltII(0,u) : ( (0<_u) -> ( -.(u<_0) -> (0<u) ) )
+            let ltii = el
+                .app("ltII", &[("u", z()), ("v", u())], &[])
+                .unwrap();
+            let a = mp(
+                le(z(), u()),
+                imp(n(le(u(), z())), lt(z(), u())),
+                leaf("g2pn.1"),
+                ltii,
+            ); // ( -.(u<_0) -> (0<u) )
+            // lein2(0,u) : ( (0<_u) -> ( (u<_0) -> 0=u ) )
+            let lein2 = el
+                .app("lein2", &[("u", z()), ("v", u())], &[])
+                .unwrap();
+            let b = mp(
+                le(z(), u()),
+                imp(le(u(), z()), eqp(z(), u())),
+                leaf("g2pn.1"),
+                lein2,
+            ); // ( (u<_0) -> 0=u )
+            let ecm = el
+                .app("eqcom", &[("x", z()), ("y", u())], &[])
+                .unwrap(); // ( 0=u -> u=0 )
+            let bu = syl(le(u(), z()), eqp(z(), u()), eqp(u(), z()), b, ecm); // ( (u<_0) -> u=0 )
+            let c3 = con3i(le(u(), z()), eqp(u(), z()), bu); // ( -.(u=0) -> -.(u<_0) )
+            let nul0 = mp(
+                n(eqp(u(), z())),
+                n(le(u(), z())),
+                leaf("g2pn.2"),
+                c3,
+            ); // ( -.(u<_0) )
+            let g = mp(n(le(u(), z())), lt(z(), u()), nul0, a); // ( 0 < u )
+            return Lemma {
+                name: "g2-posne".into(),
+                ess: vec![
+                    ("g2pn.1".into(), toks(&["|-", "(", "0", "<_", "u", ")"])),
+                    ("g2pn.2".into(), toks(&["|-", "-.", "u", "=", "0"])),
+                ],
+                goal: g,
+            };
+        }
+        // idx 4 : G2-incid  (INFERENCE)
         //   ess g2.1 |- ( Tri a b c )   g2.2 |- ( On x ( Ln a c ) )
         //       g2.3 |- ( On x ( Ln b c ) )      goal |- x = c
         // ====================================================================
-        3 => {
+        4 => {
             let pa = || leaf("va");
             let pb = || leaf("vb");
             let pc = || leaf("vc");

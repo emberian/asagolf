@@ -7,13 +7,35 @@ ruler/protractor formalism), reduced all the way down to ZFC, exceeds
 object and counting* — a small sound Metamath-subset kernel plus
 hand-built, kernel-re-checked proofs, with exact step counts.
 
-**The short answer:** the geometry is ≈ **10^6.9**. The only astronomical
-term anywhere is *constructing ℝ inside ZFC*, ≈ **10^45.7**, and an exact
-machine attribution shows even that is not completeness — it is ℤ→ℚ
-construction multiplicity, removable by model choice to ≈ 10^37.2 (with a
-real-closed-field floor far below). The poll overshoots by roughly **950
-orders of magnitude**, and every digit here is, or is becoming,
-kernel-checked.
+**The short answer:** the geometry is ≈ **10^5.6** (G4 SAS = 383,606
+cut-free, golfed ~19× from 10^6.86 by generic-lemma factoring), and
+**ASA′ is closed no-cheating end-to-end** — every Birkhoff postulate a
+kernel-verified `$p`, no PENDING axiom, case-free. The poll overshoots
+the geometry by roughly **994 orders of magnitude**.
+
+Three quantities are reported, and **never summed** — conflating them is
+the cheat this project exists to avoid:
+
+1. **Geometry proof size over F1** — ≈ 10^5.6. The poll's actual subject.
+   Stands alone as a formal object.
+2. **Grounding cost** — if you additionally expand the F1 axioms into
+   their ZFC derivations: ≈ **10^45.7** via set.mm's analytic ℝ; an
+   exact machine attribution shows that is not completeness but ℤ→ℚ
+   construction multiplicity, ≈ **10^30.75** via a real-closed-field
+   route, with a strict extractable floor of **10^25.95**.
+3. **Satisfiability certificate** — F1 is consistent/non-vacuous: a
+   minimal model (the Euclidean closure of ℚ) is *constructed and
+   kernel-MEASURED* at ≈ **10^8.15** (unit step 141 = 10^2.149, proved
+   once over fresh atoms — this *proves F1 does not need ℝ*); but
+   certifying it *inside externally-validated set.mm* costs ≈ **10^46**
+   [extracted], because set.mm contains no Euclidean / real-algebraic /
+   real-closed subfield to bind to. The sharpened thesis: the
+   irreducible ~10^46 is a property of *set.mm's construction choices*,
+   not of F1.
+
+Every digit is kernel-verified or extractor-exact; anything else is
+labelled `PROJECTION` with its derivation, never merged into a measured
+figure.
 
 A 15-minute foundations-classroom talk is in `docs/slides.html` (press
 `S` for speaker notes + timing); the interactive explorer is
@@ -25,17 +47,24 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | quantity | exact | ≈ |
 |---|---|---|
 | F0 Birkhoff ASA — postulates *asserted* as axioms | 224 cut-free steps | 10^2.4 |
-| **G4 SAS** — derived, no cheating (hardest postulate) | 7,251,714 | 10^6.86 |
+| **G4 SAS** — derived, no cheating (hardest postulate) | 383,606 | **10^5.58** |
+| ↳ before generic-lemma golf (loclink+sqcong) | 7,251,714 | 10^6.86 |
 | **G3a** ray-angle — derived | 4,720,242 | 10^6.7 |
 | **G2** incidence — derived | 607,583 | 10^5.8 |
-| G1 ruler · G3b′ oriented prot-uniq · g4a-sss · G0 · G3c — derived | small | 10^3–10^5 |
-| **all of the above, one run** | **90 lemmas, 261-statement DB, `verified all ✔`** | |
-| F1 substrate vs. a full ZFC model of ℝ (set.mm) | — | 10^45.7 |
-| same, √ as a Euclidean-field primitive | — | 10^37.2 |
-| analytic-completion *definitions* (#9, exact split) | 0.6% of that | |
+| G1 ruler · G3b′ prot-uniq · g4a-sss · g3a-dotprop · G0 · G3c | small | 10^3–10^5 |
+| **all of the above, one run** | **96 lemmas, 267-statement DB, `verified all ✔`** | |
+| **ASA′ regrounded over the derived `$p`** | **CLOSED, no-cheating, no PENDING `$a`** | |
+| shared-DAG (cruncher, kernel-verified, lower bound) | 10,134,529 → 1,916,586 | −81% |
+| *grounding cost:* full ZFC model of ℝ (set.mm) | — | 10^45.74 |
+| same, real-closed-field route (no completeness) | — | 10^30.75 |
+| same, strict extractable floor | — | 10^25.95 |
+| *satisfiability:* minimal Euclidean model, constructed+**measured** | unit 141 / 10^2.149 | ≤10^8.15 |
+| same, certified *through set.mm* (no cheaper √ to bind) | — | 10^46.10 |
 
 "F0 = 224" is the cheap, vacuous answer (assert the postulates).
-Everything else is the honest one: every Birkhoff postulate *derived*.
+Everything else is the honest one: every Birkhoff postulate *derived*,
+ASA′ closed end-to-end. The three blocks (geometry · grounding ·
+satisfiability) are distinct quantities — read down, not across.
 
 ## "No cheating", defined precisely
 
@@ -85,26 +114,34 @@ swarm and still mean something.
 ## Honest status
 
 All seven Birkhoff postulates are kernel-verified, no cheating, in one
-run. The end-to-end re-expression of ASA over those derived `$p`
-(`src/bin/asaprime.rs`) is *structurally* kernel-verified and its maximal
-sound sub-tree (275 statements, no PENDING axiom) checks against the
-genuine `$p`; the final faithful wiring — exporting an equality
-`g4a-sss` already proves internally, so the protractor-uniqueness bridge
-stays sign-free without an **unfaithful** non-degeneracy (Birkhoff ASA
-holds for right triangles, so `∠≠90°` must not be assumed) — is the last
-in-progress step. `asaprime` **refuses to claim closure until it is
-genuine**. The honest refusals (bare prot-uniq is provably false; the
-side-output-vs-angle-output SAS gap) have been among the best results
-here — see [`HISTORY.md`](HISTORY.md).
+run (96 lemmas, db 267). The end-to-end re-expression of ASA over those
+derived `$p` (`src/bin/asaprime.rs`) is now **a complete no-cheating
+closure**: `asap.s4` is derived in-file (vertex-a acong-transitivity via
+the verified `g3a-dotprop`, case-free — no `dot≠0`, no right-angle
+exclusion, no `0<sqd` cancellation), the no-cheating guard passes 14/14
+(all relied-on postulates are real `$p`, none `$a`), and the closing
+algebra is kernel-verified against only genuine `$p` — **NO PENDING
+`$a`, NO open leaf**. `asaprime` prints `COMPLETE NO-CHEATING CLOSURE of
+( sqd a c ) = ( sqd e g )` — "Genuine green, not faked."
+
+The honest refusals along the way (bare prot-uniq is provably false; the
+side-output-vs-angle-output SAS gap; the minimal-Euclidean model is
+cheap to *construct* but set.mm has no cheaper √-of-nonneg to *certify
+it against*, so the transport-anchored floor stays ~10^46 — a result
+that *sharpens* the thesis rather than faking a smaller number) have
+been among the best outcomes here — see [`HISTORY.md`](HISTORY.md).
 
 ## Reproduce
 
 ```sh
-cargo run --release --bin grounded -- data/grounded.mm          # all postulates; verdict + exact sizes
+cargo run --release --bin grounded -- data/grounded.mm          # all 96; verdict + exact sizes + [cse] shared-DAG
 cargo run --release --bin grounded -- data/grounded.mm --lint   # load-time grammar check (fail-fast)
+cargo run --release --bin grounded -- data/grounded.mm --profile sqcong   # cut-free cost attributor
 cargo run --release --bin asa                                   # F0 Birkhoff ASA = 224
-cargo run --release --bin asaprime                              # regrounded ASA′ (honest closure guard)
-bash scripts/fetch-setmm.sh && cargo run --release --bin modelsplice   # F1↔ZFC splice (#8) + #9 split
+cargo run --release --bin asaprime                              # regrounded ASA′ — COMPLETE no-cheating closure
+cargo run --release --bin euclidfloor                           # minimal Euclidean model: MEASURED unit step
+cargo run --release --bin metasearch                            # kernel-gated superoptimizer (S1 / S2)
+bash scripts/fetch-setmm.sh && cargo run --release --bin modelsplice   # grounding cost + RCF + transport-anchored floor
 cargo test --release                                            # kernel self-tests + combinator tests
 ```
 
@@ -157,8 +194,11 @@ unchanged; a proof that leaned on completeness would not transfer down.
 | `src/proof_g{1,2,3,4a}.rs` | the G1 / G2 / G3 / angle-LoC derivations (generic-lemma template) |
 | `data/grounded.mm` | F1 substrate + conservative `df-*`; the postulate goals |
 | `data/birkhoff.mm`, `src/bin/asa.rs` | F0 axiom system; Birkhoff ASA asserted = 224 |
-| `src/bin/asaprime.rs` | ASA′ regrounded over the derived `$p` (closure-guarded) |
-| `src/metamath.rs`, `src/bin/{calibrate,modelsplice}.rs` | set.mm extractor; F1↔ZFC splice (#8/#9) |
+| `src/bin/asaprime.rs` | ASA′ regrounded over the derived `$p` — **complete no-cheating closure** |
+| `src/search.rs`, `src/bin/metasearch.rs` | kernel-gated proof superoptimizer (S1 normalizer search / S2 sound CSE) — untrusted |
+| `src/cse.rs` | sound proof-DAG/CSE minimizer (shared-total only; kernel re-gated) — untrusted |
+| `data/euclid.mm`, `src/bin/euclidfloor.rs` | minimal Euclidean-field model: generic √-extension step, **measured** in-kernel |
+| `src/metamath.rs`, `src/bin/{calibrate,modelsplice}.rs` | set.mm extractor; grounding cost + RCF + transport-anchored floor |
 | `src/number.rs` | bignum → log → log-log proof-size arithmetic |
 | `docs/` | interactive explorer + the 15-minute talk |
 | `HISTORY.md` | the full narrative, including the dead ends |
@@ -167,11 +207,20 @@ unchanged; a proof that leaned on completeness would not transfer down.
 
 The headline counts are deliberately cut-free, fully-inlined, no lemma
 reuse — that *is* the metric (it makes "size of a fully-expanded proof"
-concrete). The shared-subexpression DAG is far smaller; the cruncher
-reports both. `loclink` (≈3.18M, invoked twice in SAS) and the
-no-common-subexpression ring normalizer dominate the inlined totals; the
-generic-lemma template is what kept the high-degree postulates from
-exploding cut-free. Sharper normalizer strategies and a more aggressive
-sound proof-DAG minimizer remain open directions.
+concrete). The generic-lemma template — prove a tiny identity once over
+fresh `$f` atoms, instantiate big subterms by *substitution* (free in
+this metric) — is the size weapon: it took `loclink` 3,180,000 → 67,217
+and `sqcong` 390,380 → 68,276, so G4 SAS 7,251,714 → **383,606** (~19×,
+10^6.86 → 10^5.58), all still `verified all 96 ✔`.
+
+A kernel-gated **metasearcher** (`metasearch`) closes the loop honestly:
+**S1** (normalizer-strategy search) returns a *kernel-verified negative*
+— the production normalizer is already optimal-spine, so association/
+order is not a remaining lever. **S2** + the `cse` minimizer give a
+sound, kernel-re-verified **−81%** on the *shared-DAG* total
+(10,134,529 → 1,916,586) — but provably *cannot* move the cut-free
+figure (CSE is invisible to a fully-inlined metric by construction).
+That wall is not a limitation to apologize for: it is exactly why
+cut-free is the honest hard metric for the poll's question.
 
 *Reported, not faked — including the parts still in progress.*

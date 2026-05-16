@@ -318,5 +318,63 @@ dimensionally false, `asaprime` stopping dead with two named gaps.
 There's a fact of the matter here, and the entire job was to find it and
 report it exactly. We did, and where we haven't yet, we said so.
 
-That's the history. It isn't finished — `g4a-sss` and one wire remain —
-but none of it is faked, and that's the part worth being proud of.
+## Act VI — Closure, the golf, and the sharpened thesis
+
+Then it *did* finish, and then it got smaller.
+
+**ASA′ closed.** A focused run derived `g3a-dotprop` — G3a's internal
+"Cp = a + s·(c−a), s≥0" content exported as its own `$p`, case-free —
+and with it `asap.s4` fell *in-file*. The no-cheating guard went 14/14,
+all relied-on postulates real `$p`, none `$a`. `asaprime` stopped
+refusing and printed `COMPLETE NO-CHEATING CLOSURE of (sqd a c)=(sqd e
+g)` — no PENDING `$a`, no open leaf, no `dot≠0`, no right-angle
+exclusion. The honest gap of Act V was honestly *closed*, not papered.
+
+**The golf.** The cut-free headline had sat at G4 SAS = 7,251,714
+(10^6.86) because `loclink` ring-normalised the law of cosines as a
+dense degree-4 polynomial in six coordinates, *twice*. The fix was the
+Act-III weapon turned on itself: prove it once over four fresh
+displacement atoms as a degree-2 identity (`loc-gen` + a telescoping
+bridge), instantiate by substitution (free in this metric). `loclink`:
+3,180,000 → 67,217. A profiler — the first piece of a "metasearcher" —
+localised the new bottleneck to `sqcong`'s inline degree-4 work; the
+same template (`sqc-diffsq`/`sqc-gprod`/`sqc-4uv`) took it 390,380 →
+68,276. **G4 SAS: 7,251,714 → 383,606, ~19×, 10^6.86 → 10^5.58**, every
+step still `verified all 96 ✔`.
+
+**The metasearcher, and two honest negatives.** A kernel-gated
+superoptimizer was built. S1 (normalizer-strategy search) returned a
+*kernel-verified negative*: production was already optimal-spine —
+association/order is not a lever. S2 + a sound CSE minimizer cut the
+*shared-DAG* total −81% (10,134,529 → 1,916,586) but provably could not
+touch the cut-free figure — CSE is invisible to a fully-inlined metric
+by construction. Both "failures" were the point: they prove the
+cut-free number is the honest hard one, and were reported as wins for
+exactly that reason. The swarm wasn't smooth — two finishers died
+mid-work on server-side 500s, uncommitted; their salvage was re-run
+from scratch, and every consolidated number was *re-measured on the
+real 96/267 corpus*, never quoted from a subagent's smaller base. We
+trusted commits, not working trees.
+
+**The sharpened thesis.** Asked whether the substrate floor could go
+below the 10^25.95 extractable bound, the only honest route was to
+*build* the minimal model — the Euclidean closure of ℚ — and *measure*
+it. The generic √-extension step is kernel-MEASURED in our own kernel at
+141 cut-free leaves (10^2.149); the whole construction is ≤10^8.15.
+**This proves F1 does not need ℝ.** But the maintainer set the right
+invariant: a private cheap structure proves nothing unless transported
+into externally-validated set.mm. There the bridge costs ~10^46 —
+set.mm contains no Euclidean / real-algebraic / real-closed subfield;
+its only √-of-nonneg facts ride analytic ℝ. So the transport-anchored
+floor stays ~10^46 — not a defeat, the *result*: the irreducible ~10^46
+is a property of **set.mm's construction choices, not of F1**. Three
+quantities, never summed — geometry proof size (10^5.58), grounding
+cost (10^45.74 / RCF 10^30.75), satisfiability certificate (construct
+10^8 MEASURED vs certify-in-set.mm 10^46 EXTRACTED) — each labelled
+exactly what it is.
+
+That's the history. It *is* finished: ASA′ closed end-to-end,
+no-cheating, ~19× smaller than where it started, with the one remaining
+"large" number — grounding ℝ in set.mm — not a gap but a precisely
+attributed, sharpened thesis. None of it is faked. That's the part
+worth being proud of.

@@ -14,7 +14,7 @@ $( ============================================================================
    ============================================================================ $)
 
 $c ( ) -> -. wff |- A. = $.
-$c term 0 1 + -x * < <_ $.
+$c term 0 1 + -x * inv < <_ $.
 $c Pt Xc Yc sqd dot Coll On Ln Tri Ray ACong sqrt <-> /\ \/ $.
 
 $v ph ps ch th $.
@@ -78,6 +78,7 @@ $( These of-* are field/order axioms — algebra primitives that say nothing
    about geometry.                                                          $)
 t0 $a term 0 $.  t1 $a term 1 $.
 tpl $a term ( u + v ) $.  tmi $a term ( u -x v ) $.  tmu $a term ( u * v ) $.
+tinv $a term ( inv u ) $.
 tlt $a wff ( u < v ) $.  tle $a wff ( u <_ v ) $.
 of-addcom $a |- ( u + v ) = ( v + u ) $.
 of-addass $a |- ( ( u + v ) + w ) = ( u + ( v + w ) ) $.
@@ -87,6 +88,10 @@ of-mulcom $a |- ( u * v ) = ( v * u ) $.
 of-mulass $a |- ( ( u * v ) * w ) = ( u * ( v * w ) ) $.
 of-mul1   $a |- ( u * 1 ) = u $.
 of-distr  $a |- ( u * ( v + w ) ) = ( ( u * v ) + ( u * w ) ) $.
+$( Multiplicative inverse: the ordered substrate is a field (Birkhoff's
+   reals are a field).  Only the ruler postulate (G1) needs it; G0-G4 do
+   not.  Algebra primitive, silent about geometry.                       $)
+of-recip $a |- ( -. ( u = 0 ) -> ( ( u * ( inv u ) ) = 1 ) ) $.
 of-lein   $a |- ( ( ( u <_ v ) /\ ( v <_ u ) ) -> u = v ) $.
 of-letri  $a |- ( ( u <_ v ) -> ( ( v <_ w ) -> ( u <_ w ) ) ) $.
 of-sqpos  $a |- ( 0 <_ ( u * u ) ) $.
@@ -111,6 +116,9 @@ $( The only extra primitive beyond an ordered field: square roots of
    non-negatives exist (Pythagorean/Euclidean field closure).  This is F1.$)
 tsqrt   $a term ( sqrt u ) $.
 ax-sqrt $a |- ( 0 <_ u -> ( ( sqrt u ) * ( sqrt u ) ) = u ) $.
+$( sqrt denotes the principal (non-negative) root — needed so the ruler
+   lands on the ray, not the opposite side.  Euclidean-field fact.       $)
+of-sqrtnn $a |- ( 0 <_ u -> ( 0 <_ ( sqrt u ) ) ) $.
 
 $( ---- coordinate model: conservative DEFINITIONS (df-*, NOT axioms) ---- $)
 $( A point is a coordinate pair ( Pt x y ); Xc/Yc project.                 $)
@@ -125,6 +133,15 @@ tsqd $a term ( sqd a b ) $.
 df-sqd $a |- ( sqd a b ) =
    ( ( ( ( Xc b ) -x ( Xc a ) ) * ( ( Xc b ) -x ( Xc a ) ) )
    + ( ( ( Yc b ) -x ( Yc a ) ) * ( ( Yc b ) -x ( Yc a ) ) ) ) $.
+
+$( Ruler/segment construction as a conservative DEFINITION: the point at
+   squared-distance u from a along ray a->c.  cp a c u = a + r*(c-a) with
+   r = sqrt( u * inv( sqd a c ) ), so sqd a (cp a c u) = u and it lies on
+   ray a->c.  Eliminable (df-cp rewrites it away) — scored Definition.   $)
+tcp $a term ( cp a c u ) $.
+df-cp $a |- ( cp a c u ) = ( Pt
+   ( ( Xc a ) + ( ( sqrt ( u * ( inv ( sqd a c ) ) ) ) * ( ( Xc c ) -x ( Xc a ) ) ) )
+   ( ( Yc a ) + ( ( sqrt ( u * ( inv ( sqd a c ) ) ) ) * ( ( Yc c ) -x ( Yc a ) ) ) ) ) $.
 
 $( Dot product of vectors o->p and o->q (√-free, polynomial).             $)
 tdot $a term ( dot o p q ) $.

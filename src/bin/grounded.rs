@@ -2336,8 +2336,79 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
             let s_ac = sqc(pa(), pc());
             let d_abc = dtc(pa(), pb(), pc());
             let rhs_u = mi_(plu(s_ab.clone(), s_ac.clone()), plu(d_abc.clone(), d_abc.clone()));
-            // core ring identity (this is the law of cosines)
-            let core = ring_eq(el, &s_bc, &rhs_u);
+            // core ring identity (the law of cosines) — proved ONCE,
+            // generically, in `loc-gen` (degree 2, 4 fresh atoms) and
+            // instantiated here by *substitution* (free in the cut-free
+            // metric) instead of re-expanding a dense degree-4 polynomial
+            // in 6 coordinates per triangle. Displacement components,
+            // matching sqc/dtc exactly:
+            let u1 = mi_(xc(pb()), xc(pa())); // (xc b − xc a)
+            let u2 = mi_(yc(pb()), yc(pa())); // (yc b − yc a)
+            let w1 = mi_(xc(pc()), xc(pa())); // (xc c − xc a)
+            let w2 = mi_(yc(pc()), yc(pa())); // (yc c − yc a)
+            // loc-gen[a:=u1,b:=u2,c:=w1,e:=w2] : lhs_g = rhs_u  (the
+            // substituted RHS is *syntactically* rhs_u; verified by hand).
+            let gen = el
+                .app(
+                    "loc-gen",
+                    &[("a", u1.clone()), ("b", u2.clone()),
+                      ("c", w1.clone()), ("e", w2.clone())],
+                    &[],
+                )
+                .unwrap();
+            // lhs_g = ( (w1−u1)² + (w2−u2)² ).  Bridge it to s_bc, whose
+            // factors are (xc c−xc b),(yc c−yc b), via the generic
+            // telescoping identity telesh: (C−A)−(B−A) = (C−B).
+            let xcb = mi_(xc(pc()), xc(pb()));
+            let ycb = mi_(yc(pc()), yc(pb()));
+            let mw1u1 = mi_(w1.clone(), u1.clone());
+            let mw2u2 = mi_(w2.clone(), u2.clone());
+            let lhs_g = plu(muu(mw1u1.clone(), mw1u1.clone()),
+                            muu(mw2u2.clone(), mw2u2.clone()));
+            // telesh[a:=Xc A,b:=Xc B,c:=Xc C] : (w1−u1) = (xc c−xc b)
+            let txr = eqcomm(
+                el, mw1u1.clone(), xcb.clone(),
+                el.app("telesh",
+                    &[("a", xc(pa())), ("b", xc(pb())), ("c", xc(pc()))], &[])
+                    .unwrap(),
+            ); // xcb = (w1−u1)
+            let tyr = eqcomm(
+                el, mw2u2.clone(), ycb.clone(),
+                el.app("telesh",
+                    &[("a", yc(pa())), ("b", yc(pb())), ("c", yc(pc()))], &[])
+                    .unwrap(),
+            ); // ycb = (w2−u2)
+            // (xcb·xcb) = ((w1−u1)·(w1−u1))
+            let mxx = eqtr3(
+                el,
+                muu(xcb.clone(), xcb.clone()),
+                muu(mw1u1.clone(), xcb.clone()),
+                muu(mw1u1.clone(), mw1u1.clone()),
+                cmu1(el, xcb.clone(), mw1u1.clone(), xcb.clone(), txr.clone()),
+                cmu2(el, xcb.clone(), mw1u1.clone(), mw1u1.clone(), txr),
+            );
+            let myy = eqtr3(
+                el,
+                muu(ycb.clone(), ycb.clone()),
+                muu(mw2u2.clone(), ycb.clone()),
+                muu(mw2u2.clone(), mw2u2.clone()),
+                cmu1(el, ycb.clone(), mw2u2.clone(), ycb.clone(), tyr.clone()),
+                cmu2(el, ycb.clone(), mw2u2.clone(), mw2u2.clone(), tyr),
+            );
+            // s_bc = ( xcb·xcb + ycb·ycb ) = lhs_g
+            let bridge = eqtr3(
+                el,
+                s_bc.clone(),
+                plu(muu(mw1u1.clone(), mw1u1.clone()), muu(ycb.clone(), ycb.clone())),
+                lhs_g.clone(),
+                cpl1(el, muu(xcb.clone(), xcb.clone()),
+                     muu(mw1u1.clone(), mw1u1.clone()),
+                     muu(ycb.clone(), ycb.clone()), mxx),
+                cpl2(el, muu(ycb.clone(), ycb.clone()),
+                     muu(mw2u2.clone(), mw2u2.clone()),
+                     muu(mw1u1.clone(), mw1u1.clone()), myy),
+            );
+            let core = eqtr3(el, s_bc.clone(), lhs_g, rhs_u.clone(), bridge, gen);
             // df handles
             let dlhs = el.app("df-sqd", &[("a", pb()), ("b", pc())], &[]).unwrap(); // (sqd b c)=s_bc
             let f_ab = eqcomm(el, sqd(pa(), pb()), s_ab.clone(),
@@ -4736,11 +4807,54 @@ fn make_lemma(idx: usize, el: &Elab) -> Lemma {
                 goal: g,
             }
         }
+        // ---- 57: loc-gen — the law of cosines as a *generic* identity ----
+        //  Over fresh atoms a,b,c,e (the displacement components
+        //  u=(a,b)=B−A, w=(c,e)=C−A) it is the tiny degree-2 identity
+        //    ( c -x a )( c -x a ) + ( e -x b )( e -x b )
+        //      = ( ( a·a + b·b ) + ( c·c + e·e ) )
+        //          -x ( ( a·c + b·e ) + ( a·c + b·e ) )
+        //  i.e. |C−B|² = |u|² + |w|² − 2(u·w).  loclink instantiates this
+        //  by *substitution* (free in the cut-free metric), so the law of
+        //  cosines is ring-normalised ONCE here at degree 2 instead of
+        //  re-expanded as a dense degree-4 polynomial in 6 coordinates per
+        //  triangle (cf. the generic-lemma template: g3a-plk/gfac/gsplit).
+        57 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, c, e) = (v("va"), v("vb"), v("vc"), v("ve"));
+            let lhs = pl(
+                el,
+                mu(el, mi(el, c.clone(), a.clone()), mi(el, c.clone(), a.clone())),
+                mu(el, mi(el, e.clone(), b.clone()), mi(el, e.clone(), b.clone())),
+            );
+            let d = pl(el, mu(el, a.clone(), c.clone()), mu(el, b.clone(), e.clone()));
+            let rhs = mi(
+                el,
+                pl(
+                    el,
+                    pl(el, mu(el, a.clone(), a.clone()), mu(el, b.clone(), b.clone())),
+                    pl(el, mu(el, c.clone(), c.clone()), mu(el, e.clone(), e.clone())),
+                ),
+                pl(el, d.clone(), d),
+            );
+            Lemma { name: "loc-gen".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
+        }
+        // ---- 58: telesh — telescoping shift (generic, degree-1) ----------
+        //  ( c -x a ) -x ( b -x a ) = ( c -x b )
+        //  Instantiated with a:=Xc A, b:=Xc B, c:=Xc C this bridges
+        //  loc-gen's instantiated LHS factors ((Xc C−Xc A)−(Xc B−Xc A)) to
+        //  loclink's s_bc factors (Xc C−Xc B).
+        58 => {
+            let v = |s: &str| leaf(s);
+            let (a, b, c) = (v("va"), v("vb"), v("vc"));
+            let lhs = mi(el, mi(el, c.clone(), a.clone()), mi(el, b.clone(), a.clone()));
+            let rhs = mi(el, c.clone(), b.clone());
+            Lemma { name: "telesh".into(), ess: vec![], goal: ring_eq(el, &lhs, &rhs) }
+        }
         _ => unreachable!(),
     }
 }
 
-const NAMES: [&str; 57] = [
+const NAMES: [&str; 59] = [
     "id", "a1i", "syl", "pm2.21", "pm2.43", "notnot2", "notnot1", "simpl",
     "simpr", "G3c-rayline", "eqtrd", "G0-congsub", "eqtr", "addcan",
     "ac-demo", "ac-mul-demo", "ring-demo", "mul0", "neginv", "negneg",
@@ -4750,6 +4864,9 @@ const NAMES: [&str; 57] = [
     "pm3.2", "expi", "ltle", "lt0ne", "lein2", "ltII", "lemul2",
     "lemul02", "mt", "lecon", "subeq0", "sqzhalf", "sqz", "le0add",
     "lemul0mono", "sqcong", "mulcposcan", "G4-sas",
+    // generic LoC factoring (idx 57,58): staged BEFORE loclink (idx 23) via
+    // the reordered stage sequence in main(), so loclink references them.
+    "loc-gen", "telesh",
 ];
 
 /// Stage one lemma: sound peephole-shrink, show the conclusion, append,
@@ -4912,8 +5029,18 @@ fn main() {
     let mut shrinks: Vec<Option<(usize, usize)>> = Vec::new();
 
     println!("=== Task #7: staged proofs of geometric postulates over F1 (field + √ + df-*) ===\n");
-    // core 57
-    for idx in 0..NAMES.len() {
+    // core, with the generic LoC lemmas (idx 57,58) hoisted ahead of
+    // loclink (idx 23) so loclink can reference them by name. label_idx is
+    // display-only; kernel correctness depends solely on staging order.
+    // loclink is idx 23; the generic LoC lemmas (idx 57,58) use ring_eq,
+    // which needs the core combinators (eqtr=idx12, …). Stage them in
+    // loclink's *own* dependency environment: right after idx 22, just
+    // before loclink — earliest point where every dep is present.
+    let hoisted = [57usize, 58];
+    let mut stage_order: Vec<usize> = (0..23).collect();
+    stage_order.extend_from_slice(&hoisted);
+    stage_order.extend((23..NAMES.len()).filter(|i| !hoisted.contains(i)));
+    for idx in stage_order {
         let lm = {
             let el = Elab::new(&db);
             make_lemma(idx, &el)

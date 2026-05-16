@@ -6,8 +6,9 @@
 //! rewrites every occurrence to a single call.  Statements of the original
 //! `$p`s are never touched, so the only correctness obligation is that the
 //! rewritten database still kernel-verifies — which the caller checks, and
-//! which, if it ever failed, makes us discard the whole pass and keep the
-//! original source.  Soundness therefore reduces entirely to the kernel.
+//! which, if it ever failed (or a conclusion drifted), makes the caller
+//! discard the whole pass and report the un-crunched figure.  Soundness
+//! therefore reduces entirely to the kernel re-verification.
 //!
 //! `shared_total` = Σ stored RPN length over every `$p`.  A subproof S of
 //! RPN length L occurring k times, with v distinct free `$f` variables,
@@ -15,18 +16,36 @@
 //! L + k·(v+1) − k·L, strongly negative for the deeply-shared algebra
 //! subproofs in this corpus.
 //!
-//! Each round extracts a *batch* of non-overlapping profitable patterns in
-//! a single reparse (the assembled source is large; per-helper reparsing
-//! would be quadratic).  Helpers are themselves `$p`, so later rounds CSE
-//! them too; we iterate to a fixpoint.
+//! Scaling note (current corpus is ~10^5.6 and one lemma has >3·10^5
+//! nodes): subtree identity is a recursively-computed 128-bit content
+//! hash, *not* a materialised RPN string, so memory is O(#nodes) rather
+//! than O(#nodes²).  A content-hash collision can at worst make two
+//! distinct subtrees share a helper, which the kernel re-verification then
+//! rejects (=> discard, report un-crunched) — it can never produce an
+//! unsound accept.  Each round extracts a batch of non-overlapping
+//! profitable patterns in one reparse; rounds iterate to a fixpoint.
 
 use crate::kernel::{Db, Kind};
 use std::collections::HashMap;
+
+/// 128-bit FNV-1a over the kernel-canonical RPN, computed recursively so
+/// it costs O(#nodes) total rather than O(#nodes²) of an RPN string.
+type Sig = u128;
 
 #[derive(Clone)]
 struct Node {
     label: String,
     kids: Vec<Node>,
+    sig: Sig,
+    size: u32, // RPN length of this subtree (saturating)
+}
+
+fn fnv_bytes(mut h: Sig, bytes: &[u8]) -> Sig {
+    for &b in bytes {
+        h ^= b as Sig;
+        h = h.wrapping_mul(0x0000_0000_0100_0000_0000_0000_0000_013B);
+    }
+    h
 }
 
 fn arity(db: &Db, label: &str) -> Option<usize> {
@@ -35,6 +54,21 @@ fn arity(db: &Db, label: &str) -> Option<usize> {
         Kind::F | Kind::E => 0,
         Kind::A | Kind::P => s.mand_hyps.len(),
     })
+}
+
+fn mk(label: String, kids: Vec<Node>) -> Node {
+    // sig = H(label ‖ 0x00 ‖ child sigs ‖ 0x01) — prefix-free, so distinct
+    // RPN trees get distinct preimages.
+    let mut h: Sig = 0x6C62_272E_07BB_0142_62B8_2175_6295_C58D;
+    h = fnv_bytes(h, label.as_bytes());
+    h = fnv_bytes(h, &[0x00]);
+    let mut size: u32 = 1;
+    for k in &kids {
+        h = fnv_bytes(h, &k.sig.to_le_bytes());
+        size = size.saturating_add(k.size);
+    }
+    h = fnv_bytes(h, &[0x01]);
+    Node { label, kids, sig: h, size }
 }
 
 /// Rebuild a proof tree from flat RPN exactly as the kernel's stack
@@ -48,7 +82,7 @@ fn rebuild(db: &Db, proof: &[String]) -> Option<Node> {
             return None;
         }
         let kids = stack.split_off(stack.len() - a);
-        stack.push(Node { label: lbl.clone(), kids });
+        stack.push(mk(lbl.clone(), kids));
     }
     if stack.len() == 1 {
         stack.pop()
@@ -68,25 +102,32 @@ fn rpn(n: &Node) -> Vec<String> {
     flatten(n, &mut v);
     v
 }
-/// Structural signature = RPN string (kernel is deterministic on it).
-fn sig(n: &Node) -> String {
-    rpn(n).join(" ")
-}
 
-/// Tally every closed subtree (no `$e` leaf anywhere inside).  Returns the
-/// shared bool "subtree references an $e leaf" for the caller's recursion.
+/// Tally every closed subtree (no `$e` leaf anywhere inside).  Returns
+/// whether this subtree references an `$e` leaf, for the caller's
+/// recursion.  Stores one representative `Node` per content hash; on a
+/// (vanishingly unlikely) hash collision two different subtrees would map
+/// to one entry and the kernel re-verification rejects the pass.
 fn collect(
     db: &Db,
     n: &Node,
-    table: &mut HashMap<String, (usize, Node)>,
+    table: &mut HashMap<Sig, (usize, Node)>,
 ) -> bool {
     let self_e = matches!(db.get(&n.label).map(|s| &s.kind), Some(Kind::E));
     let mut any_e = self_e;
     for k in &n.kids {
         any_e |= collect(db, k, table);
     }
-    if !any_e && !n.kids.is_empty() {
-        let e = table.entry(sig(n)).or_insert_with(|| (0, n.clone()));
+    // Memory guard: only tally closed subtrees up to a size cap.  A helper
+    // is one stored copy + small calls, so very large verbatim-repeated
+    // subtrees are rare and dominate table memory on the >3·10^5-node
+    // lemmas; excluding them only forgoes candidates (still sound) while
+    // keeping the round O(#nodes) in memory.  Patterns above the cap are
+    // still reachable indirectly: their profitable sub-patterns (≤ cap)
+    // get factored in earlier rounds, shrinking the enclosing proof.
+    const MAX_SUBTREE: u32 = 4096;
+    if !any_e && !n.kids.is_empty() && n.size <= MAX_SUBTREE {
+        let e = table.entry(n.sig).or_insert_with(|| (0, n.clone()));
         e.0 += 1;
     }
     any_e
@@ -144,22 +185,23 @@ fn eval_concl(db: &Db, n: &Node) -> Option<Vec<String>> {
     }
 }
 
-/// Multi-pattern top-down rewrite: if this node's signature is a chosen
+/// Multi-pattern top-down rewrite: if this node's content hash is a chosen
 /// helper, splice in the call (helper label preceded by its $f-arg leaves
 /// in the helper's kernel-frame order); else recurse into kids.  Top-down
 /// so a replaced subtree is never descended into (no double rewrite).
-fn rewrite(n: &Node, helpers: &HashMap<String, (String, Vec<String>)>) -> Node {
-    if let Some((hname, fvar_order)) = helpers.get(&sig(n)) {
+fn rewrite(
+    n: &Node,
+    helpers: &HashMap<Sig, (String, Vec<String>)>,
+) -> Node {
+    if let Some((hname, fvar_order)) = helpers.get(&n.sig) {
         let kids = fvar_order
             .iter()
-            .map(|fl| Node { label: fl.clone(), kids: vec![] })
+            .map(|fl| mk(fl.clone(), vec![]))
             .collect();
-        return Node { label: hname.clone(), kids };
+        return mk(hname.clone(), kids);
     }
-    Node {
-        label: n.label.clone(),
-        kids: n.kids.iter().map(|k| rewrite(k, helpers)).collect(),
-    }
+    let kids = n.kids.iter().map(|k| rewrite(k, helpers)).collect();
+    mk(n.label.clone(), kids)
 }
 
 /// One batched CSE round.  `base` numbers new helpers uniquely across
@@ -175,24 +217,24 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
         }
     }
 
-    let mut table: HashMap<String, (usize, Node)> = HashMap::new();
+    let mut table: HashMap<Sig, (usize, Node)> = HashMap::new();
     for (_, t) in &trees {
         collect(&db, t, &mut table);
     }
 
     // Profitable candidates: net = (L-(v+1))*k - L > 0, k >= 2.
     struct Cand {
-        sig: String,
+        sig: Sig,
         node: Node,
         len: usize,
         net: i64,
     }
     let mut cands: Vec<Cand> = Vec::new();
-    for (s, (k, node)) in &table {
+    for (sg, (k, node)) in &table {
         if *k < 2 {
             continue;
         }
-        let l = rpn(node).len();
+        let l = node.size as usize;
         let mut fv = Vec::new();
         free_fvars(&db, node, &mut fv);
         let v = fv.len();
@@ -204,7 +246,7 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
         if net <= 0 {
             continue;
         }
-        cands.push(Cand { sig: s.clone(), node: node.clone(), len: l, net });
+        cands.push(Cand { sig: *sg, node: node.clone(), len: l, net });
     }
     if cands.is_empty() {
         return None;
@@ -223,7 +265,7 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
     // Conclusion via kernel substitution; frame order learned by a single
     // reparse below.
     let mut helper_lines = String::new();
-    let mut provisional: Vec<(String, String, Node)> = Vec::new(); // hname, sig, node
+    let mut provisional: Vec<(String, Sig, Node)> = Vec::new(); // hname, sig, node
     for (i, c) in cands.iter().enumerate() {
         let hname = format!("cse{}", base + i);
         let concl = match eval_concl(&db, &c.node) {
@@ -240,7 +282,7 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
             "{hname} $p {} $= {body} $.\n",
             concl.join(" ")
         ));
-        provisional.push((hname, c.sig.clone(), c.node.clone()));
+        provisional.push((hname, c.sig, c.node.clone()));
     }
     if provisional.is_empty() {
         return None;
@@ -256,7 +298,7 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
 
     // Single reparse to learn every helper's mandatory-$f frame order.
     let db2 = Db::parse(&staged).ok()?;
-    let mut helpers: HashMap<String, (String, Vec<String>)> = HashMap::new();
+    let mut helpers: HashMap<Sig, (String, Vec<String>)> = HashMap::new();
     for (hname, hsig, _node) in &provisional {
         let hst = db2.get(hname)?;
         let mut order = Vec::new();
@@ -267,7 +309,7 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
             }
             order.push(hl.clone());
         }
-        helpers.insert(hsig.clone(), (hname.clone(), order));
+        helpers.insert(*hsig, (hname.clone(), order));
     }
 
     // Rewrite every $p body (skip the helper lines themselves) by emitting
@@ -322,12 +364,33 @@ fn one_round(src: &str, base: usize) -> Option<(String, usize, usize)> {
 
 /// Run batched CSE rounds to a fixpoint.  Every produced source is
 /// parse-checked here; the caller re-verifies the final result with the
-/// kernel and discards it entirely if it does not check.
+/// kernel and discards it entirely (reporting the un-crunched figure) if
+/// it does not check or any conclusion drifted.
 pub fn crunch(src: &str) -> String {
+    // Wall-clock budget: each round is a full-corpus reparse + tree
+    // rebuild, and this corpus has multi-million-node `$p` proofs, so an
+    // unbounded fixpoint can run for many minutes.  Stopping early only
+    // yields a *less* aggressively shared (but still valid) DAG — the
+    // caller kernel-verifies whatever we return, so a budget cut can
+    // never affect soundness, only how small the reported figure gets.
+    let budget = std::time::Duration::from_secs(
+        std::env::var("CSE_BUDGET_SECS")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(180),
+    );
+    let start = std::time::Instant::now();
     let mut cur = src.to_string();
     let mut base = 0usize;
     let mut prev_total = total(&cur);
-    for _ in 0..60 {
+    for round in 0..60 {
+        if start.elapsed() >= budget {
+            eprintln!(
+                "  [cse] time budget reached after {round} round(s); \
+                 returning best DAG so far (kernel re-verified by caller)"
+            );
+            break;
+        }
         match one_round(&cur, base) {
             Some((next, nb, _added)) => {
                 if Db::parse(&next).is_err() {

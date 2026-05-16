@@ -5065,12 +5065,78 @@ fn emit_json(
 ) {
     let mut memo = HashMap::new();
     // shared total = sum of stored RPN proof lengths over every $p
-    let shared_total: usize = db
+    let shared_uncrunched: usize = db
         .stmts
         .iter()
         .filter(|s| matches!(s.kind, kernel::Kind::P))
         .map(|s| s.proof.len())
         .sum();
+
+    // ---- sound proof-DAG / CSE minimizer (additive, measurement only) ----
+    // Runs on a *separate* parsed copy of the assembled corpus; the
+    // authoritative `db`, the `verified all N ✔` line, the cut-free
+    // `expand()` numbers and `grounded.out.mm` are all left byte-identical.
+    // The crunched figure is adopted for the reported headline
+    // `shared_total` ONLY when an *independent* kernel `verify()` accepts
+    // the rewritten db AND every original `$p` keeps a byte-identical
+    // statement AND the total strictly shrinks.  Anything else => keep the
+    // un-crunched figure and log an honest discard.  (Soundness reduces
+    // entirely to the kernel re-verification below.)
+    let shared_total: usize = {
+        let src = match std::fs::read_to_string("data/grounded.out.mm") {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("  [cse] could not read grounded.out.mm ({e}); reporting un-crunched");
+                String::new()
+            }
+        };
+        if src.is_empty() {
+            shared_uncrunched
+        } else {
+            let crunched = cse::crunch(&src);
+            match kernel::Db::parse(&crunched) {
+                Ok(cdb) => {
+                    let shared_after: usize = cdb
+                        .stmts
+                        .iter()
+                        .filter(|s| matches!(s.kind, kernel::Kind::P))
+                        .map(|s| s.proof.len())
+                        .sum();
+                    let concl_ok = db.stmts.iter().all(|s| {
+                        if !matches!(s.kind, kernel::Kind::P) {
+                            return true;
+                        }
+                        matches!(
+                            cdb.get(&s.label),
+                            Some(c) if matches!(c.kind, kernel::Kind::P) && c.expr == s.expr
+                        )
+                    });
+                    let verify_ok = cdb.verify().is_ok();
+                    if verify_ok && concl_ok && shared_after < shared_uncrunched {
+                        eprintln!(
+                            "  [cse] kernel-verified DAG: shared_total {} -> {} (−{}, {:.2}% smaller)",
+                            shared_uncrunched,
+                            shared_after,
+                            shared_uncrunched - shared_after,
+                            100.0 * (shared_uncrunched - shared_after) as f64
+                                / shared_uncrunched as f64
+                        );
+                        shared_after
+                    } else {
+                        eprintln!(
+                            "  [cse] discarded (verify={verify_ok}, concl_ok={concl_ok}, {}->{}); reporting un-crunched",
+                            shared_uncrunched, shared_after
+                        );
+                        shared_uncrunched
+                    }
+                }
+                Err(e) => {
+                    eprintln!("  [cse] crunched parse failed ({e}); reporting un-crunched");
+                    shared_uncrunched
+                }
+            }
+        }
+    };
 
     let mut lem_json: Vec<String> = Vec::new();
     let mut node_set: Vec<(String, f64, String)> = Vec::new(); // (id, log10 size, kind)

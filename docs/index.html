@@ -84,9 +84,11 @@
     </div>
 
     <nav class="hero-nav" aria-label="Page sections">
+      <a href="#reverify-section">Re-verify ▶</a>
       <a href="#results-section">Results</a>
       <a href="#status-section">Status</a>
       <a href="#dag-section">Proof DAG</a>
+      <a href="#explorer-section">Theorem browser</a>
       <a href="#lemma-section">Lemmas</a>
       <a href="#model-section">Model variation</a>
       <a href="#what-section">What this means</a>
@@ -98,6 +100,32 @@
     </p>
   </div>
 </header>
+
+<!-- ─── Re-verify in your browser (the trust boundary, made interactive) ─── -->
+<section class="section section-reverify" id="reverify-section"
+         aria-labelledby="reverify-heading">
+  <div class="container">
+    <h2 class="section-title" id="reverify-heading">
+      Re-verify in your browser
+      <small>
+        Don't trust the build — re-check it. The same sound kernel
+        (<code>src/kernel.rs</code>), compiled to WebAssembly with its
+        verification semantics unchanged, runs over the shipped genuine
+        no-cheating database, live, in this tab.
+      </small>
+    </h2>
+    <div id="reverify-body" class="reverify-body">
+      <!-- Populated by explorer.js -->
+      <noscript>
+        <div class="rv-fallback">
+          The in-browser re-verify needs JavaScript + WebAssembly. To
+          re-verify locally:
+          <pre><code>cargo run --release --bin grounded -- data/grounded.mm</code></pre>
+        </div>
+      </noscript>
+    </div>
+  </div>
+</section>
 
 <!-- ─── Results: table + log-scale ──────────────────────────────────────── -->
 <section class="section" id="results-section" aria-labelledby="results-heading">
@@ -277,6 +305,29 @@
     <div id="dag-fallback" role="region" aria-label="DAG fallback table">
       <!-- Populated by app.js if CDN fails -->
     </div>
+  </div>
+</section>
+
+<!-- ─── Theorem browser (embedded-prover lookup) ──────────────────────────── -->
+<section class="section" id="explorer-section" aria-labelledby="explorer-heading">
+  <div class="container">
+    <h2 class="section-title" id="explorer-heading">
+      Theorem browser
+      <small>
+        Pick any lemma to see its statement, kind, hypotheses, click-through
+        dependencies, and exact inlined-vs-shared sizes. "Show stored proof"
+        pulls the RPN proof <em>live from the in-browser kernel's parse</em>
+        of the shipped genuine database — not a precomputed blob.
+      </small>
+    </h2>
+    <div class="tb-controls">
+      <label for="tb-select">Lemma:</label>
+      <select id="tb-select" class="tb-select" aria-label="Pick a lemma">
+        <option value="">— pick a lemma —</option>
+      </select>
+    </div>
+    <div id="tb-detail" class="tb-detail" role="region"
+         aria-label="Lemma detail" aria-live="polite" hidden></div>
   </div>
 </section>
 

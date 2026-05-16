@@ -1,0 +1,16 @@
+{
+  "name": "asagolf-kernel-wasm",
+  "type": "module",
+  "description": "WASM wrapper around the asagolf sound Metamath-subset kernel (trust root, unchanged)",
+  "version": "0.1.0",
+  "files": [
+    "asagolf_kernel_wasm_bg.wasm",
+    "asagolf_kernel_wasm.js",
+    "asagolf_kernel_wasm.d.ts"
+  ],
+  "main": "asagolf_kernel_wasm.js",
+  "types": "asagolf_kernel_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

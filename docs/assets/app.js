@@ -7,7 +7,10 @@
  *   3. Proof DAG (Cytoscape.js, CDN, with table fallback)
  *   4. Lemma table (sortable, filterable, click-to-detail)
  *   5. Model variation controls
+ *   6. Embedded-prover explorer (re-verify in-browser + theorem browser)
  */
+
+import { initExplorer } from './explorer.js';
 
 // ─── Data loading ────────────────────────────────────────────────────────────
 
@@ -799,6 +802,7 @@ async function main() {
 
   renderHero(data);
   renderResults(data);
+  initExplorer(data);
   await renderDag(data);
   renderLemmaSection(data.lemmas);
   renderModelVariation(data.models);

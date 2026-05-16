@@ -29,7 +29,7 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | **G3a** ray-angle — derived | 4,720,242 | 10^6.7 |
 | **G2** incidence — derived | 607,583 | 10^5.8 |
 | G1 ruler · G3b′ oriented prot-uniq · g4a-sss · G0 · G3c — derived | small | 10^3–10^5 |
-| **all of the above, one run** | **88 lemmas, 255-statement DB, `verified all ✔`** | |
+| **all of the above, one run** | **90 lemmas, 261-statement DB, `verified all ✔`** | |
 | F1 substrate vs. a full ZFC model of ℝ (set.mm) | — | 10^45.7 |
 | same, √ as a Euclidean-field primitive | — | 10^37.2 |
 | analytic-completion *definitions* (#9, exact split) | 0.6% of that | |
@@ -87,7 +87,7 @@ swarm and still mean something.
 All seven Birkhoff postulates are kernel-verified, no cheating, in one
 run. The end-to-end re-expression of ASA over those derived `$p`
 (`src/bin/asaprime.rs`) is *structurally* kernel-verified and its maximal
-sound sub-tree (265 statements, no PENDING axiom) checks against the
+sound sub-tree (275 statements, no PENDING axiom) checks against the
 genuine `$p`; the final faithful wiring — exporting an equality
 `g4a-sss` already proves internally, so the protractor-uniqueness bridge
 stays sign-free without an **unfaithful** non-degeneracy (Birkhoff ASA
@@ -110,6 +110,33 @@ cargo test --release                                            # kernel self-te
 
 `data/set.mm` (~48 MB, public domain, Metamath project) is git-ignored;
 the fetch script pulls it. The kernel re-checks every emitted proof.
+
+## Re-verify in your browser (embedded prover)
+
+The trust root `src/kernel.rs` is compiled to WebAssembly — *verification
+semantics unchanged* — and embedded in the explorer. The "Re-verify in
+your browser" control loads the shipped genuine no-cheating database
+(`docs/data/grounded.out.mm.gz`, the shared-DAG proof — **not** the
+cut-free expansion, which is 10⁷⁺ nodes by design and only reported) and
+runs the real kernel live: a visitor's own browser re-derives every `$p`
+from the axioms and prints the true verdict. Tamper one byte → it
+rejects (tested).
+
+The wasm wrapper is a standalone crate in `wasm/` (its own lockfile and
+target dir; **not** in the main crate's build — `cargo build --release`,
+the binaries and the 90-verify are untouched). Rebuild the artifact:
+
+```sh
+bash scripts/build-wasm.sh        # wasm-pack → docs/assets/wasmpkg/ + regen the gz
+# or directly:
+wasm-pack build wasm --release --target web --out-dir ../docs/assets/wasmpkg
+cargo run --release --bin grounded -- data/grounded.mm   # emits data/grounded.out.mm
+gzip -9 -c data/grounded.out.mm > docs/data/grounded.out.mm.gz
+```
+
+Requires the `wasm32-unknown-unknown` target and `wasm-pack`. If the
+toolchain is absent the explorer degrades gracefully to a clearly-labelled
+static snapshot plus the local re-verify command.
 
 ## Reusability
 

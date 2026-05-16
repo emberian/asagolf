@@ -7,3 +7,7 @@ data/grounded.out.mm
 
 # vendored third-party corpus, fetched on demand (public domain, ~tens of MB)
 data/set.mm
+
+# but DO ship the gzipped genuine no-cheating DB for the in-browser
+# re-verify (810 KB; the shared-DAG proof, not the cut-free expansion)
+!docs/data/grounded.out.mm.gz

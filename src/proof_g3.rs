@@ -60,7 +60,7 @@
 use super::*;
 
 pub fn count() -> usize {
-    8
+    16
 }
 
 #[allow(unused_variables)]
@@ -2811,6 +2811,884 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                     "g3a.1".into(),
                     toks(&["|-", "(", "Ray", "a", "c", "x", ")"]),
                 )],
+                goal: g,
+            }
+        }
+        // ============================================================
+        // idx 8 : g3b-lagc — generic 2D Lagrange.  A=(a,b) C=(c,e):
+        //   (a*a+b*b)*(c*c+e*e) = (a*c+b*e)^2 + (a*e -x b*c)^2
+        // ============================================================
+        8 => {
+            let v = |x: &str| leaf(x);
+            let (pa, pb, pc, pe) = (v("va"), v("vb"), v("vc"), v("ve"));
+            let aa = pl(el, mu(el, pa.clone(), pa.clone()), mu(el, pb.clone(), pb.clone()));
+            let cc = pl(el, mu(el, pc.clone(), pc.clone()), mu(el, pe.clone(), pe.clone()));
+            let ac = pl(el, mu(el, pa.clone(), pc.clone()), mu(el, pb.clone(), pe.clone()));
+            let xac = mi(el, mu(el, pa.clone(), pe.clone()), mu(el, pb.clone(), pc.clone()));
+            let lhs = mu(el, aa, cc);
+            let rhs = pl(el, mu(el, ac.clone(), ac.clone()), mu(el, xac.clone(), xac.clone()));
+            return Lemma {
+                name: "g3b-lagc".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 9 : g3b-lagr — generic 2D Lagrange.  A=(a,b) R=(f,g):
+        //   (a*a+b*b)*(f*f+g*g) = (a*f+b*g)^2 + (a*g -x b*f)^2
+        // ============================================================
+        9 => {
+            let v = |x: &str| leaf(x);
+            let (pa, pb, pf, pg) = (v("va"), v("vb"), v("vf"), v("vg"));
+            let aa = pl(el, mu(el, pa.clone(), pa.clone()), mu(el, pb.clone(), pb.clone()));
+            let rr = pl(el, mu(el, pf.clone(), pf.clone()), mu(el, pg.clone(), pg.clone()));
+            let ar = pl(el, mu(el, pa.clone(), pf.clone()), mu(el, pb.clone(), pg.clone()));
+            let xar = mi(el, mu(el, pa.clone(), pg.clone()), mu(el, pb.clone(), pf.clone()));
+            let lhs = mu(el, aa, rr);
+            let rhs = pl(el, mu(el, ar.clone(), ar.clone()), mu(el, xar.clone(), xar.clone()));
+            return Lemma {
+                name: "g3b-lagr".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 10 : g3b-m — generic Plücker for M = AA*XCR.
+        //   A=(a,b) C=(c,e) R=(f,g):
+        //   (a*a+b*b)*( c*g -x e*f )
+        //     = (a*c+b*e)*(a*g -x b*f) -x (a*f+b*g)*(a*e -x b*c)
+        // ============================================================
+        10 => {
+            let v = |x: &str| leaf(x);
+            let (pa, pb, pc, pe, pf, pg) =
+                (v("va"), v("vb"), v("vc"), v("ve"), v("vf"), v("vg"));
+            let aa =
+                pl(el, mu(el, pa.clone(), pa.clone()), mu(el, pb.clone(), pb.clone()));
+            let xcr =
+                mi(el, mu(el, pc.clone(), pg.clone()), mu(el, pe.clone(), pf.clone()));
+            let ac =
+                pl(el, mu(el, pa.clone(), pc.clone()), mu(el, pb.clone(), pe.clone()));
+            let ar =
+                pl(el, mu(el, pa.clone(), pf.clone()), mu(el, pb.clone(), pg.clone()));
+            let xac =
+                mi(el, mu(el, pa.clone(), pe.clone()), mu(el, pb.clone(), pc.clone()));
+            let xar =
+                mi(el, mu(el, pa.clone(), pg.clone()), mu(el, pb.clone(), pf.clone()));
+            let lhs = mu(el, aa, xcr);
+            let rhs = mi(
+                el,
+                mu(el, ac.clone(), xar.clone()),
+                mu(el, ar.clone(), xac.clone()),
+            );
+            return Lemma {
+                name: "g3b-m".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 11 : g3b-crs — generic crs Lagrange.  A=(a,b) C=(c,e) R=(f,g):
+        //   ( a*e -x b*c )*( a*g -x b*f )
+        //     = (a*a+b*b)*( c*f+e*g ) -x (a*c+b*e)*(a*f+b*g)
+        // ============================================================
+        11 => {
+            let v = |x: &str| leaf(x);
+            let (pa, pb, pc, pe, pf, pg) =
+                (v("va"), v("vb"), v("vc"), v("ve"), v("vf"), v("vg"));
+            let xac =
+                mi(el, mu(el, pa.clone(), pe.clone()), mu(el, pb.clone(), pc.clone()));
+            let xar =
+                mi(el, mu(el, pa.clone(), pg.clone()), mu(el, pb.clone(), pf.clone()));
+            let aa =
+                pl(el, mu(el, pa.clone(), pa.clone()), mu(el, pb.clone(), pb.clone()));
+            let cr =
+                pl(el, mu(el, pc.clone(), pf.clone()), mu(el, pe.clone(), pg.clone()));
+            let ac =
+                pl(el, mu(el, pa.clone(), pc.clone()), mu(el, pb.clone(), pe.clone()));
+            let ar =
+                pl(el, mu(el, pa.clone(), pf.clone()), mu(el, pb.clone(), pg.clone()));
+            let lhs = mu(el, xac.clone(), xar.clone());
+            let rhs = mi(el, mu(el, aa, cr), mu(el, ac.clone(), ar.clone()));
+            return Lemma {
+                name: "g3b-crs".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 12 : g3b-eqcancel — abstract degree-4 cancel for the
+        //   df-acong-EQ reduction.  Fresh atoms u=AC,v=AR,w=XAC,t=XAR:
+        //     ( u*u*( v*v + t*t ) ) -x ( v*v*( u*u + w*w ) )
+        //       = ( (u*t)*(u*t) ) -x ( (v*w)*(v*w) )
+        //   instantiated with the AC/AR/XAC/XAR subterms (substitution,
+        //   no coordinate re-expansion) — keeps ring_eq at degree 4.
+        // ============================================================
+        12 => {
+            let vv = |x: &str| leaf(x);
+            let (ju, kv, mw, nt) = (vv("vu"), vv("vv"), vv("vw"), vv("vt"));
+            let aarr = pl(el, mu(el, kv.clone(), kv.clone()), mu(el, nt.clone(), nt.clone()));
+            let aacc = pl(el, mu(el, ju.clone(), ju.clone()), mu(el, mw.clone(), mw.clone()));
+            let lhs = mi(
+                el,
+                mu(el, mu(el, ju.clone(), ju.clone()), aarr),
+                mu(el, mu(el, kv.clone(), kv.clone()), aacc),
+            );
+            let s1 = mu(el, ju.clone(), nt.clone());
+            let s2 = mu(el, kv.clone(), mw.clone());
+            let rhs = mi(el, mu(el, s1.clone(), s1.clone()), mu(el, s2.clone(), s2.clone()));
+            return Lemma {
+                name: "g3b-eqcancel".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 13 : g3b-revsub — generic ( ( w -x v ) + v ) = w
+        //   (instantiated with big subterms; trivial degree-1 ring_eq
+        //   over 2 fresh atoms, never coordinate-dense).
+        // ============================================================
+        13 => {
+            let v = |x: &str| leaf(x);
+            let (w, vv) = (v("vw"), v("vv"));
+            let lhs = pl(el, mi(el, w.clone(), vv.clone()), vv.clone());
+            return Lemma {
+                name: "g3b-revsub".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &w),
+            };
+        }
+        // ============================================================
+        // idx 14 : g3b-reassoc — generic ( (a*b)*(c*e) ) = ( (a*c)*(e*b) )
+        //   (degree-4 over 4 fresh atoms; instantiated by substitution).
+        // ============================================================
+        14 => {
+            let v = |x: &str| leaf(x);
+            let (a, b, c, e) = (v("va"), v("vb"), v("vc"), v("ve"));
+            let lhs = mu(el, mu(el, a.clone(), b.clone()), mu(el, c.clone(), e.clone()));
+            let rhs = mu(el, mu(el, a.clone(), c.clone()), mu(el, e.clone(), b.clone()));
+            return Lemma {
+                name: "g3b-reassoc".into(),
+                ess: vec![],
+                goal: ring_eq(el, &lhs, &rhs),
+            };
+        }
+        // ============================================================
+        // idx 15 : G3bp-protuniq-oriented  (ORIENTED prot-uniq, F0)
+        //   ess  g3b.1 : |- ( ACong b a c b a x )
+        //        g3b.2 : |- ( 0 <_ ( crs b a c b a x ) )
+        //        g3b.3 : |- ( 0 < ( sqd b a ) )
+        //   goal       : |- ( Ray b c x )
+        //
+        // df-acong's bare squared-cosine is mirror-blind across line b-a;
+        // the conservative oriented-area term `crs` (df-crs, NOT a
+        // geometric axiom) supplies the discarded relative orientation,
+        // restoring protractor uniqueness.  Vertex-b form so the
+        // conclusion is `Ray b c x` (collinear with b,c + non-negative
+        // dot) — exactly what ASA' s7 -> G3c -> G2-incid consumes.
+        //
+        // Certificate (all CAS-checked; every ring_eq is the degree-4
+        // generic-lemma regime, never a dense coordinate polynomial):
+        //   A := b->a , C := b->c , R := b->x   (vectors)
+        //   AC=dot b a c , AR=dot b a x , AA=sqd b a ,
+        //   XAC=AxC , XAR=AxR , XCR=CxR , CR=dot b c x
+        //   S1 := AC*XAR , S2 := AR*XAC
+        //   * df-acong EQ  ==  S1*S1 -x S2*S2          [Lagrange x2 + cancel]
+        //   * AA*XCR       ==  S1 -x S2                 [g3b-m]
+        //   * S1*S2        ==  (AC*AR)*(XAC*XAR)        [reassoc]
+        //   * XAC*XAR      ==  AA*CR -x AC*AR           [g3b-crs]
+        //  From EQ=0 : S1*S1 = S2*S2.  From SGN (df-acong) 0<=AC*AR and
+        //  g3b.2 0<=XAC*XAR : 0<=S1*S2.  sqcong => S1=S2 => AA*XCR=0.
+        //  g3b.3 0<AA + mulcposcan => XCR=0  (Coll b c x).  And
+        //  AA*CR = (XAC*XAR) + AC*AR >= 0 ; 0<AA => 0<=CR (dot b c x).
+        //  conj + df-coll/df-ray bi_rev => ( Ray b c x ).
+        // ============================================================
+        15 => {
+            let pa = || leaf("va");
+            let pb = || leaf("vb");
+            let pc = || leaf("vc");
+            let px = || leaf("vx");
+            let xa = || xc(pa());
+            let ya = || yc(pa());
+            let xb = || xc(pb());
+            let yb = || yc(pb());
+            let xcc = || xc(pc());
+            let ycc = || yc(pc());
+            let xx = || xc(px());
+            let yx = || yc(px());
+            // vectors rooted at b
+            let ax = || mi(el, xa(), xb()); // (Xc a) -x (Xc b)
+            let ay = || mi(el, ya(), yb());
+            let cx = || mi(el, xcc(), xb());
+            let cy = || mi(el, ycc(), yb());
+            let rx = || mi(el, xx(), xb());
+            let ry = || mi(el, yx(), yb());
+            let dot = |o: Pt, p1: Pt, q: Pt| {
+                el.app("tdot", &[("o", o), ("p", p1), ("q", q)], &[]).unwrap()
+            };
+            let sqd = |a: Pt, b: Pt| el.app("tsqd", &[("a", a), ("b", b)], &[]).unwrap();
+            // coordinate forms
+            let acc = || pl(el, mu(el, ax(), cx()), mu(el, ay(), cy())); // AC
+            let arr = || pl(el, mu(el, ax(), rx()), mu(el, ay(), ry())); // AR
+            let aaa = || pl(el, mu(el, ax(), ax()), mu(el, ay(), ay())); // AA
+            let ccc = || pl(el, mu(el, cx(), cx()), mu(el, cy(), cy())); // CC
+            let rrr = || pl(el, mu(el, rx(), rx()), mu(el, ry(), ry())); // RR
+            let crr = || pl(el, mu(el, cx(), rx()), mu(el, cy(), ry())); // CR=dot b c x
+            let xac = || mi(el, mu(el, ax(), cy()), mu(el, ay(), cx())); // AxC
+            let xar = || mi(el, mu(el, ax(), ry()), mu(el, ay(), rx())); // AxR
+            let xcr = || mi(el, mu(el, cx(), ry()), mu(el, cy(), rx())); // CxR
+            let s1 = || mu(el, acc(), xar()); // S1
+            let s2 = || mu(el, arr(), xac()); // S2
+            // df-* term equalities
+            let e_dbac = el
+                .app("df-dot", &[("o", pb()), ("p", pa()), ("q", pc())], &[])
+                .unwrap(); // ( dot b a c ) = AC
+            let e_dbax = el
+                .app("df-dot", &[("o", pb()), ("p", pa()), ("q", px())], &[])
+                .unwrap(); // ( dot b a x ) = AR
+            let e_dbcx = el
+                .app("df-dot", &[("o", pb()), ("p", pc()), ("q", px())], &[])
+                .unwrap(); // ( dot b c x ) = CR
+            let e_sba = el.app("df-sqd", &[("a", pb()), ("b", pa())], &[]).unwrap(); // ( sqd b a ) = AA
+            let e_sbc = el.app("df-sqd", &[("a", pb()), ("b", pc())], &[]).unwrap(); // ( sqd b c ) = CC
+            let e_sbx = el.app("df-sqd", &[("a", pb()), ("b", px())], &[]).unwrap(); // ( sqd b x ) = RR
+            let dbac = || dot(pb(), pa(), pc());
+            let dbax = || dot(pb(), pa(), px());
+            let dbcx = || dot(pb(), pc(), px());
+            let sba = || sqd(pb(), pa());
+            let sbc = || sqd(pb(), pc());
+            let sbx = || sqd(pb(), px());
+            // mu congruence helper (as in G3a)
+            let mu_rw = |l: Pt, lp: Pt, r: Pt, rp: Pt, pl_eq: Pt, pr_eq: Pt| -> Pt {
+                let c1 = cmu1(el, l.clone(), lp.clone(), r.clone(), pl_eq);
+                let c2 = cmu2(el, r.clone(), rp.clone(), lp.clone(), pr_eq);
+                eqtr3(
+                    el,
+                    mu(el, l.clone(), r.clone()),
+                    mu(el, lp.clone(), r.clone()),
+                    mu(el, lp.clone(), rp.clone()),
+                    c1,
+                    c2,
+                )
+            };
+            // ---- 1. unfold ACong b a c b a x ----
+            let acong = el
+                .app(
+                    "wacong",
+                    &[
+                        ("o", pb()), ("p", pa()), ("q", pc()),
+                        ("a", pb()), ("e", pa()), ("f", px()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            let _ = acong;
+            // df-acong EQ/SGN in dot/sqd terms (o=b,p=a,q=c ; a=b,e=a,f=x):
+            //  EQ : ((dbac*dbac)*((sba)*(sbx))) = ((dbax*dbax)*((sba)*(sbc)))
+            //  SGN: 0 <_ ( dbac * dbax )
+            let eql_g = mu(el, mu(el, dbac(), dbac()), mu(el, sba(), sbx()));
+            let eqr_g = mu(el, mu(el, dbax(), dbax()), mu(el, sba(), sbc()));
+            let sgn_g = le(z(), mu(el, dbac(), dbax()));
+            let eq_g = eq(eql_g.clone(), eqr_g.clone());
+            let conj_g = aw(eq_g.clone(), sgn_g.clone());
+            let dfac = el
+                .app(
+                    "df-acong",
+                    &[
+                        ("o", pb()), ("p", pa()), ("q", pc()),
+                        ("a", pb()), ("e", pa()), ("f", px()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            let conj_pf = el.bi_fwd(dfac, leaf("g3b.1")).unwrap(); // |- ( EQ /\ SGN )
+            let eq_pf = mp(
+                conj_g.clone(),
+                eq_g.clone(),
+                conj_pf.clone(),
+                el.app("simpl", &[("ph", eq_g.clone()), ("ps", sgn_g.clone())], &[])
+                    .unwrap(),
+            ); // |- ( EQ_l = EQ_r )
+            let sgn_pf = mp(
+                conj_g.clone(),
+                sgn_g.clone(),
+                conj_pf,
+                el.app("simpr", &[("ph", eq_g.clone()), ("ps", sgn_g.clone())], &[])
+                    .unwrap(),
+            ); // |- 0 <_ ( dbac * dbax )
+
+            // ---- 2. coordinate forms of EQ_l, EQ_r ----
+            let eql_cv = mu(el, mu(el, acc(), acc()), mu(el, aaa(), rrr()));
+            let eqr_cv = mu(el, mu(el, arr(), arr()), mu(el, aaa(), ccc()));
+            let dd_c = mu_rw(dbac(), acc(), dbac(), acc(), e_dbac.clone(), e_dbac.clone());
+            let ss_lc = mu_rw(sba(), aaa(), sbx(), rrr(), e_sba.clone(), e_sbx.clone());
+            let eql_coord = mu_rw(
+                mu(el, dbac(), dbac()),
+                mu(el, acc(), acc()),
+                mu(el, sba(), sbx()),
+                mu(el, aaa(), rrr()),
+                dd_c,
+                ss_lc,
+            ); // ( EQ_l = eql_cv )
+            let dd_x = mu_rw(dbax(), arr(), dbax(), arr(), e_dbax.clone(), e_dbax.clone());
+            let ss_rc = mu_rw(sba(), aaa(), sbc(), ccc(), e_sba.clone(), e_sbc.clone());
+            let eqr_coord = mu_rw(
+                mu(el, dbax(), dbax()),
+                mu(el, arr(), arr()),
+                mu(el, sba(), sbc()),
+                mu(el, aaa(), ccc()),
+                dd_x,
+                ss_rc,
+            ); // ( EQ_r = eqr_cv )
+            // EQ_l = EQ_r  -->  eql_cv = eqr_cv
+            let eqcv = {
+                let t1 = eqcomm(el, eql_g.clone(), eql_cv.clone(), eql_coord.clone()); // (eql_cv=EQ_l)
+                let s = eqtr3(el, eql_cv.clone(), eql_g.clone(), eqr_g.clone(), t1, eq_pf);
+                eqtr3(el, eql_cv.clone(), eqr_g.clone(), eqr_cv.clone(), s, eqr_coord.clone())
+            }; // |- ( eql_cv = eqr_cv )
+
+            // ---- 3. EQ_cv  ==  (S1*S1) -x (S2*S2)  via Lagrange + cancel ----
+            // LagC: aaa*ccc = (acc*acc) + (xac*xac)
+            let lagc = el
+                .app(
+                    "g3b-lagc",
+                    &[("a", ax()), ("b", ay()), ("c", cx()), ("e", cy())],
+                    &[],
+                )
+                .unwrap();
+            // LagR: aaa*rrr = (arr*arr) + (xar*xar)
+            let lagr = el
+                .app(
+                    "g3b-lagr",
+                    &[("a", ax()), ("b", ay()), ("f", rx()), ("g", ry())],
+                    &[],
+                )
+                .unwrap();
+            let aacc = || pl(el, mu(el, acc(), acc()), mu(el, xac(), xac()));
+            let aarr = || pl(el, mu(el, arr(), arr()), mu(el, xar(), xar()));
+            // eql_cv = (acc*acc)*aarr   [rewrite aaa*rrr -> aarr]
+            let eql_1 = cmu2(el, mu(el, aaa(), rrr()), aarr(), mu(el, acc(), acc()), lagr.clone());
+            // eqr_cv = (arr*arr)*aacc
+            let eqr_1 = cmu2(el, mu(el, aaa(), ccc()), aacc(), mu(el, arr(), arr()), lagc.clone());
+            // abstract cancel — instantiate generic g3b-eqcancel
+            // (j=acc,k=arr,m=xac,n=xar); ZERO coordinate ring_eq here.
+            let cancel = el
+                .app(
+                    "g3b-eqcancel",
+                    &[
+                        ("u", acc()), ("v", arr()),
+                        ("w", xac()), ("t", xar()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            // eql_cv -x eqr_cv = (acc*acc)*aarr -x (arr*arr)*aacc
+            let diff_rw = {
+                let d1 = cmi1(
+                    el,
+                    eql_cv.clone(),
+                    mu(el, mu(el, acc(), acc()), aarr()),
+                    eqr_cv.clone(),
+                    eql_1,
+                );
+                let d2 = cmi2(
+                    el,
+                    eqr_cv.clone(),
+                    mu(el, mu(el, arr(), arr()), aacc()),
+                    mu(el, mu(el, acc(), acc()), aarr()),
+                    eqr_1,
+                );
+                eqtr3(
+                    el,
+                    mi(el, eql_cv.clone(), eqr_cv.clone()),
+                    mi(el, mu(el, mu(el, acc(), acc()), aarr()), eqr_cv.clone()),
+                    mi(
+                        el,
+                        mu(el, mu(el, acc(), acc()), aarr()),
+                        mu(el, mu(el, arr(), arr()), aacc()),
+                    ),
+                    d1,
+                    d2,
+                )
+            }; // ( (eql_cv -x eqr_cv) = ( (acc*acc)*aarr -x (arr*arr)*aacc ) )
+            let eqdiff_s = eqtr3(
+                el,
+                mi(el, eql_cv.clone(), eqr_cv.clone()),
+                mi(
+                    el,
+                    mu(el, mu(el, acc(), acc()), aarr()),
+                    mu(el, mu(el, arr(), arr()), aacc()),
+                ),
+                mi(el, mu(el, s1(), s1()), mu(el, s2(), s2())),
+                diff_rw,
+                cancel,
+            ); // ( (eql_cv -x eqr_cv) = ( S1*S1 -x S2*S2 ) )
+            // eql_cv = eqr_cv  =>  (eql_cv -x eqr_cv) = 0
+            let cm = cmi1(
+                el,
+                eql_cv.clone(),
+                eqr_cv.clone(),
+                eqr_cv.clone(),
+                eqcv.clone(),
+            );
+            let rr0 = el
+                .app("subid", &[("u", eqr_cv.clone())], &[])
+                .unwrap(); // ( eqr_cv -x eqr_cv ) = 0
+            let diff0 = eqtr3(
+                el,
+                mi(el, eql_cv.clone(), eqr_cv.clone()),
+                mi(el, eqr_cv.clone(), eqr_cv.clone()),
+                z(),
+                cm,
+                rr0,
+            ); // ( (eql_cv -x eqr_cv) = 0 )
+            // ( S1*S1 -x S2*S2 ) = 0
+            let s1122_0 = eqtr3(
+                el,
+                mi(el, mu(el, s1(), s1()), mu(el, s2(), s2())),
+                mi(el, eql_cv.clone(), eqr_cv.clone()),
+                z(),
+                eqcomm(
+                    el,
+                    mi(el, eql_cv.clone(), eqr_cv.clone()),
+                    mi(el, mu(el, s1(), s1()), mu(el, s2(), s2())),
+                    eqdiff_s,
+                ),
+                diff0,
+            );
+            // subeq0 : ( (S1*S1 -x S2*S2)=0 ) -> ( (S1*S1)=(S2*S2) )
+            let s1eq2 = mp(
+                eq(mi(el, mu(el, s1(), s1()), mu(el, s2(), s2())), z()),
+                eq(mu(el, s1(), s1()), mu(el, s2(), s2())),
+                s1122_0,
+                el.app(
+                    "subeq0",
+                    &[("u", mu(el, s1(), s1())), ("v", mu(el, s2(), s2()))],
+                    &[],
+                )
+                .unwrap(),
+            ); // |- ( (S1*S1) = (S2*S2) )
+
+            // ---- 4. 0 <_ ( S1 * S2 )  from SGN & g3b.2 ----
+            // SGN (coord): 0 <_ ( acc * arr )   [rewrite dbac*dbax -> acc*arr]
+            let sgn_cv = {
+                let rw = mu_rw(dbac(), acc(), dbax(), arr(), e_dbac.clone(), e_dbax.clone()); // (dbac*dbax)=(acc*arr)
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[
+                            ("a", mu(el, dbac(), dbax())),
+                            ("b", mu(el, acc(), arr())),
+                            ("c", z()),
+                        ],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(mu(el, dbac(), dbax()), mu(el, acc(), arr())),
+                    imp(
+                        le(z(), mu(el, dbac(), dbax())),
+                        le(z(), mu(el, acc(), arr())),
+                    ),
+                    rw,
+                    cl2,
+                );
+                mp(
+                    le(z(), mu(el, dbac(), dbax())),
+                    le(z(), mu(el, acc(), arr())),
+                    sgn_pf,
+                    m1,
+                )
+            }; // |- 0 <_ ( acc * arr )
+            // crs hyp g3b.2 : 0 <_ ( crs b a c b a x ).  df-crs unfold:
+            //   ( crs b a c b a x ) = ( XAC * XAR )      (o=b,p=a,q=c;a=b,e=a,f=x)
+            let e_crs = el
+                .app(
+                    "df-crs",
+                    &[
+                        ("o", pb()), ("p", pa()), ("q", pc()),
+                        ("a", pb()), ("e", pa()), ("f", px()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // ( crs b a c b a x ) = ( XAC * XAR )
+            let crs_t = el
+                .app(
+                    "tcrs",
+                    &[
+                        ("o", pb()), ("p", pa()), ("q", pc()),
+                        ("a", pb()), ("e", pa()), ("f", px()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            let crs_cv = {
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[("a", crs_t.clone()), ("b", mu(el, xac(), xar())), ("c", z())],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(crs_t.clone(), mu(el, xac(), xar())),
+                    imp(le(z(), crs_t.clone()), le(z(), mu(el, xac(), xar()))),
+                    e_crs.clone(),
+                    cl2,
+                );
+                mp(
+                    le(z(), crs_t.clone()),
+                    le(z(), mu(el, xac(), xar())),
+                    leaf("g3b.2"),
+                    m1,
+                )
+            }; // |- 0 <_ ( XAC * XAR )
+            // 0 <_ ( (acc*arr) * (xac*xar) )   [of-lemul0: axiom impl + mp]
+            let prod_pos = {
+                let lhsu = le(z(), mu(el, acc(), arr()));
+                let lhsv = le(z(), mu(el, xac(), xar()));
+                let conj = aw(lhsu.clone(), lhsv.clone());
+                let conj_pf =
+                    conj2(el, lhsu.clone(), lhsv.clone(), sgn_cv.clone(), crs_cv.clone());
+                let ax = el
+                    .app(
+                        "of-lemul0",
+                        &[("u", mu(el, acc(), arr())), ("v", mu(el, xac(), xar()))],
+                        &[],
+                    )
+                    .unwrap(); // ( ( (0<_u) /\ (0<_v) ) -> ( 0<_(u*v) ) )
+                mp(
+                    conj.clone(),
+                    le(z(), mu(el, mu(el, acc(), arr()), mu(el, xac(), xar()))),
+                    conj_pf,
+                    ax,
+                )
+            };
+            // ( S1 * S2 ) = ( (acc*arr) * (xac*xar) )   [g3b-reassoc inst]
+            // S1=acc*xar, S2=arr*xac ; a=acc,b=xar,c=arr,e=xac :
+            //   (a*b)*(c*e) = (a*c)*(e*b)
+            let s1s2_re = el
+                .app(
+                    "g3b-reassoc",
+                    &[("a", acc()), ("b", xar()), ("c", arr()), ("e", xac())],
+                    &[],
+                )
+                .unwrap();
+            let s1s2_pos = {
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[
+                            ("a", mu(el, mu(el, acc(), arr()), mu(el, xac(), xar()))),
+                            ("b", mu(el, s1(), s2())),
+                            ("c", z()),
+                        ],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(
+                        mu(el, mu(el, acc(), arr()), mu(el, xac(), xar())),
+                        mu(el, s1(), s2()),
+                    ),
+                    imp(
+                        le(z(), mu(el, mu(el, acc(), arr()), mu(el, xac(), xar()))),
+                        le(z(), mu(el, s1(), s2())),
+                    ),
+                    eqcomm(
+                        el,
+                        mu(el, s1(), s2()),
+                        mu(el, mu(el, acc(), arr()), mu(el, xac(), xar())),
+                        s1s2_re,
+                    ),
+                    cl2,
+                );
+                mp(
+                    le(z(), mu(el, mu(el, acc(), arr()), mu(el, xac(), xar()))),
+                    le(z(), mu(el, s1(), s2())),
+                    prod_pos,
+                    m1,
+                )
+            }; // |- 0 <_ ( S1 * S2 )
+
+            // ---- 5. sqcong : S1=S2 ; then AA*XCR=0 ; XCR=0 (Coll) ----
+            let s1_eq_s2 = el
+                .app("sqcong", &[("u", s1()), ("v", s2())], &[s1eq2, s1s2_pos])
+                .unwrap(); // |- ( S1 = S2 )
+            // g3b-m : AA*XCR = S1 -x S2
+            let gm = el
+                .app(
+                    "g3b-m",
+                    &[
+                        ("a", ax()), ("b", ay()), ("c", cx()),
+                        ("e", cy()), ("f", rx()), ("g", ry()),
+                    ],
+                    &[],
+                )
+                .unwrap(); // ( aaa*xcr ) = ( S1 -x S2 )
+            // S1=S2 -> (S1 -x S2)=0  [via subeq0 converse: cmi1 + ring]
+            let s1s2_0 = {
+                let cm = cmi1(el, s1(), s2(), s2(), s1_eq_s2.clone()); // (S1-xS2)=(S2-xS2)
+                let r0 = el.app("subid", &[("u", s2())], &[]).unwrap(); // (S2-xS2)=0
+                eqtr3(el, mi(el, s1(), s2()), mi(el, s2(), s2()), z(), cm, r0)
+            }; // ( (S1 -x S2) = 0 )
+            let aaxcr_0 = eqtr3(
+                el,
+                mu(el, aaa(), xcr()),
+                mi(el, s1(), s2()),
+                z(),
+                gm,
+                s1s2_0,
+            ); // |- ( (aaa*xcr) = 0 )
+            // mulcposcan : 0<aaa , (xcr*aaa)=(0*aaa) => xcr=0
+            // build (xcr*aaa)=(0*aaa): from aaa*xcr=0 commute + 0*aaa=0
+            let xcr_aaa = el
+                .app("of-mulcom", &[("u", aaa()), ("v", xcr())], &[])
+                .unwrap(); // ( aaa*xcr )=( xcr*aaa )
+            let xcr_aaa_0 = eqtr3(
+                el,
+                mu(el, xcr(), aaa()),
+                mu(el, aaa(), xcr()),
+                z(),
+                eqcomm(el, mu(el, aaa(), xcr()), mu(el, xcr(), aaa()), xcr_aaa),
+                aaxcr_0,
+            ); // ( (xcr*aaa) = 0 )
+            let z_aaa0 = el.app("mul0", &[("u", aaa())], &[]).unwrap(); // ( (0*aaa)=0 )
+            let xcr_eq_0aaa = eqtr3(
+                el,
+                mu(el, xcr(), aaa()),
+                z(),
+                mu(el, z(), aaa()),
+                xcr_aaa_0,
+                eqcomm(el, mu(el, z(), aaa()), z(), z_aaa0),
+            ); // ( (xcr*aaa) = (0*aaa) )
+            // 0 < (sqd b a) -> 0 < aaa   [rewrite sba -> aaa]
+            let aaa_pos = {
+                let cl2 = el
+                    .app(
+                        "cong-lt2",
+                        &[("a", sba()), ("b", aaa()), ("c", z())],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(sba(), aaa()),
+                    imp(lt(z(), sba()), lt(z(), aaa())),
+                    e_sba.clone(),
+                    cl2,
+                );
+                mp(lt(z(), sba()), lt(z(), aaa()), leaf("g3b.3"), m1)
+            }; // |- 0 < aaa
+            let xcr_0 = el
+                .app(
+                    "mulcposcan",
+                    &[("u", xcr()), ("v", z()), ("w", aaa())],
+                    &[aaa_pos.clone(), xcr_eq_0aaa],
+                )
+                .unwrap(); // |- ( xcr = 0 )
+
+            // ---- 6. Coll b c x  via df-coll ----
+            // df-coll b c x : ( Coll b c x ) <-> ( (Xc c -x Xc b)*(Yc x -x Yc b)
+            //                  = (Yc c -x Yc b)*(Xc x -x Xc b) )
+            //   i.e.  ( cx*ry ) = ( cy*rx )   [note: that is xcr=0 reordered]
+            let coll = el
+                .app("wcoll", &[("a", pb()), ("b", pc()), ("c", px())], &[])
+                .unwrap();
+            let dfcoll = el
+                .app("df-coll", &[("a", pb()), ("b", pc()), ("c", px())], &[])
+                .unwrap(); // ( Coll b c x ) <-> ( (cx*ry) = (cy*rx) )
+            // from ( xcr = 0 ) i.e. ( (cx*ry -x cy*rx) = 0 ) get (cx*ry)=(cy*rx)
+            let coll_eq = mp(
+                eq(xcr(), z()),
+                eq(mu(el, cx(), ry()), mu(el, cy(), rx())),
+                xcr_0,
+                el.app(
+                    "subeq0",
+                    &[("u", mu(el, cx(), ry())), ("v", mu(el, cy(), rx()))],
+                    &[],
+                )
+                .unwrap(),
+            ); // |- ( (cx*ry) = (cy*rx) )
+            let coll_pf = el.bi_rev(dfcoll, coll_eq).unwrap(); // |- ( Coll b c x )
+
+            // ---- 7. 0 <_ ( dot b c x )  via g3b-crs ----
+            // g3b-crs : ( xac*xar ) = ( aaa*crr -x acc*arr )
+            let gcrs = el
+                .app(
+                    "g3b-crs",
+                    &[
+                        ("a", ax()), ("b", ay()), ("c", cx()),
+                        ("e", cy()), ("f", rx()), ("g", ry()),
+                    ],
+                    &[],
+                )
+                .unwrap();
+            // 0 <_ ( aaa*crr -x acc*arr )   [rewrite from crs_cv]
+            let diff_pos = {
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[
+                            ("a", mu(el, xac(), xar())),
+                            ("b", mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr()))),
+                            ("c", z()),
+                        ],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(
+                        mu(el, xac(), xar()),
+                        mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr())),
+                    ),
+                    imp(
+                        le(z(), mu(el, xac(), xar())),
+                        le(z(), mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr()))),
+                    ),
+                    gcrs,
+                    cl2,
+                );
+                mp(
+                    le(z(), mu(el, xac(), xar())),
+                    le(z(), mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr()))),
+                    crs_cv.clone(),
+                    m1,
+                )
+            }; // |- 0 <_ ( aaa*crr -x acc*arr )
+            // 0<_( (aaa*crr -x acc*arr) + (acc*arr) )   [le0add]
+            let sum_pos = el
+                .app(
+                    "le0add",
+                    &[
+                        ("u", mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr()))),
+                        ("v", mu(el, acc(), arr())),
+                    ],
+                    &[diff_pos, sgn_cv.clone()],
+                )
+                .unwrap(); // |- 0<_( (aaa*crr -x acc*arr) + (acc*arr) )
+            // g3b-revsub inst (w=aaa*crr, v=acc*arr): ((w-xv)+v)=w
+            let sum_eq = el
+                .app(
+                    "g3b-revsub",
+                    &[("w", mu(el, aaa(), crr())), ("v", mu(el, acc(), arr()))],
+                    &[],
+                )
+                .unwrap();
+            let aaacrr_pos = {
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[
+                            (
+                                "a",
+                                pl(
+                                    el,
+                                    mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr())),
+                                    mu(el, acc(), arr()),
+                                ),
+                            ),
+                            ("b", mu(el, aaa(), crr())),
+                            ("c", z()),
+                        ],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(
+                        pl(
+                            el,
+                            mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr())),
+                            mu(el, acc(), arr()),
+                        ),
+                        mu(el, aaa(), crr()),
+                    ),
+                    imp(
+                        le(
+                            z(),
+                            pl(
+                                el,
+                                mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr())),
+                                mu(el, acc(), arr()),
+                            ),
+                        ),
+                        le(z(), mu(el, aaa(), crr())),
+                    ),
+                    sum_eq,
+                    cl2,
+                );
+                mp(
+                    le(
+                        z(),
+                        pl(
+                            el,
+                            mi(el, mu(el, aaa(), crr()), mu(el, acc(), arr())),
+                            mu(el, acc(), arr()),
+                        ),
+                    ),
+                    le(z(), mu(el, aaa(), crr())),
+                    sum_pos,
+                    m1,
+                )
+            }; // |- 0 <_ ( aaa * crr )
+            // lecpos : ess 0<=(w*t) => ( (0<w) -> (0<=t) ) ; w=aaa t=crr
+            let lecpos_impl = el
+                .app("lecpos", &[("w", aaa()), ("t", crr())], &[aaacrr_pos])
+                .unwrap(); // |- ( (0<aaa) -> (0<=crr) )
+            let crr_pos = mp(
+                lt(z(), aaa()),
+                le(z(), crr()),
+                aaa_pos,
+                lecpos_impl,
+            ); // |- 0 <_ crr
+            // crr = ( dot b c x )  -> 0 <_ ( dot b c x )
+            let dbcx_pos = {
+                let cl2 = el
+                    .app(
+                        "cong-le2",
+                        &[("a", crr()), ("b", dbcx()), ("c", z())],
+                        &[],
+                    )
+                    .unwrap();
+                let m1 = mp(
+                    eq(crr(), dbcx()),
+                    imp(le(z(), crr()), le(z(), dbcx())),
+                    eqcomm(el, dbcx(), crr(), e_dbcx.clone()),
+                    cl2,
+                );
+                mp(le(z(), crr()), le(z(), dbcx()), crr_pos, m1)
+            }; // |- 0 <_ ( dot b c x )
+
+            // ---- 8. fold Ray b c x via df-ray ----
+            let dbcx_sgn = le(z(), dbcx());
+            let conj_r = aw(coll.clone(), dbcx_sgn.clone());
+            let conj_r_pf = conj2(el, coll.clone(), dbcx_sgn.clone(), coll_pf, dbcx_pos);
+            let dfray = el
+                .app("df-ray", &[("a", pb()), ("b", pc()), ("c", px())], &[])
+                .unwrap(); // ( Ray b c x ) <-> ( ( Coll b c x ) /\ ( 0 <_ ( dot b c x ) ) )
+            let _ = conj_r;
+            let g = el.bi_rev(dfray, conj_r_pf).unwrap(); // |- ( Ray b c x )
+            Lemma {
+                name: "G3bp-protuniq-oriented".into(),
+                ess: vec![
+                    (
+                        "g3b.1".into(),
+                        toks(&[
+                            "|-", "(", "ACong", "b", "a", "c", "b", "a", "x", ")",
+                        ]),
+                    ),
+                    (
+                        "g3b.2".into(),
+                        toks(&[
+                            "|-", "(", "0", "<_", "(", "crs", "b", "a", "c", "b",
+                            "a", "x", ")", ")",
+                        ]),
+                    ),
+                    (
+                        "g3b.3".into(),
+                        toks(&[
+                            "|-", "(", "0", "<", "(", "sqd", "b", "a", ")", ")",
+                        ]),
+                    ),
+                ],
                 goal: g,
             }
         }

@@ -149,6 +149,25 @@ df-dot $a |- ( dot o p q ) =
    ( ( ( ( Xc p ) -x ( Xc o ) ) * ( ( Xc q ) -x ( Xc o ) ) )
    + ( ( ( Yc p ) -x ( Yc o ) ) * ( ( Yc q ) -x ( Yc o ) ) ) ) $.
 
+$( Oriented-area (2D cross-product) discriminator — a CONSERVATIVE
+   DEFINITION, exactly the df-dot/df-sqd shape (polynomial in Xc/Yc, no
+   geometry).  ( crs o p q a e f ) is the PRODUCT of the signed area of
+   ( o ; p ; q ) and that of ( a ; e ; f ):
+      ( (Xp-Xo)(Yq-Yo) -x (Yp-Yo)(Xq-Xo) )
+    * ( (Xe-Xa)(Yf-Ya) -x (Ye-Ya)(Xf-Xa) ) .
+   For ( crs a b x a b c ) this is ((b-a)x(x-a)) * ((b-a)x(c-a)) — the
+   RELATIVE orientation of x and c about ray a->b: positive iff x and c
+   lie on the same side, which is exactly the sign df-acong's squared
+   cosine discards (it disambiguates a ray from its mirror across a-b).
+   Eliminable (every crs rewrites away to the polynomial), so scored a
+   Definition, never a GenuineAxiom.                                     $)
+tcrs $a term ( crs o p q a e f ) $.
+df-crs $a |- ( crs o p q a e f ) =
+   ( ( ( ( ( Xc p ) -x ( Xc o ) ) * ( ( Yc q ) -x ( Yc o ) ) )
+     -x ( ( ( Yc p ) -x ( Yc o ) ) * ( ( Xc q ) -x ( Xc o ) ) ) )
+   * ( ( ( ( Xc e ) -x ( Xc a ) ) * ( ( Yc f ) -x ( Yc a ) ) )
+     -x ( ( ( Yc e ) -x ( Yc a ) ) * ( ( Xc f ) -x ( Xc a ) ) ) ) ) $.
+
 $( Collinearity = determinant zero (√-free).                              $)
 wcoll $a wff ( Coll a b c ) $.
 df-coll $a |- ( ( Coll a b c ) <->

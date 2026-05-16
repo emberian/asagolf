@@ -366,46 +366,40 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 elimx_lhs0,
             ); // |- ( detPQ · dx ) = 0
 
-            // detPQ = detU (small ring_eq) ; -.(detPQ=0) from -.(detU=0)
+            // detPQ = detU (small deg-2 ring_eq) ; -.(detPQ=0) from -.(detU=0)
+            // via ax-7 :  ( detPQ=detU -> ( detPQ=0 -> detU=0 ) ) , contrapose.
             let dpq_du = ring_eq(el, &detpq, &detu);
-            let ndetpq0 = {
-                // -.(detU=0) ; detPQ=detU ; so (detPQ=0)->(detU=0) [cong] -> contra
-                let c = cmi1(el, detpq.clone(), detu.clone(), z(), dpq_du.clone());
-                // c : (detPQ -x 0)?? need (detPQ=0)->(detU=0). Use weq congruence:
-                let cong = el
-                    .app(
-                        "cong-le1", // placeholder; replaced below if wrong
-                        &[("a", detpq.clone()), ("b", detu.clone()), ("c", z())],
-                        &[],
-                    );
-                let _ = (c, cong);
-                // (detPQ=0) -> (detU=0) via eqtr: detPQ=detU, detU? Actually:
-                // from p:(detPQ=0) and dpq_du:(detPQ=detU): detU = detPQ = 0.
-                // Build implication ( (detPQ=0) -> (detU=0) ):
-                let imp_pq_u = {
-                    // id-style: assume detPQ=0; eqtr3(detU,detPQ,0, eqcomm(dpq_du), hyp)
-                    // implement as: con3i of the reverse is simpler.
-                    // reverse: (detU=0)->(detPQ=0) via dpq_du: detPQ=detU so
-                    //   detPQ = detU = 0.
-                    let rev = {
-                        // proof of ( (detU=0) -> (detPQ=0) ) by a1i-free deduction:
-                        // use eqtr: need term-level. Simplest: cong on weq.
-                        el.app(
-                            "cong-le1",
-                            &[("a", detu.clone()), ("b", detpq.clone()), ("c", z())],
-                            &[],
-                        )
-                        .unwrap();
-                        // NOTE: cong-le1 is for <_, not =; this is a known TODO,
-                        // kernel will flag — fix to the = -congruence next pass.
-                        leaf("__G2_TODO_detpq_eq__")
-                    };
-                    rev
-                };
-                let _ = imp_pq_u;
-                leaf("__G2_TODO_ndetpq0__")
+            let imp = |p: Pt, q: Pt| el.app("wi", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let con3i = |ph: Pt, ps: Pt, p1: Pt| {
+                el.app("con3i", &[("ph", ph), ("ps", ps)], &[p1]).unwrap()
             };
-            let _ = (ndetu0, ndetpq0, detpq_dy0, detpq_dx0, xpd0, xqd0, n, eqp);
+            let ndetpq0 = {
+                let ax7 = el
+                    .app(
+                        "ax-7",
+                        &[("x", detpq.clone()), ("y", detu.clone()), ("z", z())],
+                        &[],
+                    )
+                    .unwrap(); // ( detPQ=detU -> ( detPQ=0 -> detU=0 ) )
+                let pq0_u0 = mp(
+                    eqp(detpq.clone(), detu.clone()),
+                    imp(eqp(detpq.clone(), z()), eqp(detu.clone(), z())),
+                    dpq_du.clone(),
+                    ax7,
+                ); // ( detPQ=0 -> detU=0 )
+                let c3 = con3i(
+                    eqp(detpq.clone(), z()),
+                    eqp(detu.clone(), z()),
+                    pq0_u0,
+                ); // ( -.(detU=0) -> -.(detPQ=0) )
+                mp(
+                    n(eqp(detu.clone(), z())),
+                    n(eqp(detpq.clone(), z())),
+                    ndetu0,
+                    c3,
+                ) // |- -. ( detPQ = 0 )
+            };
+            let _ = (ndetpq0, detpq_dy0, detpq_dx0, xpd0, xqd0, n, eqp);
             // ---- TODO (next kernel-guided pass): -.(detPQ=0) -> 0<detPQ²,
             // (detPQ·dy)²=detPQ²·dy² [g2-sq], mulcposcan cancel, sqz,
             // subeq0 -> Xc x=Xc c & Yc x=Yc c, conj2+ptext -> x=c. ----

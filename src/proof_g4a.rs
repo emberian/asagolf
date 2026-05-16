@@ -62,14 +62,35 @@
 use super::*;
 
 /// Number of staged lemmas this module contributes.
+///   idx 0 = g4a-sss   (SSS → ACong, the angle-output law of cosines)
+///   idx 1 = g4a-dot   (SSS → ( dot a b c ) = ( dot e f g ); g4a-sss's
+///                       own already-proven internal D1=D2, factored out)
+///   idx 2 = sqd-sym   ( ( sqd a b ) = ( sqd b a ); a degree-2 identity)
 pub fn count() -> usize {
-    1
+    3
 }
 
 /// Build local lemma `idx` against an `Elab` over the current db.
 #[allow(unused_variables)]
 pub fn make(idx: usize, el: &Elab) -> Lemma {
-    assert_eq!(idx, 0, "proof_g4a: only g4a-sss (idx 0)");
+    if idx == 2 {
+        return make_sqd_sym(el);
+    }
+    assert!(
+        idx == 0 || idx == 1,
+        "proof_g4a: idx 0 (g4a-sss), 1 (g4a-dot), or 2 (sqd-sym)"
+    );
+
+    // Metamath statement labels are globally unique even inside a `${ $}`
+    // scope, so g4a-sss and g4a-dot — which share the SAME four essential
+    // hypotheses — must use distinct hyp labels.  Pick a per-idx prefix;
+    // the proof body and the `ess` vec both read it, so the two lemmas are
+    // literally the same derivation over differently-named hyps.
+    let hp = if idx == 1 { "g4ad" } else { "g4a" };
+    let h1 = format!("{hp}.1");
+    let h2 = format!("{hp}.2");
+    let h3 = format!("{hp}.3");
+    let h4 = format!("{hp}.4");
 
     // ---- point/term constructors ------------------------------------
     let pa = || leaf("va");
@@ -119,8 +140,8 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
 
     // ---- 2. collapse to ( D1 + D1 ) = ( D2 + D2 ) -------------------
     // ( Sab + Sac ) = ( Sef + Seg )   from g4a.1, g4a.2
-    let pe1 = cpl1(el, sab.clone(), sef.clone(), sac.clone(), leaf("g4a.1")); // (Sab+Sac)=(Sef+Sac)
-    let pe2 = cpl2(el, sac.clone(), seg.clone(), sef.clone(), leaf("g4a.2")); // (Sef+Sac)=(Sef+Seg)
+    let pe1 = cpl1(el, sab.clone(), sef.clone(), sac.clone(), leaf(&h1)); // (Sab+Sac)=(Sef+Sac)
+    let pe2 = cpl2(el, sac.clone(), seg.clone(), sef.clone(), leaf(&h2)); // (Sef+Sac)=(Sef+Seg)
     let sum_s = eqtr3(
         el,
         pl(el, sab.clone(), sac.clone()),
@@ -151,7 +172,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
         sbc.clone(),
         sfg.clone(),
         rhs_efg.clone(),
-        leaf("g4a.3"),
+        leaf(&h3),
         lk_efg.clone(),
     ); // ( sqd b c ) = ( Sef+Seg )-x( D2+D2 )
     // mid_abc = ( sqd b c ) = rhs_efg
@@ -183,7 +204,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
     // ---- 3. nontriviality:  g4a.4 ⇒ 0 < ( 1 + 1 ) -------------------
     // ¬( 0 = Sab )  from  0 < Sab  (lt0ne)
     let lt0ne_s = el.app("lt0ne", &[("u", z()), ("v", sab.clone())], &[]).unwrap(); // (0<Sab)->¬(0=Sab)
-    let n_0sab = mpp(lt(z(), sab.clone()), nw(eq(z(), sab.clone())), leaf("g4a.4"), lt0ne_s);
+    let n_0sab = mpp(lt(z(), sab.clone()), nw(eq(z(), sab.clone())), leaf(&h4), lt0ne_s);
     // ¬( Sab = 0 )  : con3i on ( Sab=0 -> 0=Sab ) [eqcom]
     let eqcom_s = el.app("eqcom", &[("x", sab.clone()), ("y", z())], &[]).unwrap(); // (Sab=0)->(0=Sab)
     let c3a = el
@@ -376,7 +397,39 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
             &[("u", d1.clone()), ("v", d2.clone()), ("w", two())],
             &[zlt2, d1m_eq_d2m],
         )
-        .unwrap(); // |- ( D1 = D2 )
+        .unwrap(); // |- ( D1 = D2 ) i.e. ( dot a b c ) = ( dot e f g )
+
+    // === g4a-dot (idx 1): export exactly this internal dot-equality. ===
+    // It is g4a-sss's own steps 1-4 (loclink×2 + collapse + the
+    // nontriviality-halving + mulcposcan) with NO downstream df-acong, so
+    // its conclusion is sign-free: ( dot a b c ) = ( dot e f g ).  Same
+    // four essential hypotheses as g4a-sss.  Re-exposing this lets
+    // asaprime build the vertex-b angle by pure congruence-substitution
+    // (df-acong SGN then 0 ≤ dot·dot = of-sqpos, free — no dot≠0).
+    if idx == 1 {
+        return Lemma {
+            name: "g4a-dot".into(),
+            ess: vec![
+                (
+                    h1.clone(),
+                    toks(&["|-", "(", "sqd", "a", "b", ")", "=", "(", "sqd", "e", "f", ")"]),
+                ),
+                (
+                    h2.clone(),
+                    toks(&["|-", "(", "sqd", "a", "c", ")", "=", "(", "sqd", "e", "g", ")"]),
+                ),
+                (
+                    h3.clone(),
+                    toks(&["|-", "(", "sqd", "b", "c", ")", "=", "(", "sqd", "f", "g", ")"]),
+                ),
+                (
+                    h4.clone(),
+                    toks(&["|-", "(", "0", "<", "(", "sqd", "a", "b", ")", ")"]),
+                ),
+            ],
+            goal: d1_eq_d2,
+        };
+    }
 
     // ---- 5. df-acong EQ conjunct ------------------------------------
     //  ( D1*D1 )*( Sef*Seg ) = ( D2*D2 )*( Sab*Sac )
@@ -387,8 +440,8 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
     let dd2 = cmu2(el, d1.clone(), d2.clone(), d2.clone(), d1_eq_d2.clone()); // (D2*D1)=(D2*D2)
     let dd_eq = eqtr3(el, d1d1.clone(), mu(el, d2.clone(), d1.clone()), d2d2.clone(), dd1, dd2);
     // Sef*Seg = Sab*Sac   (from g4a.1: Sab=Sef ; g4a.2: Sac=Seg)
-    let sef_sab = eqcomm(el, sab.clone(), sef.clone(), leaf("g4a.1")); // Sef=Sab
-    let seg_sac = eqcomm(el, sac.clone(), seg.clone(), leaf("g4a.2")); // Seg=Sac
+    let sef_sab = eqcomm(el, sab.clone(), sef.clone(), leaf(&h1)); // Sef=Sab
+    let seg_sac = eqcomm(el, sac.clone(), seg.clone(), leaf(&h2)); // Seg=Sac
     let ss1 = cmu1(el, sef.clone(), sab.clone(), seg.clone(), sef_sab); // (Sef*Seg)=(Sab*Seg)
     let ss2 = cmu2(el, seg.clone(), sac.clone(), sab.clone(), seg_sac); // (Sab*Seg)=(Sab*Sac)
     let ss_eq = eqtr3(
@@ -476,22 +529,82 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
         name: "g4a-sss".into(),
         ess: vec![
             (
-                "g4a.1".into(),
+                h1.clone(),
                 toks(&["|-", "(", "sqd", "a", "b", ")", "=", "(", "sqd", "e", "f", ")"]),
             ),
             (
-                "g4a.2".into(),
+                h2.clone(),
                 toks(&["|-", "(", "sqd", "a", "c", ")", "=", "(", "sqd", "e", "g", ")"]),
             ),
             (
-                "g4a.3".into(),
+                h3.clone(),
                 toks(&["|-", "(", "sqd", "b", "c", ")", "=", "(", "sqd", "f", "g", ")"]),
             ),
             (
-                "g4a.4".into(),
+                h4.clone(),
                 toks(&["|-", "(", "0", "<", "(", "sqd", "a", "b", ")", ")"]),
             ),
         ],
+        goal: g,
+    }
+}
+
+/// `sqd-sym` (idx 2):  `|- ( sqd a b ) = ( sqd b a )`.
+///
+/// df-sqd unfolds `sqd` to `Δx² + Δy²`; symmetry is the degree-2
+/// coordinate identity `(Xb-Xa)·(Xb-Xa) + (Yb-Ya)·(Yb-Ya)
+/// = (Xa-Xb)·(Xa-Xb) + (Ya-Yb)·(Ya-Yb)` (≈4 monomials, far under the
+/// ring_eq degree guard).  Proof: df-unfold both sides to coordinates,
+/// ring_eq the polynomial identity, df-fold the RHS back — exactly the
+/// loclink template, no geometric axioms.  No essential hypotheses.
+/// Needed for asaprime's vertex-b signature alignment (`sqd b a` vs
+/// `sqd a b`).
+fn make_sqd_sym(el: &Elab) -> Lemma {
+    let pa = || leaf("va");
+    let pb = || leaf("vb");
+    let xc = |t: Pt| el.app("txc", &[("a", t)], &[]).unwrap();
+    let yc = |t: Pt| el.app("tyc", &[("a", t)], &[]).unwrap();
+    let sqd = |p: Pt, q: Pt| el.app("tsqd", &[("a", p), ("b", q)], &[]).unwrap();
+    let mi_ = |x: Pt, y: Pt| mi(el, x, y);
+    let muu = |x: Pt, y: Pt| mu(el, x, y);
+    let plu = |x: Pt, y: Pt| pl(el, x, y);
+    // coordinate expansion matching df-sqd exactly:
+    //   sqd p q = (Xq-Xp)*(Xq-Xp) + (Yq-Yp)*(Yq-Yp)
+    let sqc = |p: Pt, q: Pt| {
+        plu(
+            muu(mi_(xc(q.clone()), xc(p.clone())), mi_(xc(q.clone()), xc(p.clone()))),
+            muu(mi_(yc(q.clone()), yc(p.clone())), mi_(yc(q.clone()), yc(p.clone()))),
+        )
+    };
+    let s_ab = sqc(pa(), pb()); // = ( sqd a b ) coords
+    let s_ba = sqc(pb(), pa()); // = ( sqd b a ) coords
+
+    // ( sqd a b ) = s_ab        [df-sqd a b]
+    let df_ab = el.app("df-sqd", &[("a", pa()), ("b", pb())], &[]).unwrap();
+    // s_ab = s_ba               [pure ring identity, degree 2]
+    let core = ring_eq(el, &s_ab, &s_ba);
+    // s_ba = ( sqd b a )        [df-sqd b a, commuted]
+    let df_ba = eqcomm(
+        el,
+        sqd(pb(), pa()),
+        s_ba.clone(),
+        el.app("df-sqd", &[("a", pb()), ("b", pa())], &[]).unwrap(),
+    );
+    // ( sqd a b ) = s_ab = s_ba
+    let lhs_to_sba = eqtr3(el, sqd(pa(), pb()), s_ab.clone(), s_ba.clone(), df_ab, core);
+    // ( sqd a b ) = s_ba = ( sqd b a )
+    let g = eqtr3(
+        el,
+        sqd(pa(), pb()),
+        s_ba.clone(),
+        sqd(pb(), pa()),
+        lhs_to_sba,
+        df_ba,
+    );
+
+    Lemma {
+        name: "sqd-sym".into(),
+        ess: vec![],
         goal: g,
     }
 }

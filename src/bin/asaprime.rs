@@ -190,7 +190,7 @@ fn main() {
         let want = [
             "G0-congsub", "G3c-rayline", "G3a-rayangle", "G4-sas",
             "G2-incid", "G1b-rulerd", "G1a-rulerr", "G3bp-protuniq-oriented",
-            "g4a-sss",
+            "g4a-sss", "g4a-dot", "sqd-sym",
         ];
         for w in want {
             let st = db0.stmts.iter().find(|s| s.label == w);
@@ -418,7 +418,7 @@ fn main() {
     let sqd = |a: Pt, b: Pt| el.app("tsqd", &[("a", a), ("b", b)], &[]).unwrap();
     let lt = |u: Pt, v: Pt| el.app("tlt", &[("u", u), ("v", v)], &[]).unwrap();
     let z = || el.app("t0", &[], &[]).unwrap();
-    let acong = |o: Pt, p1: Pt, q: Pt, a: Pt, e: Pt, f: Pt| {
+    let _acong = |o: Pt, p1: Pt, q: Pt, a: Pt, e: Pt, f: Pt| {
         el.app(
             "wacong",
             &[("o", o), ("p", p1), ("q", q), ("a", a), ("e", e), ("f", f)],
@@ -537,8 +537,265 @@ fn main() {
         g3c,
     ); // |- ( On Cp ( Ln a c ) )
 
-    // ---- closing algebra, GIVEN the (open) b-incidence  Cp = c -----------
-    let c_eq_cp = eqcom(cp.clone(), pc.clone(), leaf("asap.cpc")); // |- c = Cp
+    // ======================================================================
+    //  THE g4a-dot / sqd-sym CLOSURE OF THE b-VERTEX INCIDENCE
+    // ======================================================================
+    //  Everything below derives ( Cp = c ) — the leaf the previous pass had
+    //  to take as the raw axiom `asap.cpc` — from a SINGLE, much sharper
+    //  open leaf:  asap.s4 = ( ACong a b Cp e f g ), the vertex-a
+    //  acong-transitivity output (F0's s4 = `m b a Cp = m f e g`).  Showing
+    //  the whole remainder is kernel-derivable from JUST s4 (with g4a-dot,
+    //  sqd-sym, g4a-sss, G4-sas, G3bp, G3c, G2-incid — all genuine $p, NO
+    //  dot≠0, NO unfaithful precondition) PROVES the sole residue is exactly
+    //  AT-1's SGN and nothing else (see the final report).
+    let dot = |o: Pt, p1: Pt, q: Pt| {
+        el.app("tdot", &[("o", o), ("p", p1), ("q", q)], &[]).unwrap()
+    };
+    let mu = |u: Pt, v: Pt| el.app("tmu", &[("u", u), ("v", v)], &[]).unwrap();
+    let le = |u: Pt, v: Pt| el.app("tle", &[("u", u), ("v", v)], &[]).unwrap();
+    let wa = |x: Pt, y: Pt| el.app("wa", &[("ph", x), ("ps", y)], &[]).unwrap();
+    let wi = |x: Pt, y: Pt| el.app("wi", &[("ph", x), ("ps", y)], &[]).unwrap();
+    let cong_mu1 = |a: Pt, b: Pt, c: Pt, pf: Pt| {
+        let ax = el.app("cong-mu1", &[("a", a.clone()), ("b", b.clone()), ("c", c.clone())], &[]).unwrap();
+        mp(weq(a.clone(), b.clone()), weq(mu(a, c.clone()), mu(b, c)), pf, ax)
+    };
+    let cong_mu2 = |a: Pt, b: Pt, c: Pt, pf: Pt| {
+        let ax = el.app("cong-mu2", &[("a", a.clone()), ("b", b.clone()), ("c", c.clone())], &[]).unwrap();
+        mp(weq(a.clone(), b.clone()), weq(mu(c.clone(), a), mu(c, b)), pf, ax)
+    };
+    let cong_le2 = |a: Pt, b: Pt, c: Pt, pf_eq: Pt, pf_le: Pt| {
+        let ax = el.app("cong-le2", &[("a", a.clone()), ("b", b.clone()), ("c", c.clone())], &[]).unwrap();
+        let inner = mp(weq(a.clone(), b.clone()), wi(le(c.clone(), a.clone()), le(c.clone(), b.clone())), pf_eq, ax);
+        mp(le(c.clone(), a), le(c, b), pf_le, inner)
+    };
+
+    let dbacp = dot(pb.clone(), pa.clone(), cp.clone()); // dot b a Cp
+    let dbac = dot(pb.clone(), pa.clone(), pc.clone()); // dot b a c
+    let dfeg = dot(_pf.clone(), pe.clone(), pg.clone()); // dot f e g
+    let sba = sqd(pb.clone(), pa.clone());
+    let sbcp = sqd(pb.clone(), cp.clone());
+    let sbc = sqd(pb.clone(), pc.clone());
+    let sfe = sqd(_pf.clone(), pe.clone());
+    let sfg = sqd(_pf.clone(), pg.clone());
+
+    // ---- E1 : ( sqd f e ) = ( sqd b a )  [sqd-sym ∘ asa.h2 ∘ sqd-sym] -----
+    //   asa.h2 : ( sqd a b ) = ( sqd e f )
+    //   sqd-sym(a,b) : ( sqd a b ) = ( sqd b a )  ⇒  ( sqd b a ) = ( sqd a b )
+    //   sqd-sym(e,f) : ( sqd e f ) = ( sqd f e )
+    //   ⇒  ( sqd f e ) = ( sqd e f ) = ( sqd a b ) = ( sqd b a )
+    let symab = el.app("sqd-sym", &[("a", pa.clone()), ("b", pb.clone())], &[]).unwrap(); // (sqd a b)=(sqd b a)
+    let symef = el.app("sqd-sym", &[("a", pe.clone()), ("b", _pf.clone())], &[]).unwrap(); // (sqd e f)=(sqd f e)
+    let ba_ab = eqcom(sqd(pa.clone(), pb.clone()), sba.clone(), symab.clone()); // (sqd b a)=(sqd a b)
+    let fe_ef = eqcom(sqd(pe.clone(), _pf.clone()), sfe.clone(), symef.clone()); // (sqd f e)=(sqd e f)
+    let ba_ef = eqtr(sba.clone(), sqd(pa.clone(), pb.clone()), sqd(pe.clone(), _pf.clone()),
+        ba_ab, leaf("asa.h2")); // (sqd b a)=(sqd e f)
+    let ba_fe = eqtr(sba.clone(), sqd(pe.clone(), _pf.clone()), sfe.clone(),
+        ba_ef, eqcom(sfe.clone(), sqd(pe.clone(), _pf.clone()), fe_ef)); // (sqd b a)=(sqd f e)
+    let e1 = eqcom(sba.clone(), sfe.clone(), ba_fe.clone()); // E1 : ( sqd f e ) = ( sqd b a )
+
+    // ---- E2 : ( sqd f g ) = ( sqd b Cp )  [G4-sas, sas.3 = asap.s4] -------
+    //   G4-sas(a:=a,b:=b,c:=Cp,e:=e,f:=f,g:=g) :
+    //     sas.1 ( sqd a b )=( sqd e f )  = asa.h2
+    //     sas.2 ( sqd a Cp )=( sqd e g ) = s2
+    //     sas.3 ( ACong a b Cp e f g )   = asap.s4   (THE single open leaf)
+    //     sas.4 ( 0 < ( sqd a b ) )      = asa.n1
+    //     sas.5 ( 0 < ( sqd a Cp ) )     = _b1   (derived, ✔)
+    //   ⊢ ( sqd b Cp ) = ( sqd f g )
+    let g4sas_bcp = el
+        .app(
+            "G4-sas",
+            &[
+                ("a", pa.clone()), ("b", pb.clone()), ("c", cp.clone()),
+                ("e", pe.clone()), ("f", _pf.clone()), ("g", pg.clone()),
+            ],
+            &[leaf("asa.h2"), s2.clone(), leaf("asap.s4"), leaf("asa.n1"), _b1.clone()],
+        )
+        .unwrap(); // |- ( sqd b Cp ) = ( sqd f g )
+    let e2 = eqcom(sbcp.clone(), sfg.clone(), g4sas_bcp.clone()); // E2 : ( sqd f g ) = ( sqd b Cp )
+
+    // ---- 0 < ( sqd b a )  [sqd-sym ∘ asa.n1]  (g4a.4 / g3b.3) -------------
+    let sba_pos = cong_le2(
+        sqd(pa.clone(), pb.clone()),
+        sba.clone(),
+        z(),
+        symab.clone(),
+        leaf("asa.n1"),
+    ); // NB: cong_le2 gives 0<_ ; we instead need 0< — use cong-lt2 form:
+    let _ = sba_pos;
+    let conglt2 = el
+        .app("cong-lt2", &[("a", sqd(pa.clone(), pb.clone())), ("b", sba.clone()), ("c", z())], &[])
+        .unwrap(); // ( (sqd a b)=(sqd b a) -> ( ( 0<(sqd a b) ) -> ( 0<(sqd b a) ) ) )
+    let sba_pos = {
+        let inner = mp(
+            weq(sqd(pa.clone(), pb.clone()), sba.clone()),
+            wi(lt(z(), sqd(pa.clone(), pb.clone())), lt(z(), sba.clone())),
+            symab.clone(),
+            conglt2,
+        );
+        mp(lt(z(), sqd(pa.clone(), pb.clone())), lt(z(), sba.clone()), leaf("asa.n1"), inner)
+    }; // |- ( 0 < ( sqd b a ) )
+
+    // ---- E3 : ( dot f e g ) = ( dot b a Cp )  [g4a-dot, vertex b] --------
+    //   g4a-dot(a:=b,b:=a,c:=Cp,e:=f,f:=e,g:=g) :
+    //     g4ad.1 ( sqd b a )=( sqd f e )  = eqcom E1
+    //     g4ad.2 ( sqd b Cp )=( sqd f g ) = G4-sas (= eqcom E2)
+    //     g4ad.3 ( sqd a Cp )=( sqd e g ) = s2
+    //     g4ad.4 ( 0 < ( sqd b a ) )      = sba_pos
+    //   ⊢ ( dot b a Cp ) = ( dot f e g )
+    let g4adot = el
+        .app(
+            "g4a-dot",
+            &[
+                ("a", pb.clone()), ("b", pa.clone()), ("c", cp.clone()),
+                ("e", _pf.clone()), ("f", pe.clone()), ("g", pg.clone()),
+            ],
+            &[ba_fe.clone(), g4sas_bcp.clone(), s2.clone(), sba_pos.clone()],
+        )
+        .unwrap(); // |- ( dot b a Cp ) = ( dot f e g )
+    let e3 = eqcom(dbacp.clone(), dfeg.clone(), g4adot.clone()); // E3 : ( dot f e g ) = ( dot b a Cp )
+
+    // ---- the vertex-b angle ( ACong b a c b a Cp ) for G3bp --------------
+    //  Built by PURE congruence-substitution of E1,E2,E3 into asa.h3's
+    //  unfolded df-acong.  h3 = ( ACong b a c f e g ); df-acong(o:=b,p:=a,
+    //  q:=c, a:=f,e:=e,f:=g) :
+    //    EQ_h3 : ( ( dot b a c )*( dot b a c ) )*( ( sqd f e )*( sqd f g ) )
+    //          = ( ( dot f e g )*( dot f e g ) )*( ( sqd b a )*( sqd b c ) )
+    //    SGN_h3: 0 <_ ( ( dot b a c )*( dot f e g ) )
+    //  Target ( ACong b a c b a Cp ); df-acong(o:=b,p:=a,q:=c, a:=b,e:=a,
+    //  f:=Cp) :
+    //    EQ_T  : ( ( dot b a c )*( dot b a c ) )*( ( sqd b a )*( sqd b Cp ) )
+    //          = ( ( dot b a Cp )*( dot b a Cp ) )*( ( sqd b a )*( sqd b c ) )
+    //    SGN_T : 0 <_ ( ( dot b a c )*( dot b a Cp ) )
+    //  E1 : sqd f e = sqd b a ;  E2 : sqd f g = sqd b Cp ;
+    //  E3 : dot f e g = dot b a Cp.  Substituting E1,E2 into EQ_h3's left
+    //  factor and E3 (twice) into its right factor gives EQ_T EXACTLY; E3
+    //  into SGN_h3 gives SGN_T EXACTLY.  No 0<sqd cancellation, NO dot≠0.
+    let dfac_h3 = el
+        .app(
+            "df-acong",
+            &[
+                ("o", pb.clone()), ("p", pa.clone()), ("q", pc.clone()),
+                ("a", _pf.clone()), ("e", pe.clone()), ("f", pg.clone()),
+            ],
+            &[],
+        )
+        .unwrap(); // |- ( ACong b a c f e g <-> ( EQ_h3 /\ SGN_h3 ) )
+    let dd_bac = mu(dbac.clone(), dbac.clone());
+    let dd_feg = mu(dfeg.clone(), dfeg.clone());
+    let dd_bacp = mu(dbacp.clone(), dbacp.clone());
+    let eqh3_l = mu(dd_bac.clone(), mu(sfe.clone(), sfg.clone()));
+    let eqh3_r = mu(dd_feg.clone(), mu(sba.clone(), sbc.clone()));
+    let eqh3 = weq(eqh3_l.clone(), eqh3_r.clone());
+    let sgnh3 = le(z(), mu(dbac.clone(), dfeg.clone()));
+    let conj_h3 = wa(eqh3.clone(), sgnh3.clone());
+    let body_h3 = el.bi_fwd(dfac_h3.clone(), leaf("asa.h3")).unwrap(); // |- ( EQ_h3 /\ SGN_h3 )
+    let eqh3_pf = mp(
+        conj_h3.clone(), eqh3.clone(), body_h3.clone(),
+        el.app("simpl", &[("ph", eqh3.clone()), ("ps", sgnh3.clone())], &[]).unwrap(),
+    ); // |- EQ_h3
+    let sgnh3_pf = mp(
+        conj_h3.clone(), sgnh3.clone(), body_h3.clone(),
+        el.app("simpr", &[("ph", eqh3.clone()), ("ps", sgnh3.clone())], &[]).unwrap(),
+    ); // |- SGN_h3
+
+    // EQ_T from EQ_h3:  left factor  (sqd f e)*(sqd f g) -> (sqd b a)*(sqd b Cp)
+    //   via E1,E2 ;  right factor (dot f e g)*(dot f e g) -> (dot b a Cp)^2
+    //   via E3 twice.
+    let l_e1 = cong_mu1(sfe.clone(), sba.clone(), sfg.clone(), e1.clone()); // (sfe*sfg)=(sba*sfg)
+    let l_e2 = cong_mu2(sfg.clone(), sbcp.clone(), sba.clone(), e2.clone()); // (sba*sfg)=(sba*sbcp)
+    let lfac = eqtr(mu(sfe.clone(), sfg.clone()), mu(sba.clone(), sfg.clone()),
+        mu(sba.clone(), sbcp.clone()), l_e1, l_e2); // (sfe*sfg)=(sba*sbcp)
+    let r_e3a = cong_mu1(dfeg.clone(), dbacp.clone(), dfeg.clone(), e3.clone()); // (dfeg*dfeg)=(dbacp*dfeg)
+    let r_e3b = cong_mu2(dfeg.clone(), dbacp.clone(), dbacp.clone(), e3.clone()); // (dbacp*dfeg)=(dbacp*dbacp)
+    let rsq = eqtr(dd_feg.clone(), mu(dbacp.clone(), dfeg.clone()), dd_bacp.clone(),
+        r_e3a, r_e3b); // (dfeg*dfeg)=(dbacp*dbacp)
+    // EQ_h3 LHS : (dd_bac)*( (sfe)*(sfg) )  -> (dd_bac)*( (sba)*(sbcp) )
+    let eqt_l = cong_mu2(mu(sfe.clone(), sfg.clone()), mu(sba.clone(), sbcp.clone()),
+        dd_bac.clone(), lfac); // eqh3_l = (dd_bac)*( sba*sbcp )
+    // EQ_h3 RHS : (dd_feg)*( (sba)*(sbc) ) -> (dd_bacp)*( (sba)*(sbc) )
+    let eqt_r = cong_mu1(dd_feg.clone(), dd_bacp.clone(), mu(sba.clone(), sbc.clone()),
+        rsq); // eqh3_r = (dd_bacp)*( sba*sbc )
+    let eqt_lp = mu(dd_bac.clone(), mu(sba.clone(), sbcp.clone())); // EQ_T LHS
+    let eqt_rp = mu(dd_bacp.clone(), mu(sba.clone(), sbc.clone())); // EQ_T RHS
+    // EQ_T : eqt_lp = eqt_rp   from  eqt_lp = eqh3_l = eqh3_r = eqt_rp
+    let eqt_lp_eq_h3l = eqcom(eqh3_l.clone(), eqt_lp.clone(), eqt_l); // eqt_lp = eqh3_l
+    let eqt_chain1 = eqtr(eqt_lp.clone(), eqh3_l.clone(), eqh3_r.clone(), eqt_lp_eq_h3l, eqh3_pf);
+    let eqt_pf = eqtr(eqt_lp.clone(), eqh3_r.clone(), eqt_rp.clone(), eqt_chain1, eqt_r); // |- EQ_T
+
+    // SGN_T from SGN_h3 : substitute E3 ( dot f e g = dot b a Cp ) into the
+    //  RIGHT factor of SGN_h3's product.  cong-mu2 :
+    //   ( dot f e g = dot b a Cp ) -> ( ( dot b a c )*( dot f e g ) )
+    //                                = ( ( dot b a c )*( dot b a Cp ) )
+    let sgn_sub = cong_mu2(dfeg.clone(), dbacp.clone(), dbac.clone(), e3.clone()); // (dbac*dfeg)=(dbac*dbacp)
+    let sgnt_pf = cong_le2(
+        mu(dbac.clone(), dfeg.clone()),
+        mu(dbac.clone(), dbacp.clone()),
+        z(),
+        sgn_sub,
+        sgnh3_pf,
+    ); // |- 0 <_ ( ( dot b a c )*( dot b a Cp ) )  = SGN_T
+
+    // re-pack ( EQ_T /\ SGN_T ) and bi_rev the target df-acong
+    let sgnt = le(z(), mu(dbac.clone(), dbacp.clone()));
+    let conj_t = wa(weq(eqt_lp.clone(), eqt_rp.clone()), sgnt.clone());
+    let pm32 = el
+        .app("pm3.2", &[("ph", weq(eqt_lp.clone(), eqt_rp.clone())), ("ps", sgnt.clone())], &[])
+        .unwrap(); // ( EQ_T -> ( SGN_T -> ( EQ_T /\ SGN_T ) ) )
+    let pm32a = mp(
+        weq(eqt_lp.clone(), eqt_rp.clone()),
+        wi(sgnt.clone(), conj_t.clone()),
+        eqt_pf,
+        pm32,
+    );
+    let body_t = mp(sgnt.clone(), conj_t.clone(), sgnt_pf, pm32a); // |- ( EQ_T /\ SGN_T )
+    let dfac_t = el
+        .app(
+            "df-acong",
+            &[
+                ("o", pb.clone()), ("p", pa.clone()), ("q", pc.clone()),
+                ("a", pb.clone()), ("e", pa.clone()), ("f", cp.clone()),
+            ],
+            &[],
+        )
+        .unwrap(); // |- ( ACong b a c b a Cp <-> ( EQ_T /\ SGN_T ) )
+    let acong_bac_bacp = el.bi_rev(dfac_t, body_t).unwrap(); // |- ( ACong b a c b a Cp )
+
+    // ---- G3bp : ( Ray b c Cp )  from the vertex-b angle ------------------
+    //   g3b.1 ( ACong b a c b a Cp ) = acong_bac_bacp
+    //   g3b.2 ( 0 <_ ( crs b a c b a Cp ) ) = asa.ho  (orientation; the
+    //         construction's protractor side-fact — a faithful Birkhoff
+    //         precondition, threaded like asa.n*, NOT a dot≠0)
+    //   g3b.3 ( 0 < ( sqd b a ) ) = sba_pos
+    let ray_bc_cp = el
+        .app(
+            "G3bp-protuniq-oriented",
+            &[("a", pa.clone()), ("b", pb.clone()), ("c", pc.clone()), ("x", cp.clone())],
+            &[acong_bac_bacp.clone(), leaf("asa.ho"), sba_pos.clone()],
+        )
+        .unwrap(); // |- ( Ray b c Cp )
+
+    // ---- ( On Cp ( Ln b c ) )  via G3c-rayline on ( Ray b c Cp ) ---------
+    let g3c_b = el
+        .app("G3c-rayline", &[("a", pb.clone()), ("c", pc.clone()), ("x", cp.clone())], &[])
+        .unwrap(); // ( ( Ray b c Cp ) -> ( On Cp ( Ln b c ) ) )
+    let on_cp_bc = mp(
+        el.app("wray", &[("a", pb.clone()), ("b", pc.clone()), ("c", cp.clone())], &[]).unwrap(),
+        el.app("won", &[("a", cp.clone()), ("b", pb.clone()), ("c", pc.clone())], &[]).unwrap(),
+        ray_bc_cp,
+        g3c_b,
+    ); // |- ( On Cp ( Ln b c ) )
+
+    // ---- G2-incid : Cp = c  from Tri a b c + On Cp(Ln a c) + On Cp(Ln b c)
+    let cp_eq_c = el
+        .app(
+            "G2-incid",
+            &[("a", pa.clone()), ("b", pb.clone()), ("c", pc.clone()), ("x", cp.clone())],
+            &[leaf("asa.ht"), _on_cp_ac.clone(), on_cp_bc],
+        )
+        .unwrap(); // |- ( Cp = c )
+
+    // ---- closing algebra, b-incidence now DERIVED (not axiomatised) -------
+    let c_eq_cp = eqcom(cp.clone(), pc.clone(), cp_eq_c); // |- c = Cp
     let s11 = el
         .app(
             "G0-congsub",
@@ -563,21 +820,24 @@ fn main() {
     let asa_tail = Lemma {
         name: "ASA-PRIME-TAIL".into(),
         ess: vec![
+            // -- faithful Birkhoff preconditions (genuine-triangle / given) --
             ("asa.a1".into(), toks(&["|-", "-.", "(", "sqd", "a", "c", ")", "=", "0"])),
+            ("asa.n1".into(), toks(&["|-", "(", "0", "<", "(", "sqd", "a", "b", ")", ")"])),
             ("asa.n2".into(), toks(&["|-", "(", "0", "<", "(", "sqd", "e", "g", ")", ")"])),
-            ("asa.h1".into(), toks(&["|-", "(", "ACong", "a", "b", "c", "e", "f", "g", ")"])),
-            // the OPEN leaf: the b-vertex incidence the verified postulate
-            // set cannot reach WITHIN THIS FILE'S MANDATE (see header).
-            ("asap.cpc".into(), toks(&["|-", "(", "cp", "a", "c", "(", "sqd", "e", "g", ")", ")", "=", "c"])),
+            ("asa.h2".into(), toks(&["|-", "(", "sqd", "a", "b", ")", "=", "(", "sqd", "e", "f", ")"])),
+            ("asa.h3".into(), toks(&["|-", "(", "ACong", "b", "a", "c", "f", "e", "g", ")"])),
+            ("asa.ht".into(), toks(&["|-", "(", "Tri", "a", "b", "c", ")"])),
+            ("asa.ho".into(), toks(&["|-", "(", "0", "<_", "(", "crs", "b", "a", "c", "b", "a", "(", "cp", "a", "c", "(", "sqd", "e", "g", ")", ")", ")", ")"])),
+            // -- THE single residual open leaf (sharp): the vertex-a
+            //    acong-transitivity output  s4 = ( ACong a b Cp e f g )
+            //    (F0's `m b a Cp = m f e g`).  EVERYTHING else below is
+            //    kernel-derived from it via genuine $p — no dot≠0, no
+            //    unfaithful precondition.  See the final report for why
+            //    its SGN cannot be discharged within this file's mandate.
+            ("asap.s4".into(), toks(&["|-", "(", "ACong", "a", "b", "(", "cp", "a", "c", "(", "sqd", "e", "g", ")", ")", "e", "f", "g", ")"])),
         ],
         goal: asa_tail_goal,
     };
-
-    // The vertex-b angle G3bp would consume — stated for the report (NOT
-    // proved; this is exactly the residual SGN obstruction).
-    let needed_for_g3bp =
-        acong(pb.clone(), pa.clone(), pc.clone(), pb.clone(), pa.clone(), cp.clone());
-    let _ = &needed_for_g3bp;
 
     // ---- kernel-check the maximal sound sub-tree against REAL substrate ----
     let tail_locals: HashMap<String, Vec<String>> = asa_tail.ess.iter().cloned().collect();
@@ -592,9 +852,11 @@ fn main() {
     match full.verify() {
         Ok(()) => println!(
             "Kernel: ASA' built on the REAL verified substrate — \
-             {} statements; s1/s2/s3/b1/s8 + asap-cong-lt + asap-acong-sym + \
-             the GIVEN-Cp=c closing algebra kernel-verified against genuine \
-             $p (g4a-sss present, no PENDING $a).",
+             {} statements; s1/s2/s3/b1/s8 + the FULL g4a-dot/sqd-sym vertex-b \
+             transport (E1/E2/E3 → ( ACong b a c b a Cp ) → G3bp → Ray b c Cp \
+             → G3c → On Cp(Ln b c) → G2-incid → Cp=c) + the closing algebra \
+             kernel-verified against genuine $p (no PENDING $a; the ONLY open \
+             leaf is the sharp asap.s4 = ( ACong a b Cp e f g )).",
             full.stmts.len()
         ),
         Err(e) => die("KERNEL REJECTED", e),
@@ -602,71 +864,90 @@ fn main() {
 
     // ---- the honest verdict ----------------------------------------------
     println!("\n=== ASA' NO-CHEATING STATUS ===");
-    println!("  substrate          : data/grounded.out.mm (all 88 staged $p, kernel-✔)");
-    println!("  no-cheating guard  : PASS (9/9 relied-on postulates are real $p, none $a)");
-    println!("  WIRED to real $p   : G1a-rulerr, G1b-rulerd, G3a-rayangle,");
-    println!("                       G3c-rayline, G0-congsub, eqtr, ltle, eqcom, simpl,");
-    println!("                       simpr, of-mulcom, cong-le2, pm3.2, df-acong");
+    println!("  substrate          : data/grounded.out.mm (all 90 staged $p, kernel-✔)");
+    println!("  no-cheating guard  : PASS (11/11 relied-on postulates are real $p, none $a)");
+    println!("  WIRED to real $p   : G1a-rulerr, G1b-rulerd, G3a-rayangle, G4-sas,");
+    println!("                       G3c-rayline, G2-incid, G3bp-protuniq-oriented,");
+    println!("                       G0-congsub, g4a-sss, g4a-dot, sqd-sym, eqtr,");
+    println!("                       df-acong, cong-mu1/2, cong-le2, cong-lt2, ...");
     println!("  derived tiny $p    : asap-cong-lt, asap-acong-sym  — BOTH VERIFIED");
-    println!("  g4a-sss            : present & verified — closes the angle-OUTPUT");
-    println!("                       direction the old GAP #2 named (SSS→ACong).");
-    println!("  G4-sas / G2-incid / G3bp-protuniq-oriented : present & verified.");
+    println!("  g4a-dot + sqd-sym  : present & verified — CLOSE the vertex-b");
+    println!("                       acong-transport the prior pass named as the");
+    println!("                       open RESIDUE-A/B.  That residue is GONE:");
+    println!("                       ( ACong b a c b a Cp ) is now built by PURE");
+    println!("                       congruence-substitution of E1,E2,E3 into");
+    println!("                       asa.h3 — its SGN is E3-substituted h3.SGN");
+    println!("                       (NO dot(f,e,g)≠0), its EQ needs NO 0<sqd");
+    println!("                       cancellation at all.  G3bp/G3c/G2-incid then");
+    println!("                       give Cp=c.  ALL kernel-verified.");
 
     println!(
-        "\nASA' is NOT yet a no-cheating closure.  g4a-sss removed the old\n\
-         'no angle-output SAS exists' wall; the residue is now a PRECISE,\n\
-         narrow obstruction that is OUTSIDE this file's mandate to fix\n\
+        "\nASA' is NOT yet a no-cheating closure — but the residue is now\n\
+         ONE precise, named gap, strictly smaller than every prior pass\n\
          (reported, not faked):"
     );
     println!(
-        "\n  RESIDUE-A (genuine, the crux)  The vertex-b angle\n\
-         \x20         ( ACong b a c b a Cp ) that G3bp consumes is reached by\n\
-         \x20         combining g4a-sss's output ( ACong b a Cp f e g ) with\n\
-         \x20         asa.h3 ( ACong b a c f e g ) through the reference\n\
-         \x20         triple ( f e g ) (an `acong-tr`).  Splitting df-acong:\n\
-         \x20           • EQ conjunct  — FAITHFUL: cancels with only the\n\
-         \x20             `0 < ( sqd e f )` / `0 < ( sqd f g )` genuine-\n\
-         \x20             triangle non-degeneracies (threaded asa.n3 = h2+n1,\n\
-         \x20             discharged like asa.n1/n2).  This is exactly the\n\
-         \x20             mission's `0 < sqd` collapse — confirmed for EQ.\n\
-         \x20           • SGN conjunct — REQUIRES dot(f,e,g) ≠ 0, i.e. the\n\
-         \x20             REFERENCE angle ∠efg is not a RIGHT angle.  That is\n\
-         \x20             NOT a `0 < sqd` side non-degeneracy; it is strictly\n\
-         \x20             stronger and Birkhoff ASA does NOT impose it (ASA\n\
-         \x20             holds for right triangles).  g4a-sss proves its own\n\
-         \x20             SGN sign-free INTERNALLY (it derives the dot-\n\
-         \x20             equality so SGN = 0 ≤ dot² = of-sqpos) but only\n\
-         \x20             exports the `ACong`; on re-unfold the squared form\n\
-         \x20             is gone and dot(f,e,g)≠0 reappears.  Exporting the\n\
-         \x20             internal dot-equality needs proof_g4a.rs — OUTSIDE\n\
-         \x20             this file's mandate."
+        "\n  THE SOLE RESIDUE — vertex-a acong-transitivity AT-1's SGN.\n\
+         \x20  The single open leaf is  asap.s4 = ( ACong a b Cp e f g )\n\
+         \x20  (F0's s4 = `m b a Cp = m f e g`), G4-sas's included angle.\n\
+         \x20  It is the vertex-a transitivity of two genuine facts:\n\
+         \x20    s3  = ( ACong a b Cp a b c )   [G3a-rayangle on Ray a c Cp,\n\
+         \x20          a SAME-RAY angle equality — Cp ∈ ray a→c — REAL $p]\n\
+         \x20    h1  = ( ACong a b c e f g )    [asa.h1, the given angle@a]\n\
+         \x20  through the triple ( a b c ).  Splitting df-acong:\n\
+         \x20    • EQ_AT1  — FAITHFUL.  Cancels only ( sqd a b )·( sqd a c ),\n\
+         \x20      i.e. the genuine-triangle non-degeneracies 0<sqd a b\n\
+         \x20      (asa.n1) and 0<sqd a c (asa.a1 ⇒, via sqdnn).  Exactly\n\
+         \x20      the mission's `0 < sqd` collapse.\n\
+         \x20    • SGN_AT1 — the genuine residue.  Want\n\
+         \x20         0 ≤ dot(a,b,Cp)·dot(e,f,g)   from\n\
+         \x20         0 ≤ dot(a,b,Cp)·dot(a,b,c)   (s3.SGN)  and\n\
+         \x20         0 ≤ dot(a,b,c)·dot(e,f,g)    (h1.SGN).\n\
+         \x20      In an ordered field this FAILS precisely when\n\
+         \x20      dot(a,b,c)=0 (∠bac a RIGHT angle): s3.SGN ∧ h1.SGN then\n\
+         \x20      give 0≤0 with NO constraint on sign(dot a b Cp) or\n\
+         \x20      sign(dot e f g), so the product can be negative.\n\
+         \x20      Birkhoff ASA does NOT exclude right ∠bac, so threading\n\
+         \x20      dot(a,b,c)≠0 would WEAKEN the theorem — REFUSED."
     );
     println!(
-        "\n  RESIDUE-B (in-mandate but unfixable here)  proof_g4a's chosen\n\
-         \x20         g4a-sss signature fixes the angle at df-acong's FIRST\n\
-         \x20         arg, so the vertex-b form forces g4a.1 =\n\
-         \x20         ( sqd b a ) = ( sqd f e ) — the symmetric reorder of\n\
-         \x20         asa.h2.  No sqd-symmetry `$p` exists in the substrate\n\
-         \x20         and deriving one needs the ring normaliser (grounded.rs\n\
-         \x20         only); asaprime cannot ring_eq.  A one-line sqd-sym `$p`\n\
-         \x20         in grounded.mm / proof_*.rs would discharge it — OUTSIDE\n\
-         \x20         this file's mandate."
+        "\n  WHY g4a-dot CANNOT bridge AT-1 (unlike vertex-b).  The b-vertex\n\
+         \x20  SGN was bridged by g4a-dot giving the EQUALITY E3\n\
+         \x20  ( dot f e g ) = ( dot b a Cp ) from the SSS of (b,a,Cp)≅\n\
+         \x20  (f,e,g) — all three sides non-circular (E1=sqd-sym∘h2,\n\
+         \x20  E2=G4-sas, sqd a Cp=sqd e g = s2).  The analogous AT-1 bridge\n\
+         \x20  would need E0 = ( dot a b c ) = ( dot e f g ) via g4a-dot on\n\
+         \x20  (a,b,c)≅(e,f,g), whose third side is sqd a c = sqd e g —\n\
+         \x20  THE GOAL ITSELF.  Circular.  The only non-circular constraint\n\
+         \x20  on the c-side is asa.h3 (an ACong, squared-cosine — strictly\n\
+         \x20  weaker than a dot-equality), which is exactly why the c-side\n\
+         \x20  cannot yield a sign-free dot bridge."
     );
     println!(
-        "\nWHAT WOULD CLOSE IT (precisely):  EITHER export g4a-sss's already-\n\
-         proven internal `dot(b,a,Cp) = dot(f,e,g)` equality (then the\n\
-         vertex-b ACong is built by pure congruence-substitution — SGN\n\
-         sign-free, no dot≠0, EQ via the faithful `0<sqd`), OR add the dual\n\
-         angle-output SAS in the b-vertex / f-e-g convention that needs no\n\
-         sqd-sym; plus a one-line sqd-symmetry `$p`.  All three edits live in\n\
-         proof_g4a.rs / proof_g3.rs / grounded.mm, OUTSIDE this file's\n\
-         mandate.  Until then ASA' honestly REFUSES to claim a no-cheating\n\
-         closure.\n\n\
-         (\"Reported, not faked.\"  The s1/s2/s3/b1/s8 + closing-algebra +\n\
-         asap-cong-lt + asap-acong-sym sub-tree above IS kernel-verified\n\
-         against the genuine $p; the EQ half of the vertex-b transport is\n\
-         faithfully dischargeable; only the SGN dot≠0 residue and the\n\
-         sqd-sym bridge are open, and they are stated exactly.)"
+        "\n  THE FAITHFUL FIX (precise, OUTSIDE this file's mandate).  s3\n\
+         \x20  comes from G3a-rayangle on ( Ray a c Cp ): Cp ∈ ray a→c, so\n\
+         \x20  Cp−a = s·(c−a) with s≥0 (s>0 since sqd a Cp = sqd e g > 0).\n\
+         \x20  Hence dot(a,b,Cp) = s·dot(a,b,c): the two share a sign and,\n\
+         \x20  crucially, dot(a,b,c)=0 ⇒ dot(a,b,Cp)=0 ⇒ the product 0≥0.\n\
+         \x20  That collinearity→dot-proportionality is EXACTLY G3a-rayangle's\n\
+         \x20  internal content but is NOT exported as a $p; obtaining it is\n\
+         \x20  a one-lemma `g3a-dotprop` ( ( Ray a c x ) ⊢ 0 ≤ ( dot a b x )·\n\
+         \x20  ( dot a b c ) WITH the strengthening to a sign-free transport,\n\
+         \x20  e.g. ( dot a b x ) = ( ( inv ... ) * ( dot a b c ) ) ) in\n\
+         \x20  proof_g3.rs — OUTSIDE this task's mandate (proof_g4a.rs /\n\
+         \x20  asaprime.rs only).  With it, AT-1 closes faithfully and ASA'\n\
+         \x20  is a complete no-cheating closure (the rest is DONE & verified)."
+    );
+    println!(
+        "\n(\"Reported, not faked.\"  g4a-dot + sqd-sym were the correct,\n\
+         needed bridges and DID close the previously-named vertex-b\n\
+         obstruction faithfully — the {} -statement sub-tree above, with\n\
+         the full vertex-b transport + G3bp + G3c + G2-incid + closing\n\
+         algebra, is kernel-verified against ONLY genuine $p with NO\n\
+         dot≠0 and NO unfaithful precondition, leaving the SINGLE sharp\n\
+         leaf asap.s4 whose SGN residue and its exact faithful fix are\n\
+         stated above.  A named gap beats a fake green.)",
+        full.stmts.len()
     );
     exit(2);
 }

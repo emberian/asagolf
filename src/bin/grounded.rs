@@ -1399,6 +1399,32 @@ fn ring_eq(el: &Elab, lhs: &Pt, rhs: &Pt) -> Pt {
     let (r1, rp) = desub(el, rhs);
     let (lsm, lps) = sdist(el, &l1);
     let (rsm, rps) = sdist(el, &r1);
+    // Degree guard. canon_sum is ~O(n³) in the monomial count n (proof-size
+    // metric is intentionally cut-free, so high-degree dense identities are
+    // genuinely astronomical — this is the project thesis, not a bug). The
+    // discipline is: never hand ring_eq a dense identity past degree ~4;
+    // factor it into tiny generic lemmas instantiated by substitution (see
+    // g3a-plk / g2-elim-* / gsplit). Make that regime *observable* instead
+    // of a silent multi-minute hang. Thresholds are far above every
+    // degree-≤4 lemma in the verified set (loclink/G4-sas/g2-* etc.), so
+    // this never regresses a working proof.
+    let nmon = lsm.len() + rsm.len();
+    if nmon >= 512 {
+        eprintln!(
+            "  ring_eq: {nmon} monomials — high-degree regime (canon_sum is \
+             ~O(n³)); if this hangs, factor via a generic lemma (cf. g3a-plk)."
+        );
+    }
+    if nmon >= 4096 {
+        let lt = el.conclusion(lhs).map(|c| c.join(" ")).unwrap_or_default();
+        panic!(
+            "ring_eq: refusing {nmon}-monomial dense identity — this is the \
+             degree wall (intractable cut-free by design). Factor it: prove \
+             a tiny generic identity over fresh $f atoms and instantiate with \
+             the big subterms by substitution (see g3a-plk/g2-elim/gsplit in \
+             proof_g3.rs/proof_g2.rs).\n  lhs = {lt}"
+        );
+    }
     let (lc, lcp) = canon_sum(el, &lsm);
     let (rc, rcp) = canon_sum(el, &rsm);
     if !same(&lc, &rc) {

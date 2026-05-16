@@ -309,6 +309,31 @@ impl<'a> Elab<'a> {
             .db
             .get(label)
             .ok_or_else(|| format!("unknown label {label}"))?;
+        // Key-checker (construction-layer ergonomics; soundness unaffected —
+        // the kernel still independently re-checks the emitted proof). The
+        // recurring `("vw",..)` vs `("w",..)` / `("va",..)` vs `("a",..)`
+        // bug-class produced cryptic "no binding for variable" errors; here
+        // we name the lemma's actual mandatory variables and flag any
+        // provided key that matches none of them.
+        let expected_vars: Vec<&str> = st
+            .mand_hyps
+            .iter()
+            .filter_map(|hl| {
+                let h = self.db.get(hl)?;
+                (h.kind == Kind::F).then(|| h.expr[1].as_str())
+            })
+            .collect();
+        if let Some((bad, _)) = binds
+            .iter()
+            .find(|(n, _)| !expected_vars.contains(n))
+        {
+            return Err(format!(
+                "{label}: substitution key `{bad}` is not a mandatory variable \
+                 of `{label}` (expected one of: {}). Note el.app keys are the \
+                 $f *variable* name (e.g. `w`), not the $f *label* (e.g. `vw`).",
+                expected_vars.join(", ")
+            ));
+        }
         let mut kids = Vec::with_capacity(st.mand_hyps.len());
         let mut ei = 0;
         for hl in &st.mand_hyps {
@@ -320,7 +345,13 @@ impl<'a> Elab<'a> {
                         .iter()
                         .find(|(n, _)| n == v)
                         .map(|(_, p)| p.clone())
-                        .ok_or_else(|| format!("{label}: no binding for variable `{v}`"))?;
+                        .ok_or_else(|| {
+                            format!(
+                                "{label}: no binding for variable `{v}` \
+                                 (mandatory variables: {})",
+                                expected_vars.join(", ")
+                            )
+                        })?;
                     kids.push(p);
                 }
                 Kind::E => {

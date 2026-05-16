@@ -36,10 +36,10 @@ use super::*;
 /// they stage tiny + kernel-✔, exactly as g3a-plk did). The full G2
 /// inference lemma is wired on top of these next.
 pub fn count() -> usize {
-    // 4 = generics (g2-elim-y/x, g2-sq) + g2-posne (idx 3), all
-    // kernel-verifiable. idx-4 G2-incid inference arm drafted with a
-    // documented tail; gated off until it kernel-verifies. RESTORE TO 5.
-    4
+    // 5 = generics + g2-posne(3) + g2-sqpos-ne(4), all kernel-verifiable.
+    // idx-5 G2-incid inference arm drafted with a documented tail; gated
+    // off until it kernel-verifies. RESTORE TO 6.
+    5
 }
 
 /// Build local lemma `idx` against an `Elab` over the current db.
@@ -184,11 +184,149 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 goal: g,
             };
         }
-        // idx 4 : G2-incid  (INFERENCE)
+        // ====================================================================
+        // idx 4 : g2-sqpos-ne  (INFERENCE, reusable)
+        //   ess  g2sn.1 : -. ( u = 0 )      goal  ( 0 < ( u * u ) )
+        //   of-letot 2-branch + g2-posne + of-lemul + jaoi (sqz-pos kin).
+        // ====================================================================
+        4 => {
+            let u = || leaf("vu");
+            let nu = || neg(el, u()); // ( 0 -x u )
+            let n = |p: Pt| el.app("wn", &[("ph", p)], &[]).unwrap();
+            let aw = |p: Pt, q: Pt| el.app("wa", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let ow = |p: Pt, q: Pt| el.app("wo", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let mp = |pw: Pt, qw: Pt, mn: Pt, mj: Pt| {
+                el.app("ax-mp", &[("ph", pw), ("ps", qw)], &[mn, mj]).unwrap()
+            };
+            let syl = |p: Pt, q: Pt, r: Pt, s1: Pt, s2: Pt| {
+                el.app("syl", &[("ph", p), ("ps", q), ("ch", r)], &[s1, s2]).unwrap()
+            };
+            let imp = |p: Pt, q: Pt| el.app("wi", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let eqp = |s: Pt, t: Pt| el.app("weq", &[("x", s), ("y", t)], &[]).unwrap();
+            let le = |s: Pt, t: Pt| el.app("tle", &[("u", s), ("v", t)], &[]).unwrap();
+            let lt = |s: Pt, t: Pt| el.app("tlt", &[("u", s), ("v", t)], &[]).unwrap();
+            let z = || t0p(el);
+            let con3i = |ph: Pt, ps: Pt, p1: Pt| {
+                el.app("con3i", &[("ph", ph), ("ps", ps)], &[p1]).unwrap()
+            };
+            let idt = |ph: Pt| el.app("id", &[("ph", ph)], &[]).unwrap();
+            let jca = |ph: Pt, ps: Pt, ch: Pt, p1: Pt, p2: Pt| {
+                el.app("jca", &[("ph", ph), ("ps", ps), ("ch", ch)], &[p1, p2]).unwrap()
+            };
+            // ( (0<t) -> 0<(t*t) ) from of-lemul(t,t) + dup
+            let pos_sq = |t: Pt| -> Pt {
+                let lem = el
+                    .app("of-lemul", &[("u", t.clone()), ("v", t.clone())], &[])
+                    .unwrap(); // ( ( (0<t)/\(0<t) ) -> 0<(t*t) )
+                let dup = jca(
+                    lt(z(), t.clone()),
+                    lt(z(), t.clone()),
+                    lt(z(), t.clone()),
+                    idt(lt(z(), t.clone())),
+                    idt(lt(z(), t.clone())),
+                ); // ( (0<t) -> ((0<t)/\(0<t)) )
+                syl(
+                    lt(z(), t.clone()),
+                    aw(lt(z(), t.clone()), lt(z(), t.clone())),
+                    lt(z(), mu(el, t.clone(), t.clone())),
+                    dup,
+                    lem,
+                ) // ( (0<t) -> 0<(t*t) )
+            };
+            // ---- positive branch : ( (0<_u) -> 0<(u*u) ) ----
+            let posu = el
+                .app("g2-posne", &[("u", u())], &[leaf("g2sn.1")])
+                .unwrap(); // ( (0<_u) -> (0<u) )
+            let br_p = syl(
+                le(z(), u()),
+                lt(z(), u()),
+                lt(z(), mu(el, u(), u())),
+                posu,
+                pos_sq(u()),
+            ); // ( (0<_u) -> 0<(u*u) )
+            // ---- negative branch : ( (u<_0) -> 0<(u*u) ) ----
+            // -.(nu=0) from -.(u=0): (nu=0)->(0=u)[subeq0]->(u=0)[eqcom]
+            let se0 = el
+                .app("subeq0", &[("u", z()), ("v", u())], &[])
+                .unwrap(); // ( (0-xu)=0 -> 0=u )
+            let ec = el
+                .app("eqcom", &[("x", z()), ("y", u())], &[])
+                .unwrap(); // ( 0=u -> u=0 )
+            let nu0_u0 = syl(eqp(nu(), z()), eqp(z(), u()), eqp(u(), z()), se0, ec); // ( nu=0 -> u=0 )
+            let nnu0 = mp(
+                n(eqp(u(), z())),
+                n(eqp(nu(), z())),
+                leaf("g2sn.1"),
+                con3i(eqp(nu(), z()), eqp(u(), z()), nu0_u0),
+            ); // -.(nu=0)
+            let posnu = el
+                .app("g2-posne", &[("u", nu())], &[nnu0])
+                .unwrap(); // ( (0<_nu) -> (0<nu) )
+            let l2s = el
+                .app("le2sub", &[("u", u()), ("v", z())], &[])
+                .unwrap(); // ( (u<_0) -> ( 0 <_ ( 0 -x u ) ) )
+            let nu_le = syl(le(u(), z()), le(z(), nu()), lt(z(), nu()), l2s, posnu); // ( (u<_0) -> (0<nu) )
+            let nu_sq = syl(
+                le(u(), z()),
+                lt(z(), nu()),
+                lt(z(), mu(el, nu(), nu())),
+                nu_le,
+                pos_sq(nu()),
+            ); // ( (u<_0) -> 0<(nu*nu) )
+            // (nu*nu)=(u*u) [tiny ring]; cong-lt2 rewrite 0<(nu*nu) -> 0<(u*u)
+            let rsq = ring_eq(el, &mu(el, nu(), nu()), &mu(el, u(), u()));
+            let clt2 = el
+                .app(
+                    "cong-lt2",
+                    &[("a", mu(el, nu(), nu())), ("b", mu(el, u(), u())), ("c", z())],
+                    &[],
+                )
+                .unwrap(); // ( (nu*nu)=(u*u) -> ( 0<(nu*nu) -> 0<(u*u) ) )
+            let nn_uu = mp(
+                eqp(mu(el, nu(), nu()), mu(el, u(), u())),
+                imp(lt(z(), mu(el, nu(), nu())), lt(z(), mu(el, u(), u()))),
+                rsq,
+                clt2,
+            ); // ( 0<(nu*nu) -> 0<(u*u) )
+            let br_n = syl(
+                le(u(), z()),
+                lt(z(), mu(el, nu(), nu())),
+                lt(z(), mu(el, u(), u())),
+                nu_sq,
+                nn_uu,
+            ); // ( (u<_0) -> 0<(u*u) )
+            // ---- of-letot(u,0) jaoi ----
+            let tot = el
+                .app("of-letot", &[("u", u()), ("v", z())], &[])
+                .unwrap(); // ( (u<_0) \/ (0<_u) )
+            let jao = el
+                .app(
+                    "jaoi",
+                    &[
+                        ("ph", le(u(), z())),
+                        ("ps", le(z(), u())),
+                        ("ch", lt(z(), mu(el, u(), u()))),
+                    ],
+                    &[br_n, br_p],
+                )
+                .unwrap(); // ( ( (u<_0)\/(0<_u) ) -> 0<(u*u) )
+            let g = mp(
+                ow(le(u(), z()), le(z(), u())),
+                lt(z(), mu(el, u(), u())),
+                tot,
+                jao,
+            ); // ( 0 < ( u * u ) )
+            return Lemma {
+                name: "g2-sqpos-ne".into(),
+                ess: vec![("g2sn.1".into(), toks(&["|-", "-.", "u", "=", "0"]))],
+                goal: g,
+            };
+        }
+        // idx 5 : G2-incid  (INFERENCE)
         //   ess g2.1 |- ( Tri a b c )   g2.2 |- ( On x ( Ln a c ) )
         //       g2.3 |- ( On x ( Ln b c ) )      goal |- x = c
         // ====================================================================
-        4 => {
+        5 => {
             let pa = || leaf("va");
             let pb = || leaf("vb");
             let pc = || leaf("vc");

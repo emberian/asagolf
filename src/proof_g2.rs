@@ -36,10 +36,8 @@ use super::*;
 /// they stage tiny + kernel-✔, exactly as g3a-plk did). The full G2
 /// inference lemma is wired on top of these next.
 pub fn count() -> usize {
-    // 5 = generics + g2-posne(3) + g2-sqpos-ne(4), all kernel-verifiable.
-    // idx-5 G2-incid inference arm drafted with a documented tail; gated
-    // off until it kernel-verifies. RESTORE TO 6.
-    5
+    // 6 = generics + g2-posne(3) + g2-sqpos-ne(4) + G2-incid(5).
+    6
 }
 
 /// Build local lemma `idx` against an `Elab` over the current db.
@@ -533,7 +531,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                 let c2 = cmi2(el, mu(el, pyy(), xqd.clone()), z(), z(), py_xqd0);
                 eqtr3(el, elimy_lhs.clone(), mi(el, z(), mu(el, pyy(), xqd.clone())), mi(el, z(), z()), c1, c2)
             };
-            let zz0 = ring_eq(el, &mi(el, z(), z()), &z()); // (0-x0)=0
+            let zz0 = el.app("subid", &[("u", z())], &[]).unwrap(); // ( 0 -x 0 ) = 0
             let elimy_lhs0 = eqtr3(el, elimy_lhs.clone(), mi(el, z(), z()), z(), lhs_y_zz, zz0.clone());
             // detPQ·dy = 0 : eqtr3( elimy : lhs=detPQ·dy ; elimy_lhs0 : lhs=0 )
             let detpq_dy0 = eqtr3(
@@ -610,10 +608,100 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                     c3,
                 ) // |- -. ( detPQ = 0 )
             };
-            let _ = (ndetpq0, detpq_dy0, detpq_dx0, xpd0, xqd0, n, eqp);
-            // ---- TODO (next kernel-guided pass): -.(detPQ=0) -> 0<detPQ²,
-            // (detPQ·dy)²=detPQ²·dy² [g2-sq], mulcposcan cancel, sqz,
-            // subeq0 -> Xc x=Xc c & Yc x=Yc c, conj2+ptext -> x=c. ----
+            let _ = (xpd0, xqd0);
+            // ---- tail: all helpers kernel-verified, pure composition ----
+            let aw = |p: Pt, q: Pt| el.app("wa", &[("ph", p), ("ps", q)], &[]).unwrap();
+            let dsq = mu(el, detpq.clone(), detpq.clone()); // detPQ²
+            // 0 < detPQ²  (g2-sqpos-ne, ess -.(detPQ=0))
+            let detpq_sqpos = el
+                .app("g2-sqpos-ne", &[("u", detpq.clone())], &[ndetpq0])
+                .unwrap(); // |- ( 0 < ( detPQ * detPQ ) )
+            // per-axis: from |- (detPQ·k)=0  derive |- ( cxx = cxc )
+            let axis = |k: Pt, kp0: Pt, cxx: Pt, cxc: Pt| -> Pt {
+                let dk = mu(el, detpq.clone(), k.clone()); // detPQ·k
+                let ksq = mu(el, k.clone(), k.clone()); // k²
+                // (dk·dk) = (0·dk) = 0
+                let sq_l = cmu1(el, dk.clone(), z(), dk.clone(), kp0);
+                let m0 = el.app("mul0", &[("u", dk.clone())], &[]).unwrap();
+                let sq0 = eqtr3(
+                    el,
+                    mu(el, dk.clone(), dk.clone()),
+                    mu(el, z(), dk.clone()),
+                    z(),
+                    sq_l,
+                    m0,
+                ); // ( (dk·dk) = 0 )
+                // g2-sq : (dk·dk) = (detPQ²·k²)  ⇒  (detPQ²·k²)=0
+                let gsq = el
+                    .app(
+                        "g2-sq",
+                        &[("u", detpq.clone()), ("v", k.clone())],
+                        &[],
+                    )
+                    .unwrap();
+                let g_rev = eqcomm(
+                    el,
+                    mu(el, dk.clone(), dk.clone()),
+                    mu(el, dsq.clone(), ksq.clone()),
+                    gsq,
+                );
+                let dsqk0 = eqtr3(
+                    el,
+                    mu(el, dsq.clone(), ksq.clone()),
+                    mu(el, dk.clone(), dk.clone()),
+                    z(),
+                    g_rev,
+                    sq0,
+                ); // ( (detPQ²·k²) = 0 )
+                // (k²·detPQ²) = (0·detPQ²)  [both = 0] for mulcposcan
+                let comm = el
+                    .app(
+                        "of-mulcom",
+                        &[("u", ksq.clone()), ("v", dsq.clone())],
+                        &[],
+                    )
+                    .unwrap(); // (k²·detPQ²)=(detPQ²·k²)
+                let k2d0 = eqtr3(
+                    el,
+                    mu(el, ksq.clone(), dsq.clone()),
+                    mu(el, dsq.clone(), ksq.clone()),
+                    z(),
+                    comm,
+                    dsqk0,
+                ); // (k²·detPQ²)=0
+                let zmul0 = el.app("mul0", &[("u", dsq.clone())], &[]).unwrap(); // (0·detPQ²)=0
+                let canc_eq = eqtr3(
+                    el,
+                    mu(el, ksq.clone(), dsq.clone()),
+                    z(),
+                    mu(el, z(), dsq.clone()),
+                    k2d0,
+                    eqcomm(el, mu(el, z(), dsq.clone()), z(), zmul0),
+                ); // (k²·detPQ²)=(0·detPQ²)
+                let k2_0 = el
+                    .app(
+                        "mulcposcan",
+                        &[("u", ksq.clone()), ("v", z()), ("w", dsq.clone())],
+                        &[detpq_sqpos.clone(), canc_eq],
+                    )
+                    .unwrap(); // |- ( k² = 0 )
+                let k_0 = el
+                    .app("sqz", &[("u", k.clone())], &[k2_0])
+                    .unwrap(); // |- ( k = 0 )   i.e. ( (cxx -x cxc) = 0 )
+                let se = el
+                    .app("subeq0", &[("u", cxx.clone()), ("v", cxc.clone())], &[])
+                    .unwrap();
+                mp(eqp(k.clone(), z()), eqp(cxx.clone(), cxc.clone()), k_0, se)
+            };
+            let xeq = axis(dxx(), detpq_dx0, xc(px()), xc(pc())); // (Xc x)=(Xc c)
+            let yeq = axis(dyy(), detpq_dy0, yc(px()), yc(pc())); // (Yc x)=(Yc c)
+            let aexp = eqp(xc(px()), xc(pc()));
+            let bexp = eqp(yc(px()), yc(pc()));
+            let conj = conj2(el, aexp.clone(), bexp.clone(), xeq, yeq); // ( (Xcx=Xcc) /\ (Ycx=Ycc) )
+            let pt = el
+                .app("ptext", &[("a", px()), ("b", pc())], &[])
+                .unwrap(); // ( ( (Xcx=Xcc)/\(Ycx=Ycc) ) -> x=c )
+            let g = mp(aw(aexp, bexp), eqp(px(), pc()), conj, pt); // |- x = c
             Lemma {
                 name: "G2-incid".into(),
                 ess: vec![
@@ -621,7 +709,7 @@ pub fn make(idx: usize, el: &Elab) -> Lemma {
                     ("g2.2".into(), toks(&["|-", "(", "On", "x", "(", "Ln", "a", "c", ")", ")"])),
                     ("g2.3".into(), toks(&["|-", "(", "On", "x", "(", "Ln", "b", "c", ")", ")"])),
                 ],
-                goal: eqp(px(), pc()),
+                goal: g,
             }
         }
         _ => unreachable!(),

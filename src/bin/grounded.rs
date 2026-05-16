@@ -29,6 +29,8 @@ mod proof_g2;
 mod proof_g3;
 #[path = "../proof_g1.rs"]
 mod proof_g1;
+#[path = "../cse.rs"]
+mod cse;
 
 use elaborate::{assemble, assemble_one, leaf, Elab, Lemma, Pt};
 use number::ProofSize;

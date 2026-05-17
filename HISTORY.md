@@ -854,6 +854,39 @@ still the bone; the meaning is still the heavy thing in the other
 column; the backbone is just now visibly a backbone — recorded at
 exactly that weight.
 
+## Act XX — The Fourth Promise, Flagged
+
+Full steam, full autonomy — and the honest reading was not licence but
+*the deliberate promise, made the way it was always going to have to be
+made*. Wave 9 had drawn the wall: a genuine metric is not in the bare
+ring; the dynamics need it. The contract had pre-registered, chapters
+earlier, exactly this contingency — a new positive commitment might be
+forced; if so, flag it like the third one; it *bounds* the thesis, it
+does not break it.
+
+So commitment #4 was added on consent and by the book. One axiom: the
+metric is invertible. Beside it, written before it was used: the
+Verdict-B proof that it is genuinely not derivable (the all-zero world
+keeps every old rule and fails this one); the shape-proof that it
+smuggles nothing classical (one bare equation); and the quarantine,
+verified by an empty diff — the frozen base untouched, every prior pure
+result undisturbed, the new promise sealed in one room. The fourth
+flagged non-conservative commitment in the whole structure, flagged
+exactly as the third (`eq-ap`) was.
+
+It bought one honest thing: the dual-star, given a non-degenerate
+metric, is a genuine involution — fold then unfold returns the start,
+and it *needed* the metric to be so (the orientation-only version of
+the act before never did). That is the well-posed floor the
+inhomogeneous field equation would stand on. The equation with a
+source, the action, matter, the quantum — all stayed named, unbuilt,
+because the metric buys the metric and not the physics, and the one
+forbidden move was to claim otherwise. This is the §1b bounded
+outcome, exactly as pre-registered: the thesis survives a named, pure,
+flagged commitment; it would not survive a classical or a hidden one,
+and neither was made. The promise was made out loud, with its price
+written on it, and nothing was claimed beyond what was paid.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

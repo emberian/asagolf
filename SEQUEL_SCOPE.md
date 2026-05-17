@@ -1922,6 +1922,63 @@ once more: the structural backbone is cheap, pure, general, and forces
 nothing; the full tower and the meaning stay the named, immovable
 residuals — reported, not inflated.**
 
+## 5x. FLAGGED COMMITMENT #4 — the metric, and the genuine metric Hodge involution (the §1b pre-registered BOUND, on consent)
+
+The deliberate trust-story step, taken on explicit authorization. Wave 9
+(§5v) proved the negative map: a genuine metric Hodge `⋆` and the
+dynamical field equation **force a metric the bare ring lacks**.
+`BOOK3_SCOPE §1b` *pre-registered* exactly this: "a gauge identity may
+force a NEW positive substrate commitment — flagged like `eq-ap` if so
+... a **bound, not a falsification**." Wave 11 is that pre-registered
+case materializing, with the exact `eq-ap` discipline:
+
+**FLAGGED NON-CONSERVATIVE SUBSTRATE COMMITMENT #4 — `ax-metric`:**
+`( met * imet ) = 1` (a non-degenerate scalar metric: two new
+constants, "the metric is invertible"). **Verdict B (NOT derivable)**:
+the all-zero model satisfies the entire frozen `data/sdg.base.mm` +
+`eq-ap` but there `( met * imet ) = ( 0*0 ) = 0 ≠ 1` — outside the
+derivable set, a genuine new commitment, not a derived lemma.
+**Intuitionistic**: a single positive-Horn atomic equality, no `¬`/`∨`/
+`→`/quantifier — matches no classical template (the structural twin of
+`t0`/`t1` + the ring equalities). **Quarantined**: the frozen
+`data/sdg.base.mm` is **UNCHANGED** (git diff empty); `ax-metric` +
+`met`/`imet` live ONLY in the metric-extended base prefix of
+`data/sdg.metric.mm`; **every other corpus (50+ pure `$p`) rides the
+frozen base, untouched**. Standalone trio `sdgmetric{build,floor,pure}`.
+
+```
+sdgmetricpure: GENUINELY INTUITIONISTIC ✔ (exit 0)
+  sdg-metric-eqneg      = 1979  inv-congruence            [MEASURED, pure-ring helper]
+  sdg-metric-neguniq    = 1542  additive-inverse uniqueness [MEASURED, helper]
+  sdg-metric-invinv     = 1610  inv(inv x)=x              [MEASURED, helper]
+  sdg-metric-mulneg     = 1686  a·(inv w)=inv(a·w)        [MEASURED, helper]
+  sdg-metric-symm       =   42  ( imet * met ) = 1        [MEASURED, consumes #4]
+  sdg-metric-involution = 5849  ( imet·inv(met·inv F) ) = F [MEASURED, consumes #4]
+ADVERSARIAL: sdg-metric-symm & sdg-metric-involution genuinely
+  consume ax-metric ✔ (hard-fail otherwise); helpers frozen-base-only ✔;
+  ax-metric the SOLE non-frozen-base axiom (NO eq-ap/kl/mc) ✔.
+```
+
+**The headline — `sdg-metric-involution`:** the genuine metric Hodge
+round-trip `⋆'⋆F = F` (`F := ( ap c x ) * v`). It is an involution
+**precisely because the metric is non-degenerate** (`met·imet=1`):
+wave-9's orientation-only `⋆⋆=id` needed NO metric; this one genuinely
+**consumes `ax-metric`** — the first result that requires the metric,
+the well-posedness precondition the dynamical field equation stands on.
+
+**Honest scope.** What closes: the metric Hodge is a genuine
+involution (⋆ invertible ⇔ metric non-degenerate), genuinely consuming
+the ONE flagged commitment #4, nothing classical, frozen base intact.
+**This is the §1b BOUND, exactly as pre-registered — the thesis
+survives a named, pure, flagged new commitment; it would NOT survive a
+classical one (§1a, not triggered) or a hidden one (an Iron-Rule ZERO —
+not the case: loudly flagged).** NAMED RESIDUAL (not papered): the full
+inhomogeneous `D⋆F=J` with a dynamical source, the Yang–Mills action's
+variational principle, matter, quantization — the genuine *dynamics*
+beyond the well-posed-⋆ precondition; the model-meaning floor remains
+the UNCHANGED Book-Two `[PROJECTION]`. **Commitment #4 buys the metric,
+not the physics — flagged, quarantined, claimed at exactly its weight.**
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

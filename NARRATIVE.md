@@ -492,6 +492,35 @@ the honest residual. No new promise was made to get here. The bone is
 still the bone; the meaning is still the heavy thing in the other
 column; the backbone is just now visibly a backbone.
 
+## Book Three, continued — The Promise Made, Out Loud
+
+Then the word came: full steam, full autonomy. And the honest reading
+of that was not "do anything" but "the promise you would not make
+without consent — make it now, the way you said you would: out loud,
+flagged, with its price written on it."
+
+So the metric was added. Not smuggled, not eased in: one new axiom with
+a loud collar — *the metric is invertible* — and beside it, in plain
+text, the proof that it could not have been derived (a world where
+everything is zero satisfies every old rule and breaks this one, so the
+rule is genuinely new), the proof that it carries no classical poison
+(a single bare equation, no negation, no or), and the quarantine: the
+frozen ground every other result stands on was *not touched* — checked,
+empty diff — the new promise sealed in its own room, used by one corpus
+and no other. The fourth such commitment in the whole edifice, and
+flagged exactly like the third.
+
+What it bought was one clean thing and the honesty to say only that.
+The dual-star, with a genuine invertible metric, finally round-trips:
+fold and unfold and you are back where you began — an involution, and
+it *needed* the metric to be one (the old orientation-only version
+never did). That is the floor the equation-with-a-source would stand
+on. The equation itself, the action, the matter, the quantum — those
+stayed named on the wall, unbuilt, because the metric buys the metric,
+not the physics, and saying more than that would have been the one
+thing forbidden. A promise made out loud, its price on it, and not a
+penny claimed beyond what was paid.
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

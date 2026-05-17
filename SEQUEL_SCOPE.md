@@ -370,6 +370,90 @@ before — the iron rule held for the documentation as it did for the
 proofs.
 
 
+## 5g. Globalized differentiation calculus (MEASURED; the chain `ap` boundary explicit)
+
+The pointwise calculus of §5e (`data/sdg.calc.mm`) is **lifted to GLOBAL
+synthetic-derivative theorems** in the integrated union `data/sdg.mm`.
+"Global" means the slope is no longer a free coefficient in a *pointwise*
+identity (the §5e `$e`-rep discipline) but the **uniquely determined
+function value**, discharged through the **same §5b seam fragment** (the
+derived deduction-theorem combinators `imp_a1`/`imp_mp`/`imp_eqtr`/
+`imp_eqsym`/`imp_cong_*` + guarded `ax-gen` + `ax-spec`) and
+`ax-microcancel` that seam-free `sdg-deriv` uses — **NO linking `$e`, NO
+`mc.h`-style hypothesis**. The `data/sdg.calc.mm` corpus is read-only; its
+two ring helpers were **re-derived in the generator** (`sdg-add4`,
+`sdg-rdistr`), not imported.
+
+Each global rule's hypotheses are ONLY universals: the KL existence
+representations (`ax-kl` instances, `A. d ( ( D d ) -> … )`) for `f`, `g`
+and the composite `w`, **plus** the universal pointwise relation that
+*defines* `w` (`w=f+g` / `w=f·g` / `w=g∘f`). The linking universal
+`A. d ( ( D d ) -> ( a·d = E·d ) )` is **mechanically threaded** (build the
+conjunctive guard under `( D d )` via `ax-ian` lifted by `imp_a1`/detached
+by `imp_mp`; deduction-discharged pointwise core via `sdg-addcan-imp` +
+the ring helpers; `ax-gen`; `ax-microcancel`), never assumed.
+
+| global rule | statement | consumes | leaves (MEASURED) |
+|---|---|---|---|
+| `sdg-add4` | comm-monoid 4-shuffle, RING-ONLY | ring eq-ax | **303** |
+| `sdg-rdistr` | right distributivity, RING-ONLY | ring eq-ax | **167** |
+| `sdg-global-sum` | `( f + g )' = f' + g'` : `⊢ a = ( b + c )` | `ax-microcancel`,`ax-gen`,`ax-spec` (pure ring) | **23508** |
+| `sdg-global-prod` | Leibniz globally: `⊢ a = ( ( f(0)·c ) + ( b·g(0) ) )` | + **`df-D`** + **`ax-mul0`** | **39571** |
+| `sdg-global-chain` | `( g∘f )' = ( g'∘f )·f'` : `⊢ a = ( c · b )` | `ax-microcancel`,`ax-gen`,`ax-spec` | **28314** |
+
+Integrated union: **`Kernel: verified all 18 $p in data/sdg.mm ✔
+(db 124)`**. `sdgpure`: **GENUINELY INTUITIONISTIC ✔** — 43 logical `$a`
+audited (NAME+SHAPE), none classical, **none in any `$p`'s
+consumed-axiom closure** (all three globals included).
+
+**Adversarially-honest closure audit (kernel-authoritative, recomputed
+via `src/kernel.rs` over the emitted union):**
+
+- **Global uniqueness genuinely consumes the seam.** All three globals
+  reach `ax-microcancel` **and** `ax-gen` **and** `ax-spec` — the global
+  identifying equation is *threaded* from the universal KL reps, not
+  taken as a hidden hypothesis. Verified true for
+  `sdg-global-sum`/`-prod`/`-chain` (and `sdg-deriv` for reference).
+- **`sdg-global-prod` genuinely consumes `df-D` AND `ax-mul0`** (both
+  `true` in its closure). The canonical SDG Leibniz proof really kills
+  the second-order `( b·d )·( c·d )` term: it is reassociated to
+  `( b·c )·( d·d )`, then `df-D` applied to the **shared guard `( D d )`**
+  (a genuine conjunct of the deduction antecedent — `d·d=0` is consumed
+  exactly there, the honest place) gives `d·d=0`, then `ax-mul0` gives
+  `( b·c )·0 = 0`. Not hand-waved.
+- **`sdg-global-sum` is pure ring** — does **not** reach `df-D` or
+  `ax-mul0` (no `d·d=0`); `sdg-global-chain` likewise does not reach
+  them (its infinitesimal content is entirely inside the surfaced `$e`).
+
+**CHAIN — the `ap`-congruence boundary, HELD (reported, not faked; a
+FULL SUCCESS per the Iron Rule).** Composing `f`'s affine expansion
+*into* `g`'s argument is Leibniz substitution under the
+function-application symbol `ap`. The authored `data/sdg.base.mm`
+instantiates equality's congruence **only** for the ring operations `+`
+and `*` (`eq-pl1/2`, `eq-mu1/2`); it provides **no**
+`x = y → ( ap g x ) = ( ap g y )`. This gap is **not** a classical
+principle and **not** the pointwise→global seam — it is precisely the
+SEQUEL §5e `ap`-congruence substrate-instantiation gap. Per the task we
+**STOP at exactly this boundary**: the single `ap`-Leibniz instance is
+surfaced as **one loudly-labelled universal `$e`** (`chain.sub`,
+`A. d ( ( D d ) -> ( ap g ( ap f d ) ) = ( ap g ( ( ap f 0 ) + ( b·d ) ) ) )`)
+— **exactly as the pointwise `sdg-calc-chain` did** — and **nothing
+else** is assumed: the globalization seam (uniqueness via
+`ax-microcancel`, the universal threading) is still fully discharged.
+We did **NOT** add an `ap`-congruence axiom (that is the held
+**W2-apcong follow-on**'s job). The kernel-authoritative audit confirms
+the boundary held: **no `ap`-congruence axiom appears in any closure**
+(`apcong:[]`; only the pre-existing `tap` *term* constructor, which is
+not a congruence rule). Staying at the boundary IS the honest result.
+
+The mirror hypothesis remains SUPPORTED and is now *strengthened*: the
+entire globalized synthetic-differentiation calculus (sum, product,
+chain) needs exactly KL (existence, cited) + microcancellation
+(uniqueness, consumed) + the `df-D`/`ax-mul0` ring residue for Leibniz —
+and **NOTHING classical**, at every rule, mechanically certified. The
+only honest residual is the orthogonal `ap`-congruence substrate gap,
+isolated to one labelled `$e` in the chain rule.
+
 ## 5h. Synthetic Taylor — ORDER-2, MEASURED (BOOK TWO / SDG, wave 2)
 
 The order-2 synthetic Taylor formula, kernel-verified and

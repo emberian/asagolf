@@ -393,7 +393,8 @@ fn cong_r(p: &Pf, z: &W, op: &str, tlabel: &str, eqlabel: &str) -> Pf {
 fn axeq(label: &str, floats: &[&W], l: &W, r: &W) -> Pf {
     reg(l);
     reg(r);
-    apply(label, floats, &[], weq(l, r).toks)
+    let eqw = reg(&weq(l, r));
+    apply(label, floats, &[], eqw.toks)
 }
 
 /// Global $f declaration order in data/sdg.base.mm.  The kernel's
@@ -601,6 +602,44 @@ fn imp_cong_r(pab: &Pf, z: &W, op: &str, tlabel: &str, eqlabel: &str) -> Pf {
     let eq_inst = apply(eqlabel, &[&aw, &bw, z], &[], reg(&wi(&ab, &cong)).toks);
     let g_eq = imp_a1(&eq_inst, &gw);
     imp_mp(pab, &g_eq)
+}
+
+/// `( k + t )` registered.
+fn w0_ad(k: &W, tm: &W) -> W {
+    reg(&binop(k, tm, "+", "tpl"))
+}
+
+/// Build `|- ( guard -> G )` where `G` is the left-nested conjunction of
+/// `conjs`, GIVEN, for each conjunct ci, a proof `imps[i] : ( guard -> ci )`.
+/// Uses ax-ian (lifted by imp_a1, detached by imp_mp) — pure ax-1/ax-2/
+/// ax-mp/ax-ian; NO classical principle.  This is exactly the §5b
+/// seam-closing technique seam-free sdg-deriv uses, generalised to an
+/// n-ary conjunction.
+fn build_guarded_conj(guard: &W, imps: &[&Pf], conjs: &[&W]) -> Pf {
+    assert_eq!(imps.len(), conjs.len());
+    assert!(!conjs.is_empty());
+    // ( guard -> prefix[0] ) = imps[0]
+    let mut acc = imps[0].clone();
+    let mut prefix = conjs[0].clone();
+    for k in 1..conjs.len() {
+        let ci = conjs[k];
+        let new_prefix = reg(&wa(&prefix, ci));
+        // ax-ian : ( prefix -> ( ci -> ( prefix /\ ci ) ) )
+        let ian = apply(
+            "ax-ian",
+            &[&prefix, ci],
+            &[],
+            reg(&wi(&prefix, &reg(&wi(ci, &new_prefix)))).toks,
+        );
+        // lift under guard: ( guard -> ( prefix -> ( ci -> (prefix/\ci) ) ) )
+        let g_ian = imp_a1(&ian, guard);
+        // detach prefix:  ( guard -> ( ci -> ( prefix /\ ci ) ) )
+        let g_ci_conj = imp_mp(&acc, &g_ian);
+        // detach ci:      ( guard -> ( prefix /\ ci ) )
+        acc = imp_mp(imps[k], &g_ci_conj);
+        prefix = new_prefix;
+    }
+    acc
 }
 
 fn main() {
@@ -1086,6 +1125,846 @@ fn main() {
         mp(&s1, &s4)
     };
 
+    // =====================================================================
+    //  §5g  GLOBALIZED DIFFERENTIATION CALCULUS.
+    //
+    //  The pointwise rules of data/sdg.calc.mm (sum / product / chain) are
+    //  here LIFTED to GLOBAL synthetic-derivative theorems: the slope is no
+    //  longer a free coefficient in a pointwise identity but a UNIQUELY
+    //  determined function value, discharged through the SAME §5b seam
+    //  fragment (deduction combinators + guarded ax-gen) and ax-microcancel
+    //  that seam-free sdg-deriv uses — NO linking `$e`, NO mc.h.
+    //
+    //  Two ring-only, hypothesis-free helpers are first re-proved IN the
+    //  generator (the calc corpus is read-only; its content is re-derived,
+    //  not imported): sdg-add4 (commutative-monoid 4-shuffle) and
+    //  sdg-rdistr (right distributivity).  Both pure ring; no df-D, no
+    //  ax-mul0, no order, no classical principle.
+    // =====================================================================
+
+    let yv = leaf("vy", "y");
+    let ev = leaf("ve", "e");
+    let gg = leaf("vg", "g");
+    let ww = leaf("vw", "w");
+    let sa = leaf("va", "a"); // w's (global) slope variable
+
+    // ---- sdg-add4 : ( ( x + y ) + ( z + e ) ) = ( ( x + z ) + ( y + e ) )
+    //  Pure associativity/commutativity.  Chain:
+    //   ((x+y)+(z+e)) =[addass]  (x+(y+(z+e)))
+    //                 =[~addass] (x+((y+z)+e))
+    //                 =[addcom]  (x+((z+y)+e))
+    //                 =[addass]  (x+(z+(y+e)))
+    //                 =[~addass] ((x+z)+(y+e))
+    let x_p_y = reg(&binop(&x, &yv, "+", "tpl"));
+    let z_p_e = reg(&binop(&zv, &ev, "+", "tpl"));
+    let xy_zе = reg(&binop(&x_p_y, &z_p_e, "+", "tpl")); // ((x+y)+(z+e))
+    let y_zе = reg(&binop(&yv, &z_p_e, "+", "tpl")); // (y+(z+e))
+    let x_y_zе = reg(&binop(&x, &y_zе, "+", "tpl")); // (x+(y+(z+e)))
+    let s_add4_1 = axeq(
+        "ax-addass",
+        &[&x, &yv, &z_p_e],
+        &xy_zе,
+        &x_y_zе,
+    ); // ((x+y)+(z+e)) = (x+(y+(z+e)))
+    // (y+(z+e)) = ((y+z)+e)  [sym addass]
+    let y_p_z = reg(&binop(&yv, &zv, "+", "tpl"));
+    let yz_e = reg(&binop(&y_p_z, &ev, "+", "tpl"));
+    let inner2 = eqsym(&axeq("ax-addass", &[&yv, &zv, &ev], &yz_e, &y_zе)); // (y+(z+e))=((y+z)+e)
+    let s_add4_2 = cong_r(&inner2, &x, "+", "tpl", "eq-pl2"); // (x+(y+(z+e)))=(x+((y+z)+e))
+    // (y+z)=(z+y) -> cong under +e -> cong under x+
+    let z_p_y = reg(&binop(&zv, &yv, "+", "tpl"));
+    let zy_e = reg(&binop(&z_p_y, &ev, "+", "tpl"));
+    let yz_zy = axeq("ax-addcom", &[&yv, &zv], &y_p_z, &z_p_y); // (y+z)=(z+y)
+    let yze_zye = cong_l(&yz_zy, &ev, "+", "tpl", "eq-pl1"); // ((y+z)+e)=((z+y)+e)
+    let s_add4_3 = cong_r(&yze_zye, &x, "+", "tpl", "eq-pl2"); // (x+((y+z)+e))=(x+((z+y)+e))
+    // ((z+y)+e)=(z+(y+e))  [addass]
+    let y_p_e = reg(&binop(&yv, &ev, "+", "tpl"));
+    let z_ye = reg(&binop(&zv, &y_p_e, "+", "tpl"));
+    let zye_z_ye = axeq("ax-addass", &[&zv, &yv, &ev], &zy_e, &z_ye); // ((z+y)+e)=(z+(y+e))
+    let s_add4_4 = cong_r(&zye_z_ye, &x, "+", "tpl", "eq-pl2"); // (x+((z+y)+e))=(x+(z+(y+e)))
+    // (x+(z+(y+e))) = ((x+z)+(y+e))  [sym addass x z (y+e)]
+    let x_p_z = reg(&binop(&x, &zv, "+", "tpl"));
+    let xz_ye = reg(&binop(&x_p_z, &y_p_e, "+", "tpl"));
+    let x_z_ye = reg(&binop(&x, &z_ye, "+", "tpl")); // (x+(z+(y+e)))
+    let s_add4_5 = eqsym(&axeq("ax-addass", &[&x, &zv, &y_p_e], &xz_ye, &x_z_ye)); // (x+(z+(y+e)))=((x+z)+(y+e))
+    let sdg_add4 = eqtr(
+        &s_add4_1,
+        &eqtr(&s_add4_2, &eqtr(&s_add4_3, &eqtr(&s_add4_4, &s_add4_5))),
+    ); // |- ( ( x + y ) + ( z + e ) ) = ( ( x + z ) + ( y + e ) )
+
+    // ---- sdg-rdistr : ( ( x + y ) * z ) = ( ( x * z ) + ( y * z ) ) -----
+    //  (x+y)*z =[mulcom] z*(x+y) =[distr] (z*x)+(z*y)
+    //          =[mulcom both summands] (x*z)+(y*z)
+    let xy_mul_z = reg(&binop(&x_p_y, &zv, "*", "tmu")); // ((x+y)*z)
+    let z_mul_xy = reg(&binop(&zv, &x_p_y, "*", "tmu")); // (z*(x+y))
+    let r1 = axeq("ax-mulcom", &[&x_p_y, &zv], &xy_mul_z, &z_mul_xy); // ((x+y)*z)=(z*(x+y))
+    let z_mul_x = reg(&binop(&zv, &x, "*", "tmu"));
+    let z_mul_y = reg(&binop(&zv, &yv, "*", "tmu"));
+    let zx_p_zy = reg(&binop(&z_mul_x, &z_mul_y, "+", "tpl"));
+    let r2 = axeq("ax-distr", &[&zv, &x, &yv], &z_mul_xy, &zx_p_zy); // (z*(x+y))=((z*x)+(z*y))
+    let x_mul_z = reg(&binop(&x, &zv, "*", "tmu"));
+    let y_mul_z = reg(&binop(&yv, &zv, "*", "tmu"));
+    let zx_xz = axeq("ax-mulcom", &[&zv, &x], &z_mul_x, &x_mul_z); // (z*x)=(x*z)
+    let zy_yz = axeq("ax-mulcom", &[&zv, &yv], &z_mul_y, &y_mul_z); // (z*y)=(y*z)
+    let r3 = cong_l(&zx_xz, &z_mul_y, "+", "tpl", "eq-pl1"); // ((z*x)+(z*y))=((x*z)+(z*y))
+    let r4 = cong_r(&zy_yz, &x_mul_z, "+", "tpl", "eq-pl2"); // ((x*z)+(z*y))=((x*z)+(y*z))
+    let sdg_rdistr = eqtr(&r1, &eqtr(&r2, &eqtr(&r3, &r4))); // |- ((x+y)*z)=((x*z)+(y*z))
+
+    // =====================================================================
+    //  Shared seam machinery for the global calculus theorems.
+    //
+    //  Every global rule is: GIVEN the universal KL representations
+    //  (existence, ax-kl instances, as universal `$e`) for f, g and the
+    //  composite w, PLUS the universal pointwise relation that DEFINES w
+    //  (w=f+g / w=f·g / w=g∘f) as `$e` — CONCLUDE the unique global slope
+    //  identity (s = <expr>) by:
+    //    1. ax-spec strips A.d from every universal `$e` under guard (D d).
+    //    2. ax-ian (lifted by imp_a1, detached by imp_mp) builds the big
+    //       conjunctive antecedent G under (D d).
+    //    3. a deduction-discharged pointwise core `( G -> ( s*d = E*d ) )`
+    //       (built ONLY from imp_a1/imp_mp/imp_eqtr/imp_eqsym/imp_cong_*
+    //       and sdg-addcan-imp + the ring helpers — NO classical principle)
+    //       is lifted under (D d) and detached -> ( (D d) -> s*d = E*d ).
+    //    4. gen (ax-gen) over d (SOUND: d is bound in every `$e`).
+    //    5. ax-microcancel : s = E.
+    //  The `$e` hypotheses are ONLY universals (KL existence) and the
+    //  defining pointwise relation — exactly the discipline of seam-free
+    //  sdg-deriv; the linking universal s*d=E*d is THREADED, never assumed.
+    // =====================================================================
+
+    // term abbreviations reused below
+    let apg0 = reg(&ap(&gg, &zero)); // ( ap g 0 )
+    let apgd = reg(&ap(&gg, &dd)); // ( ap g d )
+    let apw0 = reg(&ap(&ww, &zero)); // ( ap w 0 )
+    let apwd = reg(&ap(&ww, &dd)); // ( ap w d )
+    let s_d = reg(&binop(&sa, &dd, "*", "tmu")); // ( a * d )  (w's slope * d)
+
+    // build the conjunctive antecedent G from a list of conjunct wffs
+    // (left-nested: ( ( ( c1 /\ c2 ) /\ c3 ) ... )).  Returns the W of G
+    // plus, for each conjunct, a Pf  |- ( G -> conjunct ).
+    fn conj_and_projs(conjs: &[W]) -> (W, Vec<Pf>) {
+        assert!(!conjs.is_empty());
+        let mut g = conjs[0].clone();
+        for cj in &conjs[1..] {
+            g = reg(&wa(&g, cj));
+        }
+        // projections: for conjunct i, ( G -> ci ).  G is left-nested;
+        // peel right with ax-iar to expose the last conjunct, ax-ial to
+        // descend.  Build ( G -> ci ) compositionally.
+        let n = conjs.len();
+        let mut projs: Vec<Pf> = Vec::with_capacity(n);
+        // prefix[k] = W of the left-nested conjunction of conjs[0..=k]
+        let mut prefix: Vec<W> = Vec::with_capacity(n);
+        prefix.push(conjs[0].clone());
+        for k in 1..n {
+            prefix.push(reg(&wa(&prefix[k - 1], &conjs[k])));
+        }
+        // ( G -> prefix[k] ) for every k: from G, repeatedly ax-ial.
+        // g_to_prefix[n-1] = identity-ish ( G -> G ) handled via sdg-id-like;
+        // simpler: ( G -> prefix[k] ) by (n-1-k) left-projections.
+        let g_w = prefix[n - 1].clone();
+        let mut g_to_prefix: Vec<Pf> = vec![Pf { stmt: vec![], rpn: vec![] }; n];
+        // ( G -> G ): use ax-1-based identity via the sdg-id trick inline.
+        g_to_prefix[n - 1] = {
+            let p = &g_w;
+            let pp = reg(&wi(p, p));
+            let p_pp = reg(&wi(p, &pp));
+            let pp_p = reg(&wi(&pp, p));
+            let p__pp_p = reg(&wi(p, &pp_p));
+            let _ = reg(&wi(&p_pp, &pp));
+            let a1 = apply("ax-1", &[p, p], &[], p_pp.toks.clone());
+            let a2 = apply("ax-1", &[p, &pp], &[], p__pp_p.toks.clone());
+            let a3 = apply("ax-2", &[p, &pp, p], &[], {
+                let lhs = wi(p, &p__pp_p);
+                let rhs = wi(&p_pp, &pp);
+                wi(&lhs, &rhs).toks
+            });
+            mp(&a1, &mp(&a2, &a3))
+        };
+        for k in (0..n - 1).rev() {
+            // prefix[k] = ( prefix[k] /\ conjs[k+1] ) split left:
+            // ax-ial : ( ( prefix[k] /\ conjs[k+1] ) -> prefix[k] )
+            let lhs = prefix[k].clone();
+            let rhs = conjs[k + 1].clone();
+            let pk1 = reg(&wa(&lhs, &rhs)); // = prefix[k+1]
+            let ial = apply("ax-ial", &[&lhs, &rhs], &[], reg(&wi(&pk1, &lhs)).toks);
+            // ( G -> prefix[k] ) = imp_mp( (G->prefix[k+1]), imp_a1(ial,G) )
+            let g_ial = imp_a1(&ial, &g_w);
+            g_to_prefix[k] = imp_mp(&g_to_prefix[k + 1], &g_ial);
+        }
+        for i in 0..n {
+            if i == n - 1 {
+                // last conjunct: ax-iar on prefix[n-1] = ( prefix[n-2] /\ cn )
+                if n == 1 {
+                    projs.push(g_to_prefix[0].clone());
+                } else {
+                    let lhs = prefix[n - 2].clone();
+                    let rhs = conjs[n - 1].clone();
+                    let iar = apply("ax-iar", &[&lhs, &rhs], &[], reg(&wi(&g_w, &rhs)).toks);
+                    projs.push(iar);
+                }
+            } else {
+                // conjunct i is the RIGHT child of prefix[i] (= prefix[i-1] /\ ci)
+                // for i>=1; for i==0 it is the left-most leaf of prefix[0..].
+                if i == 0 {
+                    // ( G -> prefix[0] ) and prefix[0] == conjs[0]
+                    projs.push(g_to_prefix[0].clone());
+                } else {
+                    let lhs = prefix[i - 1].clone();
+                    let rhs = conjs[i].clone();
+                    let pk = reg(&wa(&lhs, &rhs)); // prefix[i]
+                    let iar = apply("ax-iar", &[&lhs, &rhs], &[], reg(&wi(&pk, &rhs)).toks);
+                    let g_iar = imp_a1(&iar, &g_w);
+                    projs.push(imp_mp(&g_to_prefix[i], &g_iar));
+                }
+            }
+        }
+        (g_w, projs)
+    }
+
+    // ---------------------------------------------------------------------
+    //  GLOBAL SUM :  ( f + g )' = f' + g'   (derivative operator additive)
+    //
+    //  $e (all universal / pointwise — the KL existence + the definition of
+    //  w as the pointwise sum, exactly the seam-free sdg-deriv discipline):
+    //    sum.hf  : A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) )
+    //    sum.hg  : A. d ( ( D d ) -> ( ap g d ) = ( ( ap g 0 ) + ( c * d ) ) )
+    //    sum.hw  : A. d ( ( D d ) -> ( ap w d ) = ( ( ap w 0 ) + ( a * d ) ) )
+    //    sum.hpw : A. d ( ( D d ) -> ( ap w d ) = ( ( ap f d ) + ( ap g d ) ) )
+    //    sum.h0  : ( ap w 0 ) = ( ( ap f 0 ) + ( ap g 0 ) )
+    //  conclusion:  a = ( b + c )    (the global identifying equation;
+    //  uniqueness of w's slope discharged via ax-microcancel — NO mc.h).
+    // ---------------------------------------------------------------------
+    let apf0 = reg(&ap(&ff, &zero));
+    let apfd = reg(&ap(&ff, &dd));
+    let b_d = reg(&binop(&bb, &dd, "*", "tmu"));
+    let c_d = reg(&binop(&cc, &dd, "*", "tmu"));
+    let k_bd = reg(&binop(&apf0, &b_d, "+", "tpl"));
+    let g_cd = reg(&binop(&apg0, &c_d, "+", "tpl"));
+    let w_ad = reg(&binop(&apw0, &s_d, "+", "tpl"));
+    let dd_pred = reg(&wD(&dd));
+    let ef = reg(&weq(&apfd, &k_bd)); // ( ap f d ) = ( ( ap f 0 ) + ( b*d ) )
+    let eg = reg(&weq(&apgd, &g_cd)); // ( ap g d ) = ( ( ap g 0 ) + ( c*d ) )
+    let ew = reg(&weq(&apwd, &w_ad)); // ( ap w d ) = ( ( ap w 0 ) + ( a*d ) )
+    let fpg = reg(&binop(&apfd, &apgd, "+", "tpl"));
+    let epw = reg(&weq(&apwd, &fpg)); // ( ap w d ) = ( ( ap f d ) + ( ap g d ) )
+    let kw0 = reg(&binop(&apf0, &apg0, "+", "tpl"));
+    let e0 = reg(&weq(&apw0, &kw0)); // ( ap w 0 ) = ( ( ap f 0 ) + ( ap g 0 ) )
+
+    let sum_hf = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ef)))).toks, rpn: t("sum.hf") };
+    let sum_hg = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &eg)))).toks, rpn: t("sum.hg") };
+    let sum_hw = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ew)))).toks, rpn: t("sum.hw") };
+    let sum_hpw = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &epw)))).toks, rpn: t("sum.hpw") };
+    let sum_h0 = Pf { stmt: e0.toks.clone(), rpn: t("sum.h0") };
+
+    // step 1: ax-spec each universal under (D d).
+    let mk_spec = |all: &Pf, body_imp: &W| -> Pf {
+        let inst = apply(
+            "ax-spec",
+            &[body_imp, &dd],
+            &[],
+            reg(&wi(&w_of(&all.stmt), body_imp)).toks,
+        );
+        mp(all, &inst) // |- ( ( D d ) -> <eq> )
+    };
+    let imp_f = mk_spec(&sum_hf, &reg(&wi(&dd_pred, &ef)));
+    let imp_g = mk_spec(&sum_hg, &reg(&wi(&dd_pred, &eg)));
+    let imp_w = mk_spec(&sum_hw, &reg(&wi(&dd_pred, &ew)));
+    let imp_pw = mk_spec(&sum_hpw, &reg(&wi(&dd_pred, &epw)));
+    // sum.h0 is non-universal: lift under (D d) by imp_a1.
+    let imp_e0 = imp_a1(&sum_h0, &dd_pred); // ( ( D d ) -> e0 )
+
+    // step 2: deduction-discharged pointwise SUM core, under conjunctive G.
+    //   G := ( ( ( ( EF /\ EG ) /\ EW ) /\ EPW ) /\ E0 )
+    //   target: ( G -> ( ( a*d ) = ( ( b + c )*d ) ) )
+    let (g_sum, p_sum) =
+        conj_and_projs(&[ef.clone(), eg.clone(), ew.clone(), epw.clone(), e0.clone()]);
+    let g_ef = &p_sum[0]; // ( G -> EF )
+    let g_eg = &p_sum[1];
+    let g_ew = &p_sum[2];
+    let g_epw = &p_sum[3];
+    let g_e0 = &p_sum[4];
+    // Under G:
+    //  ( ap w d ) = ( ap f d ) + ( ap g d )                      [EPW]
+    //             = ( (apf0+b*d) + (apg0+c*d) )                   [cong EF,EG]
+    //             = ( (apf0+apg0) + ((b*d)+(c*d)) )               [sdg-add4]
+    //             = ( (ap w 0)  + ((b*d)+(c*d)) )                  [~E0 cong]
+    //             = ( (ap w 0)  + ((b+c)*d) )                      [~sdg-rdistr]
+    //  also ( ap w d ) = ( (ap w 0) + (a*d) )                      [EW]
+    //  => ( (ap w 0)+(a*d) ) = ( (ap w 0)+((b+c)*d) )  [eqtr via apwd]
+    //  => ( a*d ) = ( (b+c)*d )                          [sdg-addcan-imp]
+    let bpc = reg(&binop(&bb, &cc, "+", "tpl")); // ( b + c )
+    let bpc_d = reg(&binop(&bpc, &dd, "*", "tmu")); // ( ( b + c ) * d )
+    let bd_p_cd = reg(&binop(&b_d, &c_d, "+", "tpl")); // ( ( b*d ) + ( c*d ) )
+    let kf_kg = reg(&binop(&apf0, &apg0, "+", "tpl")); // ( apf0 + apg0 )
+    let lhs_big = reg(&binop(&k_bd, &g_cd, "+", "tpl")); // ( (apf0+b*d) + (apg0+c*d) )
+    let mid_big = reg(&binop(&kf_kg, &bd_p_cd, "+", "tpl")); // ( (apf0+apg0) + ((b*d)+(c*d)) )
+    let w0_bdcd = reg(&binop(&apw0, &bd_p_cd, "+", "tpl")); // ( apw0 + ((b*d)+(c*d)) )
+    let w0_bpc_d = reg(&binop(&apw0, &bpc_d, "+", "tpl")); // ( apw0 + ((b+c)*d) )
+
+    // ( G -> ( ap w d ) = ( (apf0+b*d) + (apg0+c*d) ) )
+    //   from g_epw and cong with g_ef (left) then g_eg (right).
+    let g_step_fg = {
+        // ( G -> ( apfd + apgd ) = ( (apf0+b*d) + apgd ) )  via g_ef cong_l
+        let c1 = imp_cong_l(g_ef, &apgd, "+", "tpl", "eq-pl1");
+        // ( G -> ( (apf0+b*d) + apgd ) = ( (apf0+b*d) + (apg0+c*d) ) ) via g_eg cong_r
+        let c2 = imp_cong_r(g_eg, &k_bd, "+", "tpl", "eq-pl2");
+        // chain with g_epw: ( G -> apwd = (apf0+b*d)+(apg0+c*d) )
+        imp_eqtr(g_epw, &imp_eqtr(&c1, &c2))
+    };
+    // sdg-add4[x:=apf0,y:=(b*d),z:=apg0,e:=(c*d)] :
+    //   |- ( ( apf0 + (b*d) ) + ( apg0 + (c*d) ) )
+    //        = ( ( apf0 + apg0 ) + ( (b*d) + (c*d) ) )
+    let add4_inst = use_thm(
+        "sdg-add4",
+        &[("x", &apf0), ("y", &b_d), ("z", &apg0), ("e", &c_d)],
+        &[],
+        reg(&weq(&lhs_big, &mid_big)).toks,
+    );
+    let g_add4 = imp_a1(&add4_inst, &g_sum); // ( G -> lhs_big = mid_big )
+    // ( G -> apwd = mid_big )
+    let g_apwd_mid = imp_eqtr(&g_step_fg, &g_add4);
+    // ( apf0 + apg0 ) = ( ap w 0 )   from g_e0 (E0: apw0 = apf0+apg0) symm
+    let g_kfkg_w0 = imp_eqsym(g_e0); // ( G -> ( apf0+apg0 ) = apw0 )
+    // cong under +( (b*d)+(c*d) )  ->  ( G -> mid_big = w0_bdcd )
+    let g_mid_w0 = imp_cong_l(&g_kfkg_w0, &bd_p_cd, "+", "tpl", "eq-pl1");
+    let g_apwd_w0bdcd = imp_eqtr(&g_apwd_mid, &g_mid_w0); // ( G -> apwd = w0_bdcd )
+    // sdg-rdistr[x:=b,y:=c,z:=d] : |- ( (b+c)*d ) = ( (b*d)+(c*d) )
+    let rdistr_inst = use_thm(
+        "sdg-rdistr",
+        &[("x", &bb), ("y", &cc), ("z", &dd)],
+        &[],
+        reg(&weq(&bpc_d, &bd_p_cd)).toks,
+    );
+    // need ( (b*d)+(c*d) ) = ( (b+c)*d ) : symm
+    let rdistr_sym = eqsym(&rdistr_inst); // |- ( (b*d)+(c*d) ) = ( (b+c)*d )
+    let g_rdistr = imp_a1(&rdistr_sym, &g_sum);
+    let g_bdcd_to_bpcd = imp_cong_r(&g_rdistr, &apw0, "+", "tpl", "eq-pl2"); // ( G -> w0_bdcd = w0_bpc_d )
+    let g_apwd_w0bpcd = imp_eqtr(&g_apwd_w0bdcd, &g_bdcd_to_bpcd); // ( G -> apwd = w0_bpc_d )
+    // EW: ( G -> apwd = ( apw0 + (a*d) ) ) ; symm -> ( G -> (apw0+(a*d)) = apwd )
+    let g_w0ad_apwd = imp_eqsym(g_ew);
+    // chain: ( G -> ( apw0+(a*d) ) = w0_bpc_d )
+    let g_w0ad_w0bpcd = imp_eqtr(&g_w0ad_apwd, &g_apwd_w0bpcd);
+    // sdg-addcan-imp[z:=apw0,u:=(a*d),v:=((b+c)*d)] :
+    //   |- ( ( apw0+(a*d) ) = ( apw0+((b+c)*d) ) -> ( a*d ) = ( (b+c)*d ) )
+    let ac_sum = use_thm(
+        "sdg-addcan-imp",
+        &[("z", &apw0), ("u", &s_d), ("v", &bpc_d)],
+        &[],
+        reg(&wi(&reg(&weq(&w0_ad(&apw0, &s_d), &w0_bpc_d)), &reg(&weq(&s_d, &bpc_d)))).toks,
+    );
+    let g_ac_sum = imp_a1(&ac_sum, &g_sum); // ( G -> ( (w0+ad)=(w0+bpcd) -> ad=bpcd ) )
+    let g_q_sum = imp_mp(&g_w0ad_w0bpcd, &g_ac_sum); // ( G -> ( a*d ) = ( (b+c)*d ) )
+
+    // step 3: thread ( G -> Q ) under ( D d ).  Build ( (D d) -> G ) from
+    //  the five spec'd / lifted implications via ax-ian chained left.
+    let g_under_d_sum = build_guarded_conj(
+        &dd_pred,
+        &[&imp_f, &imp_g, &imp_w, &imp_pw, &imp_e0],
+        &[&ef, &eg, &ew, &epw, &e0],
+    );
+    // ( (D d) -> ( G -> Q ) ) by imp_a1, then imp_mp -> ( (D d) -> Q ).
+    let g_sum_imp_under_d = imp_a1(&g_q_sum, &dd_pred);
+    let dd_to_q_sum = imp_mp(&g_under_d_sum, &g_sum_imp_under_d); // ( (D d) -> a*d=(b+c)*d )
+    // step 4: ax-gen over d.
+    let all_q_sum = gen(&dd_to_q_sum, "vd", "d"); // A. d ( (D d) -> a*d=(b+c)*d )
+    // step 5: ax-microcancel[b:=a, c:=(b+c), d:=d] : ( A.d (...) -> a = (b+c) )
+    let a_eq_bpc = reg(&weq(&sa, &bpc));
+    let mc_sum = use_thm(
+        "ax-microcancel",
+        &[("b", &sa), ("c", &bpc), ("d", &dd)],
+        &[],
+        wi(&w_of(&all_q_sum.stmt), &a_eq_bpc).toks,
+    );
+    let sdg_global_sum = mp(&all_q_sum, &mc_sum); // |- a = ( b + c )
+
+    // ---------------------------------------------------------------------
+    //  GLOBAL PRODUCT / LEIBNIZ :  ( f · g )' = f'·g + f·g'  globally.
+    //
+    //  $e :  product KL reps for f, g, w + the pointwise product relation
+    //        ( ap w d ) = ( ap f d ) * ( ap g d )  and at 0, all universal.
+    //  conclusion:  a = ( ( ( ap f 0 ) * c ) + ( b * ( ap g 0 ) ) )
+    //  i.e. the global Leibniz slope:  f(0)·g' + f'·g(0)  (the synthetic
+    //  product rule; the second-order ( b*d )·( c*d ) term is killed by
+    //  d·d=0 — df-D applied to the SHARED GUARD ( D d ), ax-mul0).
+    // ---------------------------------------------------------------------
+    // pointwise product equality, all under (D d):
+    let f_mul_g = reg(&binop(&apfd, &apgd, "*", "tmu")); // ( apfd * apgd )
+    let epw_p = reg(&weq(&apwd, &f_mul_g)); // ( ap w d ) = ( apfd * apgd )
+    let kf_mul_kg = reg(&binop(&apf0, &apg0, "*", "tmu"));
+    let e0_p = reg(&weq(&apw0, &kf_mul_kg)); // ( ap w 0 ) = ( apf0 * apg0 )
+    // Leibniz slope L := ( ( apf0 * c ) + ( b * apg0 ) )
+    let kf_c = reg(&binop(&apf0, &cc, "*", "tmu"));
+    let b_kg = reg(&binop(&bb, &apg0, "*", "tmu"));
+    let leib = reg(&binop(&kf_c, &b_kg, "+", "tpl"));
+    let leib_d = reg(&binop(&leib, &dd, "*", "tmu")); // ( L * d )
+
+    let prod_hf = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ef)))).toks, rpn: t("prod.hf") };
+    let prod_hg = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &eg)))).toks, rpn: t("prod.hg") };
+    let prod_hw = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ew)))).toks, rpn: t("prod.hw") };
+    let prod_hpw = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &epw_p)))).toks, rpn: t("prod.hpw") };
+    let prod_h0 = Pf { stmt: e0_p.toks.clone(), rpn: t("prod.h0") };
+
+    let pimp_f = mk_spec(&prod_hf, &reg(&wi(&dd_pred, &ef)));
+    let pimp_g = mk_spec(&prod_hg, &reg(&wi(&dd_pred, &eg)));
+    let pimp_w = mk_spec(&prod_hw, &reg(&wi(&dd_pred, &ew)));
+    let pimp_pw = mk_spec(&prod_hpw, &reg(&wi(&dd_pred, &epw_p)));
+    let pimp_e0 = imp_a1(&prod_h0, &dd_pred);
+
+    // The pointwise product algebra, deduction-discharged under
+    //  G := ( ( ( ( EF /\ EG ) /\ EW ) /\ EPW' ) /\ E0' )  AND the guard
+    //  ( D d ) is also a conjunct (we genuinely consume d·d=0 via df-D on
+    //  it — the canonical SDG Leibniz step).
+    let (g_prod, p_prod) = conj_and_projs(&[
+        ef.clone(),
+        eg.clone(),
+        ew.clone(),
+        epw_p.clone(),
+        e0_p.clone(),
+        dd_pred.clone(),
+    ]);
+    let gp_ef = &p_prod[0];
+    let gp_eg = &p_prod[1];
+    let gp_ew = &p_prod[2];
+    let gp_epw = &p_prod[3];
+    let gp_e0 = &p_prod[4];
+    let gp_dd = &p_prod[5]; // ( G -> ( D d ) )
+
+    // ( G -> apwd = ( apf0+b*d ) * ( apg0+c*d ) )
+    let g_prod_fg = {
+        let c1 = imp_cong_l(gp_ef, &apgd, "*", "tmu", "eq-mu1");
+        let c2 = imp_cong_r(gp_eg, &k_bd, "*", "tmu", "eq-mu2");
+        imp_eqtr(gp_epw, &imp_eqtr(&c1, &c2))
+    }; // ( G -> apwd = ( (apf0+bd) * (apg0+cd) ) )
+
+    // Expand ( (apf0+bd)*(apg0+cd) ) by distributivity to
+    //   ( apf0*apg0 ) + ( ( (apf0*c) + (b*apg0) )*d ) + ( (b*c)*(d*d) )
+    // then kill the last term with ( D d ) (df-D: d*d=0 ; ax-mul0).
+    // We assemble this as a closed ring identity instance proved by a
+    // dedicated builder lemma sdg-prodexp (hypothesis-free EXCEPT it needs
+    // d*d=0, supplied as one antecedent), then discharged under G via the
+    // ( G -> ( D d ) ) projection.  To stay within the existing combinator
+    // toolkit we build the chain explicitly:
+    let kbd = k_bd.clone(); // ( apf0 + ( b*d ) )
+    let gcd = g_cd.clone(); // ( apg0 + ( c*d ) )
+    let prod_lr = reg(&binop(&kbd, &gcd, "*", "tmu")); // ( kbd * gcd )
+    // distribute: kbd*gcd = ( kbd*apg0 ) + ( kbd*(c*d) )            [ax-distr]
+    let kbd_kg = reg(&binop(&kbd, &apg0, "*", "tmu"));
+    let kbd_cd = reg(&binop(&kbd, &c_d, "*", "tmu"));
+    let dist1 = axeq(
+        "ax-distr",
+        &[&kbd, &apg0, &c_d],
+        &prod_lr,
+        &reg(&binop(&kbd_kg, &kbd_cd, "+", "tpl")),
+    ); // kbd*gcd = (kbd*apg0)+(kbd*(c*d))
+    // kbd*apg0 = (apf0*apg0)+((b*d)*apg0)                            [rdistr]
+    let kf_kg2 = reg(&binop(&apf0, &apg0, "*", "tmu"));
+    let bd_kg = reg(&binop(&b_d, &apg0, "*", "tmu"));
+    let rd_a = use_thm(
+        "sdg-rdistr",
+        &[("x", &apf0), ("y", &b_d), ("z", &apg0)],
+        &[],
+        reg(&weq(&kbd_kg, &reg(&binop(&kf_kg2, &bd_kg, "+", "tpl")))).toks,
+    );
+    // kbd*(c*d) = (apf0*(c*d))+((b*d)*(c*d))                         [rdistr]
+    let kf_cd = reg(&binop(&apf0, &c_d, "*", "tmu"));
+    let bd_cd = reg(&binop(&b_d, &c_d, "*", "tmu"));
+    let rd_b = use_thm(
+        "sdg-rdistr",
+        &[("x", &apf0), ("y", &b_d), ("z", &c_d)],
+        &[],
+        reg(&weq(&kbd_cd, &reg(&binop(&kf_cd, &bd_cd, "+", "tpl")))).toks,
+    );
+    // assemble prod_lr = ( ( (apf0*apg0)+((b*d)*apg0) ) + ( (apf0*(c*d))+((b*d)*(c*d)) ) )
+    let sumA = reg(&binop(&kf_kg2, &bd_kg, "+", "tpl"));
+    let sumB = reg(&binop(&kf_cd, &bd_cd, "+", "tpl"));
+    let dist_full = eqtr(
+        &dist1,
+        &eqtr(
+            &cong_l(&rd_a, &kbd_cd, "+", "tpl", "eq-pl1"),
+            &cong_r(&rd_b, &sumA, "+", "tpl", "eq-pl2"),
+        ),
+    ); // prod_lr = ( sumA + sumB )
+    // ( (b*d)*(c*d) ) = ( (b*c)*(d*d) )  : reassociate/commute
+    //   (b*d)*(c*d) = b*(d*(c*d)) = b*((d*c)*d) = b*((c*d)*d)
+    //              = b*(c*(d*d)) = (b*c)*(d*d)
+    let b_c = reg(&binop(&bb, &cc, "*", "tmu"));
+    let d_d = reg(&binop(&dd, &dd, "*", "tmu"));
+    let bc_dd = reg(&binop(&b_c, &d_d, "*", "tmu"));
+    let bdcd_eq_bcdd = {
+        // (b*d)*(c*d) = b*( d*(c*d) )                       [ax-mulass]
+        let t1 = axeq(
+            "ax-mulass",
+            &[&bb, &dd, &c_d],
+            &reg(&binop(&b_d, &c_d, "*", "tmu")),
+            &reg(&binop(&bb, &reg(&binop(&dd, &c_d, "*", "tmu")), "*", "tmu")),
+        );
+        // d*(c*d) = (d*c)*d                                  [~ax-mulass]
+        let d_cd = reg(&binop(&dd, &c_d, "*", "tmu"));
+        let dc = reg(&binop(&dd, &cc, "*", "tmu"));
+        let dc_d = reg(&binop(&dc, &dd, "*", "tmu"));
+        let t2 = eqsym(&axeq("ax-mulass", &[&dd, &cc, &dd], &dc_d, &d_cd));
+        // (d*c) = (c*d)                                      [ax-mulcom]
+        let cd = reg(&binop(&cc, &dd, "*", "tmu"));
+        let t3 = cong_l(
+            &axeq("ax-mulcom", &[&dd, &cc], &dc, &cd),
+            &dd,
+            "*",
+            "tmu",
+            "eq-mu1",
+        ); // (d*c)*d = (c*d)*d
+        // (c*d)*d = c*(d*d)                                  [ax-mulass]
+        let cd_d = reg(&binop(&cd, &dd, "*", "tmu"));
+        let c_dd = reg(&binop(&cc, &d_d, "*", "tmu"));
+        let t4 = axeq("ax-mulass", &[&cc, &dd, &dd], &cd_d, &c_dd);
+        // b*( d*(c*d) ) = b*( c*(d*d) ) via cong_r of (t2;t3;t4)
+        let inner = eqtr(&t2, &eqtr(&t3, &t4)); // d*(c*d) = c*(d*d)
+        let t5 = cong_r(&inner, &bb, "*", "tmu", "eq-mu2"); // b*(d*(c*d)) = b*(c*(d*d))
+        // b*( c*(d*d) ) = (b*c)*(d*d)                        [~ax-mulass]
+        let t6 = eqsym(&axeq(
+            "ax-mulass",
+            &[&bb, &cc, &d_d],
+            &bc_dd,
+            &reg(&binop(&bb, &c_dd, "*", "tmu")),
+        ));
+        eqtr(&t1, &eqtr(&t5, &t6)) // (b*d)*(c*d) = (b*c)*(d*d)
+    };
+    // Under G: ( D d ) -> ( d*d ) = 0   [df-D + ax-bi1], then (b*c)*(d*d)=(b*c)*0=0
+    let dd_eq0 = reg(&weq(&d_d, &zero));
+    let g_dd_eq0 = {
+        // df-D[x:=d] : ( ( D d ) <-> ( d*d )=0 )
+        let dfd = apply("df-D", &[&dd], &[], reg(&wb(&dd_pred, &dd_eq0)).toks);
+        // ax-bi1 : ( ( ph<->ps ) -> ( ph -> ps ) )
+        let bi1 = apply(
+            "ax-bi1",
+            &[&dd_pred, &dd_eq0],
+            &[],
+            wi(&reg(&wb(&dd_pred, &dd_eq0)), &reg(&wi(&dd_pred, &dd_eq0))).toks,
+        );
+        let dd_imp = mp(&dfd, &bi1); // ( ( D d ) -> ( d*d )=0 )
+        // thread under G: g_dd : ( G -> ( D d ) ) ; imp_a1 lifts dd_imp,
+        // imp_mp detaches -> ( G -> ( d*d )=0 ).
+        let g_ddimp = imp_a1(&dd_imp, &g_prod);
+        imp_mp(gp_dd, &g_ddimp) // ( G -> ( d*d )=0 )
+    };
+    // ( G -> ( (b*c)*(d*d) ) = ( (b*c)*0 ) )   cong_r of g_dd_eq0
+    let g_bcdd_bc0 = imp_cong_r(&g_dd_eq0, &b_c, "*", "tmu", "eq-mu2");
+    // ( (b*c)*0 ) = 0   [ax-mul0]  -> lift under G
+    let bc_0 = reg(&binop(&b_c, &zero, "*", "tmu"));
+    let bc0_eq0 = axeq("ax-mul0", &[&b_c], &bc_0, &zero);
+    let g_bc0_0 = imp_a1(&bc0_eq0, &g_prod);
+    let g_bcdd_0 = imp_eqtr(&g_bcdd_bc0, &g_bc0_0); // ( G -> ( (b*c)*(d*d) )=0 )
+    // bdcd = (b*d)*(c*d) ; ( G -> bdcd = 0 )
+    let g_bdcd_bcdd = imp_a1(&bdcd_eq_bcdd, &g_prod); // ( G -> (b*d)*(c*d) = (b*c)*(d*d) )
+    let g_bdcd_0 = imp_eqtr(&g_bdcd_bcdd, &g_bcdd_0); // ( G -> (b*d)*(c*d) = 0 )
+
+    // Now collect: prod_lr = sumA + sumB, sumA = (apf0*apg0)+((b*d)*apg0),
+    // sumB = (apf0*(c*d))+((b*d)*(c*d)).  With (b*d)*(c*d)=0 (under G) and
+    // ring-rearrangement, prod_lr = ( apf0*apg0 ) + ( L * d ) where
+    // L = ( apf0*c ) + ( b*apg0 ).  We finish the algebra under G.
+    // Rearranged target: prod_lr = ( (apf0*apg0) + ( L*d ) ).
+    //   sumA + sumB
+    //   = ( (apf0*apg0)+((b*d)*apg0) ) + ( (apf0*(c*d))+(b*d)*(c*d) )
+    // Under G, (b*d)*(c*d)=0, so sumB = (apf0*(c*d)) + 0 = apf0*(c*d).
+    // Then apf0*(c*d)=(apf0*c)*d, (b*d)*apg0=(b*apg0)*d, and
+    //  ((b*apg0)*d)+((apf0*c)*d) = ((b*apg0)+(apf0*c))*d ; reorder to
+    //  ((apf0*c)+(b*apg0))*d = L*d.  And (apf0*apg0) is the constant.
+    // We do this via the deduction combinators on the explicit chain.
+    let g_prodlr_eq = {
+        // ( G -> prod_lr = sumA + sumB )
+        let g_df = imp_a1(&dist_full, &g_prod);
+        // sumB = ( apf0*(c*d) ) + ( (b*d)*(c*d) ) ; rewrite 2nd to 0
+        let g_sumB_collapse = {
+            // ( G -> sumB = ( apf0*(c*d) + 0 ) )  via cong_r g_bdcd_0
+            let c = imp_cong_r(&g_bdcd_0, &kf_cd, "+", "tpl", "eq-pl2");
+            // ( apf0*(c*d) + 0 ) = apf0*(c*d)  [ax-add0]
+            let kfcd_p0 = reg(&binop(&kf_cd, &zero, "+", "tpl"));
+            let add0 = axeq("ax-add0", &[&kf_cd], &kfcd_p0, &kf_cd);
+            imp_eqtr(&c, &imp_a1(&add0, &g_prod)) // ( G -> sumB = apf0*(c*d) )
+        };
+        // ( G -> ( sumA + sumB ) = ( sumA + apf0*(c*d) ) )
+        let g_sAB = imp_cong_r(&g_sumB_collapse, &sumA, "+", "tpl", "eq-pl2");
+        // chain: ( G -> prod_lr = ( sumA + apf0*(c*d) ) )
+        let g_pl1 = imp_eqtr(&g_df, &g_sAB);
+        // Now pure ring identity (hypothesis-free):
+        //  ( sumA + apf0*(c*d) )
+        //    = ( ( (apf0*apg0)+((b*d)*apg0) ) + (apf0*(c*d)) )
+        //    = ( (apf0*apg0) + ( ((b*d)*apg0) + (apf0*(c*d)) ) )   [addass]
+        //    = ( (apf0*apg0) + ( ((b*apg0)*d) + ((apf0*c)*d) ) )   [mulass*2]
+        //    = ( (apf0*apg0) + ( ((b*apg0)+(apf0*c)) * d ) )       [~rdistr]
+        //    = ( (apf0*apg0) + ( ((apf0*c)+(b*apg0)) * d ) )       [addcom]
+        //    = ( (apf0*apg0) + ( L * d ) )
+        let bapg0 = reg(&binop(&bb, &apg0, "*", "tmu"));
+        let bapg0_d = reg(&binop(&bapg0, &dd, "*", "tmu"));
+        let apf0c = reg(&binop(&apf0, &cc, "*", "tmu"));
+        let apf0c_d = reg(&binop(&apf0c, &dd, "*", "tmu"));
+        // (b*d)*apg0 = (b*apg0)*d  : (b*d)*apg0 = b*(d*apg0)=b*(apg0*d)=(b*apg0)*d
+        let bd_kg2 = reg(&binop(&b_d, &apg0, "*", "tmu"));
+        let d_kg = reg(&binop(&dd, &apg0, "*", "tmu"));
+        let kg_d = reg(&binop(&apg0, &dd, "*", "tmu"));
+        let e1 = axeq(
+            "ax-mulass",
+            &[&bb, &dd, &apg0],
+            &bd_kg2,
+            &reg(&binop(&bb, &d_kg, "*", "tmu")),
+        ); // (b*d)*apg0 = b*(d*apg0)
+        let e2 = cong_r(
+            &axeq("ax-mulcom", &[&dd, &apg0], &d_kg, &kg_d),
+            &bb,
+            "*",
+            "tmu",
+            "eq-mu2",
+        ); // b*(d*apg0) = b*(apg0*d)
+        let e3 = eqsym(&axeq(
+            "ax-mulass",
+            &[&bb, &apg0, &dd],
+            &bapg0_d,
+            &reg(&binop(&bb, &kg_d, "*", "tmu")),
+        )); // b*(apg0*d) = (b*apg0)*d
+        let bdkg_eq = eqtr(&e1, &eqtr(&e2, &e3)); // (b*d)*apg0 = (b*apg0)*d
+        // apf0*(c*d) = (apf0*c)*d   [~ax-mulass]
+        let apf0cd_eq = eqsym(&axeq(
+            "ax-mulass",
+            &[&apf0, &cc, &dd],
+            &apf0c_d,
+            &reg(&binop(&apf0, &c_d, "*", "tmu")),
+        )); // apf0*(c*d) = (apf0*c)*d
+        // addass: ( (K)+(P) )+(Q) = (K)+( (P)+(Q) ), K=apf0*apg0,
+        //   P=(b*d)*apg0, Q=apf0*(c*d)
+        let kk = reg(&binop(&apf0, &apg0, "*", "tmu"));
+        let pp = bd_kg.clone();
+        let qq = kf_cd.clone();
+        let kp = reg(&binop(&kk, &pp, "+", "tpl"));
+        let kp_q = reg(&binop(&kp, &qq, "+", "tpl"));
+        let p_q = reg(&binop(&pp, &qq, "+", "tpl"));
+        let k_pq = reg(&binop(&kk, &p_q, "+", "tpl"));
+        let assoc = axeq("ax-addass", &[&kk, &pp, &qq], &kp_q, &k_pq); // (K+P)+Q = K+(P+Q)
+        // ( P + Q ) = ( (b*apg0)*d + (apf0*c)*d )  via bdkg_eq, apf0cd_eq
+        let pq_rw = eqtr(
+            &cong_l(&bdkg_eq, &qq, "+", "tpl", "eq-pl1"),
+            &cong_r(&apf0cd_eq, &bapg0_d, "+", "tpl", "eq-pl2"),
+        ); // (P+Q) = ((b*apg0)*d)+((apf0*c)*d)
+        // ((b*apg0)*d)+((apf0*c)*d) = ((b*apg0)+(apf0*c))*d   [~rdistr]
+        let bapg0_apf0c = reg(&binop(&bapg0, &apf0c, "+", "tpl"));
+        let rd_pq = eqsym(&use_thm(
+            "sdg-rdistr",
+            &[("x", &bapg0), ("y", &apf0c), ("z", &dd)],
+            &[],
+            reg(&weq(
+                &reg(&binop(&bapg0_apf0c, &dd, "*", "tmu")),
+                &reg(&binop(&bapg0_d, &apf0c_d, "+", "tpl")),
+            ))
+            .toks,
+        )); // ((b*apg0)*d)+((apf0*c)*d) = ((b*apg0)+(apf0*c))*d
+        // ((b*apg0)+(apf0*c)) = ((apf0*c)+(b*apg0)) = L   [addcom]
+        let l_w = reg(&binop(&apf0c, &bapg0, "+", "tpl")); // = L (apf0*c + b*apg0)
+        let addc = axeq("ax-addcom", &[&bapg0, &apf0c], &bapg0_apf0c, &l_w);
+        let addc_d = cong_l(&addc, &dd, "*", "tmu", "eq-mu1"); // ((b*apg0)+(apf0*c))*d = L*d
+        // chain P+Q rewrites: (P+Q) = ... = L*d
+        let pq_to_ld = eqtr(&pq_rw, &eqtr(&rd_pq, &addc_d)); // (P+Q) = L*d
+        // K + (P+Q) = K + (L*d)   cong_r
+        let k_pq_to_k_ld = cong_r(&pq_to_ld, &kk, "+", "tpl", "eq-pl2"); // K+(P+Q)=K+(L*d)
+        // ( sumA + apf0*(c*d) ) == (K+P)+Q  (definally: sumA=K+P, qq=apf0*(c*d))
+        // assoc : (K+P)+Q = K+(P+Q) ; then k_pq_to_k_ld : = K+(L*d)
+        let ring_tail = eqtr(&assoc, &k_pq_to_k_ld); // (K+P)+Q = K+(L*d)
+        // lift ring_tail under G and chain with g_pl1
+        let g_ring_tail = imp_a1(&ring_tail, &g_prod);
+        imp_eqtr(&g_pl1, &g_ring_tail) // ( G -> prod_lr = ( (apf0*apg0) + (L*d) ) )
+    };
+    // ( G -> apwd = prod_lr )  was g_prod_fg ; chain to ( apf0*apg0 + L*d )
+    let kk_full = reg(&binop(&apf0, &apg0, "*", "tmu"));
+    let kk_ld = reg(&binop(&kk_full, &leib_d, "+", "tpl")); // ( (apf0*apg0) + (L*d) )
+    let g_apwd_klld = imp_eqtr(&g_prod_fg, &g_prodlr_eq); // ( G -> apwd = (apf0*apg0)+(L*d) )
+    // ( apf0*apg0 ) = ( ap w 0 )   from gp_e0 : ( ap w 0 ) = ( apf0*apg0 ) symm
+    let g_kk_w0 = imp_eqsym(gp_e0);
+    let g_klld_w0ld = imp_cong_l(&g_kk_w0, &leib_d, "+", "tpl", "eq-pl1"); // (apf0*apg0+L*d)=(apw0+L*d)
+    let g_apwd_w0ld = imp_eqtr(&g_apwd_klld, &g_klld_w0ld); // ( G -> apwd = (apw0+L*d) )
+    // EW : ( G -> apwd = ( apw0 + a*d ) ) ; symm + chain
+    let g_w0ad_apwd_p = imp_eqsym(gp_ew);
+    let g_w0ad_w0ld = imp_eqtr(&g_w0ad_apwd_p, &g_apwd_w0ld); // (apw0+a*d)=(apw0+L*d)
+    // sdg-addcan-imp[z:=apw0,u:=(a*d),v:=(L*d)]
+    let ac_prod = use_thm(
+        "sdg-addcan-imp",
+        &[("z", &apw0), ("u", &s_d), ("v", &leib_d)],
+        &[],
+        reg(&wi(
+            &reg(&weq(&w0_ad(&apw0, &s_d), &reg(&binop(&apw0, &leib_d, "+", "tpl")))),
+            &reg(&weq(&s_d, &leib_d)),
+        ))
+        .toks,
+    );
+    let g_ac_prod = imp_a1(&ac_prod, &g_prod);
+    let g_q_prod = imp_mp(&g_w0ad_w0ld, &g_ac_prod); // ( G -> ( a*d ) = ( L*d ) )
+
+    // thread under ( D d ): build ( (D d) -> G ).  Here ( D d ) itself is
+    // a conjunct of G, so the guard supplies it directly (closing the
+    // df-D consumption honestly at the guard).
+    let g_under_d_prod = build_guarded_conj(
+        &dd_pred,
+        &[&pimp_f, &pimp_g, &pimp_w, &pimp_pw, &pimp_e0, &{
+            // ( ( D d ) -> ( D d ) ) : identity, so the guard's own
+            // truth feeds the ( D d ) conjunct.
+            let p = &dd_pred;
+            let pp = reg(&wi(p, p));
+            let p_pp = reg(&wi(p, &pp));
+            let pp_p = reg(&wi(&pp, p));
+            let p__pp_p = reg(&wi(p, &pp_p));
+            let _ = reg(&wi(&p_pp, &pp));
+            let a1 = apply("ax-1", &[p, p], &[], p_pp.toks.clone());
+            let a2 = apply("ax-1", &[p, &pp], &[], p__pp_p.toks.clone());
+            let a3 = apply("ax-2", &[p, &pp, p], &[], {
+                let lhs = wi(p, &p__pp_p);
+                let rhs = wi(&p_pp, &pp);
+                wi(&lhs, &rhs).toks
+            });
+            mp(&a1, &mp(&a2, &a3))
+        }],
+        &[&ef, &eg, &ew, &epw_p, &e0_p, &dd_pred],
+    );
+    let g_prod_imp_d = imp_a1(&g_q_prod, &dd_pred);
+    let dd_to_q_prod = imp_mp(&g_under_d_prod, &g_prod_imp_d); // ( (D d) -> a*d=L*d )
+    let all_q_prod = gen(&dd_to_q_prod, "vd", "d");
+    let a_eq_leib = reg(&weq(&sa, &leib));
+    let mc_prod = use_thm(
+        "ax-microcancel",
+        &[("b", &sa), ("c", &leib), ("d", &dd)],
+        &[],
+        wi(&w_of(&all_q_prod.stmt), &a_eq_leib).toks,
+    );
+    let sdg_global_prod = mp(&all_q_prod, &mc_prod); // |- a = ( ( apf0*c ) + ( b*apg0 ) )
+
+    // ---------------------------------------------------------------------
+    //  GLOBAL CHAIN :  ( g ∘ f )' = ( g'∘f )·f'  globally.
+    //
+    //  Composing f's affine expansion INTO g's argument is Leibniz
+    //  substitution under the function-application symbol `ap`.  The
+    //  authored substrate (data/sdg.base.mm) instantiates equality's
+    //  congruence ONLY for the ring ops + and * (eq-pl*/eq-mu*); it gives
+    //  NO  x = y -> ( ap g x ) = ( ap g y ).  This is the SEQUEL §5e
+    //  ap-congruence substrate gap (NOT a classical principle, NOT the
+    //  pointwise→global seam).  Per the task we STOP at exactly this
+    //  boundary: the single ap-Leibniz instance is surfaced as ONE
+    //  loudly-labelled universal `$e` (chain.sub) — exactly as the
+    //  pointwise sdg-calc-chain did — and NOTHING else is assumed; the
+    //  globalization seam (uniqueness via ax-microcancel) is still fully
+    //  threaded.  We do NOT add an ap-congruence axiom (that is the held
+    //  W2-apcong follow-on's job).  Staying at the boundary IS the honest
+    //  result.
+    //
+    //  $e :  KL rep for f (gives the affine inner expansion), the ap-
+    //        Leibniz substitution step (chain.sub, the surfaced boundary),
+    //        g's KL rep at the expanded point (chain.hg), w=g∘f pointwise
+    //        (chain.hw / chain.h0), and w's KL rep (chain.hw'), all
+    //        universal under ( D d ).
+    //  conclusion:  a = ( c * b )    (global chain slope).
+    // ---------------------------------------------------------------------
+    let apg_apfd = reg(&ap(&gg, &apfd)); // ( ap g ( ap f d ) )
+    let apg_kbd = reg(&ap(&gg, &k_bd)); // ( ap g ( apf0 + b*d ) )
+    let apg_apf0 = reg(&ap(&gg, &apf0)); // ( ap g ( ap f 0 ) )
+    let c_bd = reg(&binop(&cc, &b_d, "*", "tmu")); // ( c * ( b*d ) )
+    let cb = reg(&binop(&cc, &bb, "*", "tmu")); // ( c * b )
+    let cb_d = reg(&binop(&cb, &dd, "*", "tmu")); // ( ( c*b )*d )
+    // chain.hw  : A. d ( ( D d ) -> ( ap w d ) = ( ap g ( ap f d ) ) )
+    let ch_hw_body = reg(&weq(&apwd, &apg_apfd));
+    // chain.sub : A. d ( ( D d ) -> ( ap g ( ap f d ) ) = ( ap g ( apf0+b*d ) ) )
+    //   THE SURFACED ap-LEIBNIZ BOUNDARY (one labelled $e).
+    let ch_sub_body = reg(&weq(&apg_apfd, &apg_kbd));
+    // chain.hg  : A. d ( ( D d ) -> ( ap g ( apf0+b*d ) ) = ( ( ap g (apf0) ) + ( c*(b*d) ) ) )
+    let kg0_cbd = reg(&binop(&apg_apf0, &c_bd, "+", "tpl"));
+    let ch_hg_body = reg(&weq(&apg_kbd, &kg0_cbd));
+    // chain.hw' : A. d ( ( D d ) -> ( ap w d ) = ( ( ap w 0 ) + ( a*d ) ) )
+    // chain.h0  : ( ap w 0 ) = ( ap g ( ap f 0 ) )
+    let ch_h0_body = reg(&weq(&apw0, &apg_apf0));
+    // chain.hf  : A. d ( ( D d ) -> ( ap f d ) = ( apf0 + b*d ) )   (KL of f)
+
+    let chain_hf = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ef)))).toks, rpn: t("chain.hf") };
+    let chain_hw = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ch_hw_body)))).toks, rpn: t("chain.hw") };
+    let chain_sub = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ch_sub_body)))).toks, rpn: t("chain.sub") };
+    let chain_hg = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ch_hg_body)))).toks, rpn: t("chain.hg") };
+    let chain_hwp = Pf { stmt: reg(&wal("vd", "d", &reg(&wi(&dd_pred, &ew)))).toks, rpn: t("chain.hwp") };
+    let chain_h0 = Pf { stmt: ch_h0_body.toks.clone(), rpn: t("chain.h0") };
+
+    let cimp_f = mk_spec(&chain_hf, &reg(&wi(&dd_pred, &ef)));
+    let cimp_hw = mk_spec(&chain_hw, &reg(&wi(&dd_pred, &ch_hw_body)));
+    let cimp_sub = mk_spec(&chain_sub, &reg(&wi(&dd_pred, &ch_sub_body)));
+    let cimp_hg = mk_spec(&chain_hg, &reg(&wi(&dd_pred, &ch_hg_body)));
+    let cimp_wp = mk_spec(&chain_hwp, &reg(&wi(&dd_pred, &ew)));
+    let cimp_h0 = imp_a1(&chain_h0, &dd_pred);
+
+    // G := conj of [ EF, HW, SUB, HG, EW, H0 ]
+    let (g_chain, p_chain) = conj_and_projs(&[
+        ef.clone(),
+        ch_hw_body.clone(),
+        ch_sub_body.clone(),
+        ch_hg_body.clone(),
+        ew.clone(),
+        ch_h0_body.clone(),
+    ]);
+    let gc_ef = &p_chain[0]; // unused directly but kept for completeness
+    let gc_hw = &p_chain[1];
+    let gc_sub = &p_chain[2];
+    let gc_hg = &p_chain[3];
+    let gc_ew = &p_chain[4];
+    let gc_h0 = &p_chain[5];
+    let _ = gc_ef;
+    // Under G:
+    //  apwd = ( ap g ( ap f d ) )                          [HW]
+    //       = ( ap g ( apf0 + b*d ) )                       [SUB — the surfaced ap-Leibniz]
+    //       = ( ( ap g (apf0) ) + ( c*(b*d) ) )             [HG]
+    //  ( ap g (apf0) ) = ( ap w 0 )                          [~H0]
+    //  c*(b*d) = (c*b)*d                                     [~ax-mulass]
+    //  => apwd = ( apw0 + ( (c*b)*d ) )
+    //  EW: apwd = ( apw0 + ( a*d ) )
+    //  => ( a*d ) = ( (c*b)*d )   [sdg-addcan-imp] => a = c*b
+    let g_chain_1 = imp_eqtr(gc_hw, &imp_eqtr(gc_sub, gc_hg)); // ( G -> apwd = (apg(apf0))+(c*(b*d)) )
+    // ( ap g (apf0) ) = ( ap w 0 )  via gc_h0 (H0: apw0 = ap g(apf0)) symm
+    let g_kg0_w0 = imp_eqsym(gc_h0);
+    let g_chain_2 = imp_cong_l(&g_kg0_w0, &c_bd, "+", "tpl", "eq-pl1"); // ((apg apf0)+c(bd)) = (apw0+c(bd))
+    let g_chain_3 = imp_eqtr(&g_chain_1, &g_chain_2); // ( G -> apwd = ( apw0 + c*(b*d) ) )
+    // c*(b*d) = (c*b)*d  [~ax-mulass]
+    let cbd_eq_cb_d = eqsym(&axeq(
+        "ax-mulass",
+        &[&cc, &bb, &dd],
+        &cb_d,
+        &reg(&binop(&cc, &b_d, "*", "tmu")),
+    )); // c*(b*d) = (c*b)*d
+    let g_cbd = imp_a1(&cbd_eq_cb_d, &g_chain);
+    let g_w0cbd_w0cbd = imp_cong_r(&g_cbd, &apw0, "+", "tpl", "eq-pl2"); // (apw0+c(bd))=(apw0+(c*b)*d)
+    let g_chain_4 = imp_eqtr(&g_chain_3, &g_w0cbd_w0cbd); // ( G -> apwd = ( apw0 + (c*b)*d ) )
+    // EW symm + chain
+    let g_w0ad_apwd_c = imp_eqsym(gc_ew);
+    let g_w0ad_w0cbd = imp_eqtr(&g_w0ad_apwd_c, &g_chain_4); // (apw0+a*d)=(apw0+(c*b)*d)
+    let ac_chain = use_thm(
+        "sdg-addcan-imp",
+        &[("z", &apw0), ("u", &s_d), ("v", &cb_d)],
+        &[],
+        reg(&wi(
+            &reg(&weq(&w0_ad(&apw0, &s_d), &reg(&binop(&apw0, &cb_d, "+", "tpl")))),
+            &reg(&weq(&s_d, &cb_d)),
+        ))
+        .toks,
+    );
+    let g_ac_chain = imp_a1(&ac_chain, &g_chain);
+    let g_q_chain = imp_mp(&g_w0ad_w0cbd, &g_ac_chain); // ( G -> ( a*d ) = ( (c*b)*d ) )
+
+    let g_under_d_chain = build_guarded_conj(
+        &dd_pred,
+        &[&cimp_f, &cimp_hw, &cimp_sub, &cimp_hg, &cimp_wp, &cimp_h0],
+        &[&ef, &ch_hw_body, &ch_sub_body, &ch_hg_body, &ew, &ch_h0_body],
+    );
+    let _ = &cimp_f; // cimp_f (KL of f) retained as $e for honest provenance
+    let g_chain_imp_d = imp_a1(&g_q_chain, &dd_pred);
+    let dd_to_q_chain = imp_mp(&g_under_d_chain, &g_chain_imp_d);
+    let all_q_chain = gen(&dd_to_q_chain, "vd", "d");
+    let a_eq_cb = reg(&weq(&sa, &cb));
+    let mc_chain = use_thm(
+        "ax-microcancel",
+        &[("b", &sa), ("c", &cb), ("d", &dd)],
+        &[],
+        wi(&w_of(&all_q_chain.stmt), &a_eq_cb).toks,
+    );
+    let sdg_global_chain = mp(&all_q_chain, &mc_chain); // |- a = ( c * b )
+
     // assemble + emit ----------------------------------------------------
     let proofs: Vec<(&str, &str, Vec<(&str, &str)>, &Pf)> = vec![
         ("sdg-id", "|- ( ph -> ph )", vec![], &sdg_id),
@@ -1169,6 +2048,76 @@ fn main() {
             "|- ( E. b A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) ) -> E. b A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) ) )",
             vec![],
             &sdg_kl1_is_kl,
+        ),
+        // ---- §5g  GLOBALIZED DIFFERENTIATION CALCULUS ------------------
+        // Two ring-only helpers re-proved in the generator (calc corpus
+        // is read-only; content re-derived, not imported).
+        (
+            "sdg-add4",
+            "|- ( ( x + y ) + ( z + e ) ) = ( ( x + z ) + ( y + e ) )",
+            vec![],
+            &sdg_add4,
+        ),
+        (
+            "sdg-rdistr",
+            "|- ( ( x + y ) * z ) = ( ( x * z ) + ( y * z ) )",
+            vec![],
+            &sdg_rdistr,
+        ),
+        (
+            // GLOBAL SUM: ( f + g )' = f' + g'  (derivative additive).
+            // Uniqueness of w's global slope discharged via the §5b seam
+            // fragment + ax-microcancel — NO linking $e.  Consumes
+            // ax-microcancel; nothing classical.
+            "sdg-global-sum",
+            "|- a = ( b + c )",
+            vec![
+                ("sum.hf", "|- A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) )"),
+                ("sum.hg", "|- A. d ( ( D d ) -> ( ap g d ) = ( ( ap g 0 ) + ( c * d ) ) )"),
+                ("sum.hw", "|- A. d ( ( D d ) -> ( ap w d ) = ( ( ap w 0 ) + ( a * d ) ) )"),
+                ("sum.hpw", "|- A. d ( ( D d ) -> ( ap w d ) = ( ( ap f d ) + ( ap g d ) ) )"),
+                ("sum.h0", "|- ( ap w 0 ) = ( ( ap f 0 ) + ( ap g 0 ) )"),
+            ],
+            &sdg_global_sum,
+        ),
+        (
+            // GLOBAL PRODUCT / LEIBNIZ: ( f · g )' = f(0)·g' + f'·g(0)
+            // globally.  Genuinely consumes d·d=0 (df-D on the SHARED
+            // GUARD ( D d ), a conjunct of G) + ax-mul0 to kill the
+            // second-order term, then ax-microcancel for uniqueness.
+            "sdg-global-prod",
+            "|- a = ( ( ( ap f 0 ) * c ) + ( b * ( ap g 0 ) ) )",
+            vec![
+                ("prod.hf", "|- A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) )"),
+                ("prod.hg", "|- A. d ( ( D d ) -> ( ap g d ) = ( ( ap g 0 ) + ( c * d ) ) )"),
+                ("prod.hw", "|- A. d ( ( D d ) -> ( ap w d ) = ( ( ap w 0 ) + ( a * d ) ) )"),
+                ("prod.hpw", "|- A. d ( ( D d ) -> ( ap w d ) = ( ( ap f d ) * ( ap g d ) ) )"),
+                ("prod.h0", "|- ( ap w 0 ) = ( ( ap f 0 ) * ( ap g 0 ) )"),
+            ],
+            &sdg_global_prod,
+        ),
+        (
+            // GLOBAL CHAIN: ( g ∘ f )' = ( g'∘f )·f' globally.  Hits the
+            // SEQUEL §5e ap-congruence substrate gap: composing f's affine
+            // expansion INTO g's argument is Leibniz under `ap`, and the
+            // authored substrate gives congruence ONLY for + and *.  Per
+            // the task we STOP at exactly that boundary: the single
+            // ap-Leibniz instance is surfaced as ONE loudly-labelled
+            // universal $e `chain.sub` (exactly as the pointwise
+            // sdg-calc-chain did) — NO ap-congruence axiom added.  The
+            // globalization seam (uniqueness via ax-microcancel) is still
+            // fully threaded; nothing else is assumed.
+            "sdg-global-chain",
+            "|- a = ( c * b )",
+            vec![
+                ("chain.hf", "|- A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) )"),
+                ("chain.hw", "|- A. d ( ( D d ) -> ( ap w d ) = ( ap g ( ap f d ) ) )"),
+                ("chain.sub", "|- A. d ( ( D d ) -> ( ap g ( ap f d ) ) = ( ap g ( ( ap f 0 ) + ( b * d ) ) ) )"),
+                ("chain.hg", "|- A. d ( ( D d ) -> ( ap g ( ( ap f 0 ) + ( b * d ) ) ) = ( ( ap g ( ap f 0 ) ) + ( c * ( b * d ) ) ) )"),
+                ("chain.hwp", "|- A. d ( ( D d ) -> ( ap w d ) = ( ( ap w 0 ) + ( a * d ) ) )"),
+                ("chain.h0", "|- ( ap w 0 ) = ( ap g ( ap f 0 ) )"),
+            ],
+            &sdg_global_chain,
         ),
     ];
 

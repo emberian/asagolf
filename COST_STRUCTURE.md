@@ -123,6 +123,51 @@ remaining genuinely-open question is the *quantitative* one — the
 exact-constant Obligation O (a cut-free lower bound for `x²=0→x=0`) —
 and it is named, not faked.
 
+### Obligation O — the gap, now MEASURED on the upper side (the bound, sharpened)
+
+The open question is sharpened, never faked closed. The
+Obligation-O literal `( x · x ) = 0 → x = 0` (Frontier C / Closure 2)
+is reproduced by `cargo run --bin sdgobligbuild` as
+`data/sdg.oblig.mm` — a deliberately **classical proof-complexity
+measurement corpus** (*not* the intuitionistic substrate, *not*
+`sdgpure`-guarded, header says so; 266 statements, 96 `$p`, all
+kernel-verified, cross-checked **identical** to the canonical
+`data/grounded.out.mm`). Like `data/grounded.out.mm` it is a **132 MB
+generated build artifact, `.gitignore`d, never tracked** (same
+discipline as every Book-One expanded corpus); the MEASURED figure
+below is reproduced by running `sdgobligfloor`, which measures both the
+regenerated corpus **and** the canonical `data/grounded.out.mm`
+directly (identical). Trio `sdgoblig{build,floor,pure}`; `sdgobligpure`
+exit 0 confirms
+`sdg-oblig-sqz` is **exactly** the literal in hypothesis form
+(`$e |- ( u * u ) = 0` ⊢ `|- u = 0`), a **genuine multi-hundred-step
+derivation** (consuming the order-essential `of-letot`), **not** an
+`$a` smuggle, 0 label collisions. Independently re-verified by the
+integrator (kernel + the `sqz` block read + canonical cross-check + a
+scan confirming no `$p` claims a lower bound).
+
+| bound | value | status |
+|---|---|---|
+| weak LB (unconditional, **trivial**) | **≥ 1** order-essential `$a` (false in ℤ/4, so ≥1 order axiom in *every* cut-free proof) | PROVED, labelled WEAK |
+| Obligation O exact constant | — | **OPEN** (the entire gap below) |
+| MEASURED UB — `sdg-oblig-sqz` (the literal) | **16,476** cut-free `$a`-leaves (10^4.217) | MEASURED |
+
+(supporting MEASURED: `sdg-oblig-sqzhalf` `(0≤u)→((u·u)=0→u=0)` = 5,663;
+`sdg-oblig-subeq0` `(u−v)=0→u=v` = 1,033.)
+
+The genuinely-open content is **the whole interval `[1, 16476]`**: an
+*unconditional* cut-free size lower bound against **every** proof
+(Frege-style) of the literal, hard for two **named** reasons — (a) the
+matching bound reduces to substitution-closed smallest-grammar /
+minimal-DAG compression, proved **NP-hard** (Frontier E / SEAM2); (b)
+the metric is construction-sensitive (Frontier C pt 2) — strong
+empirical stability of the order-core is, by the Iron Rule, *not* a
+proof. The *factor-through / essentiality* clause **is** a theorem
+(Frontier C Thm 1); only the *quantitative size* clause is open. The
+qualitative result is closed; the constant is named, bounded above by a
+MEASURED 16,476 and below by a trivial 1, and the gap between them is
+exactly the open problem — **reported, not papered.**
+
 ## What the proof content actually is (Seam #4)
 
 Partitioning every cut-free leaf (kernel-reverified, 9,017,010 `$a`):

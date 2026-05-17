@@ -546,3 +546,19 @@ into a `$p`. This is the iron-rule-correct deliverable: the cheap
 orientation skeleton shipped; the genuine dynamics named as the
 boundary they are. The recurring theorem, held twice more — reported,
 not inflated past the contract.**
+
+**The open-threads swarm — closed (4 sent, 4 back, each independently
+re-verified by the integrator, not trusted).** T1 (term-model
+grounding): declined-and-named — the weak mechanization is the spine;
+`SDG_MODEL §5.2` sharpened to a principled-absence. T2 (wave 8): the
+genuine non-vacuous non-abelian Jacobi, integrated. T4 (wave 9): the
+Hodge-⋆ negative map, integrated. T3 (Obligation O, Book One —
+`COST_STRUCTURE`): a kernel-MEASURED upper bound (16,476, the literal,
+cross-checked identical to canonical) + the trivial unconditional weak
+LB (1) + the exact constant sharpened as OPEN with the whole `[1,
+16476]` gap precisely named; correctly a *classical proof-complexity
+measurement corpus*, header-declared, no purity overclaim. Every
+thread's outcome is MEASURED, a labelled `[PROJECTION]`/principled-
+absence, or a precisely-named OPEN gap — none faked, none inflated.
+The Iron Rule held across the whole swarm, hardest on the work not
+self-authored.**

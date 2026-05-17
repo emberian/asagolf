@@ -806,8 +806,24 @@ matter, quantization were named exactly where they begin — behind a
 commitment the frozen world does not contain. The cheap skeleton
 shipped; the genuine dynamics named at their weight, not faked.
 
-The third worker — the exact constant, Obligation O — was still walking
-the hard road, as that road was always going to be.
+The third worker — the exact constant, Obligation O — came back last,
+and came back honest. It did not close the constant; the constant
+cannot be closed by anyone yet (the matching bound is NP-hard, a thing
+proved long ago in the first book). What it brought instead was the
+honest shape of the gap: the literal proof re-measured in our own
+kernel at sixteen thousand four hundred seventy-six leaves — a true
+*upper* bound, cross-checked identical to the canonical proof — and,
+below it, the only lower bound anyone can prove unconditionally: one.
+One order axiom, because the statement is false where order is absent.
+Between one and sixteen thousand lies the entire open question, and the
+worker drew exactly that interval and labelled the inside of it
+*unknown*. It was checked the hardest of the four — the block read by
+hand, the literal confirmed a genuine derivation and not an axiom in
+disguise, every label scanned for any sneaked claim of a lower bound;
+there were none. A bound honestly placed on one side, and the unknown
+named on the other, is the correct shape of an open problem, and it was
+recorded at exactly that weight. Four sent out; four back; each
+checked; the swarm closed.
 
 ## The history, three books in
 

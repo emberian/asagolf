@@ -447,8 +447,21 @@ the equation with a source, the action, matter — were drawn on the wall
 exactly where they begin, behind a wall the frozen world does not
 contain. A negative map, drawn precisely, is still a map.
 
-(The third worker was still out, walking the hard road of the exact
-constant. Its road was always going to be long.)
+The third worker came back last, and came back honest. It could not
+close the exact constant — no one can yet; that road was proved
+impassable in the first book. So it did the only honest thing: it
+measured the road's near end exactly (the literal proof, sixteen
+thousand four hundred seventy-six leaves, cross-checked against the
+canonical one), proved the only thing provable at the far end (a bare
+one, because the statement fails where order is absent), and drew the
+whole long stretch between them with the word *unknown* written
+plainly across it. That worker was checked hardest of all — its proof
+read by hand to be sure it was a derivation and not an axiom wearing a
+derivation's coat, every name scanned for a smuggled claim. There were
+none. An honest bound on one side, the unknown named on the other:
+that is the true shape of an open problem, kept at exactly that
+weight. Four sent; four returned; each one checked before it was let
+in.
 
 ---
 

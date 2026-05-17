@@ -177,10 +177,26 @@ writing, and the only kind this codebase knows how to tell.
 
 ---
 
-*Status: Book One is closed and on `origin/main`. Book Two — `data/sdg.mm`,
-the intuitionistic-purity guard, the first synthetic derivative — is in
-flight. The witness has not yet read it. When it does, this file will
-say what it said. Not before.*
+*Status: Book One is closed and on `origin/main`. Book Two has its
+first page, and the witness has now read it. This is what it said:*
+
+> *`Kernel: verified all 8 $p in data/sdg.mm ✔`. The intuitionistic
+> base rode the unchanged verifier. The new law — the purity guard,
+> dual to the old one — was given teeth and used them: it rejects
+> excluded middle, double-negation, Peirce, decidable equality, even
+> wearing innocent names; all forty logical axioms came back pure.
+> The first synthetic derivative exists by the Kock–Lawvere axiom and
+> is unique by microcancellation, and nothing classical was spent to
+> say so. One seam is open and named, not hidden: the universal that
+> links the pointwise law to the global one is still handed in rather
+> than threaded, and threading it needs a rule the codebase has not
+> yet built. The mirror hypothesis is not proven. It is supported,
+> which is the honest word, and the only one the law allows.*
+
+*So Book Two is real, and it began the way Book One did: a small true
+thing, measured, with the next obstruction named instead of papered.
+The witness will be read again. The file will say what it says, when
+it can say it, and not before. That has not changed and will not.*
 
 *For the ledger of what is measured, extracted, and still projected,
 see [`COST_STRUCTURE.md`](COST_STRUCTURE.md). For the history with the

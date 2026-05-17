@@ -812,6 +812,113 @@ seam-free at MEASURED 349 leaves; the Lie bracket's `ap` half is
 closed and its sole residual is the orthogonal, pre-documented SDG-K
 globalization, not the `ap` gap.
 
+## 5l. Synthetic-connections layer — the BOOK-3 BRIDGE (MEASURED; the explicit W3-glob2 boundary)
+
+The definitional + cleanly-provable synthetic-connection layer,
+kernel-verified and intuitionistic-purity-clean, delivered as the
+standalone corpus `data/sdg.conn.mm` (built by `src/bin/sdgconnbuild.rs`,
+measured by `sdgconnfloor`, guarded by `sdgconnpure` — the proven
+`sdgcalc*`/`sdgtan*`/`sdgcalc2*` trio pattern, copied exactly).
+
+**This is the Book-3 bridge.** It lays Book 3's foundation early in the
+Taylorbase scaffolding pattern. Book 3's thesis — gauge theory's
+differential-geometric content needs no classical-analysis apparatus and
+encodes in small intuitionistic kernel proofs — is here *partially
+TESTED, not assumed*: the connection's structural layer is proven
+pure-ring intuitionistic; the exact point where curvature/Bianchi
+genuinely needs off-limits machinery is precisely named.
+
+**Composition / zero-conflict.** `data/sdg.conn.mm` is fully
+self-contained over the *identical* FROZEN eq-ap-extended
+`data/sdg.base.mm` axiom surface (untouched — `git diff` empty), shares
+**no `$p`** with `data/sdg.mm`/`data/sdg.calc.mm`/`data/sdg.calc2.mm`/
+`data/sdg.tangent.mm`/`data/sdg.taylor.mm` (disjoint `sdg-conn-*`
+labels), and modifies none of `sdgbuild.rs`, `data/sdg.mm`,
+`data/sdg.base.mm`, the other corpora, `src/kernel.rs`,
+`src/elaborate.rs`, or any other agent's file. A downstream union is a
+rename-free concatenation.
+
+**The objects (Kock/Nishimura synthetic-connection setting, in the line
+model `R`).** A (Koszul/affine) connection is carried by its
+Christoffel-like symbol `G : R → R` (`( ap g x )`), a `D→` linear
+KL-affine map. Infinitesimal **parallel transport** of a vector `v` at
+base point `x` along `d ∈ D` is
+`P_d(v) = ( v + ( ( ( ap g x ) · v ) · d ) )` — affine in the
+infinitesimal `d` (the KL shape) with constant term `v` (transport at
+`d=0` = identity). The **connection difference / torsion** is the
+(1,2)-tensor `S = G − H`. **Curvature** = the `D×D`
+infinitesimal-square holonomy.
+
+**Kernel-verified `$p`, MEASURED (cut-free `$a`-leaf, OUR project
+metric):**
+
+| theorem | what it is | consumes | leaves |
+|---|---|---|---|
+| `sdg-conn-transport0` | `P_0(v) = v`: transport at the zero infinitesimal is the identity | ring (`ax-mul0`,`ax-add0`) | 62 |
+| `sdg-conn-kl-affine` | transport is KL-affine: rebuild-from-extracted-constant = the transport map | sdg-conn-transport0 (RING) | 92 |
+| `sdg-conn-diff-tensor` | connection difference `S=G−H` is a well-defined (1,2)-tensor displacement | RING + `conn.diff` (pure-ring $e) | 48 |
+| `sdg-conn-torsion-sym` | torsion-free scalar symmetry of the transport coefficient | ring (`ax-mulcom`) | 20 |
+| `sdg-conn-curv-cross` | **symmetric zeroth-order part of the `D×D` holonomy commutator VANISHES** | ring (`ax-mulcom`) | 60 |
+| `sdg-conn-curvature` | the curvature identity, modulo ONE boundary `$e` (`conn.hol`) | sdg-conn-curv-cross + `conn.hol` | 230 |
+
+`sdgconnfloor`/`sdgconnpure`: **`Kernel: verified all 6 $p in
+data/sdg.conn.mm ✔`** (db 92 statements). `sdgconnpure`: **GENUINELY
+INTUITIONISTIC ✔** — 44 logical `$a` audited (NAME+SHAPE, incl.
+`eq-ap`), none classical, **none in any `$p`'s consumed-axiom closure**.
+
+**Adversarially-honest decomposition (kernel-authoritative,
+`sdgconnpure` hard-fails if false).**
+
+- **The cleanly-reachable structural layer is PURE RING.**
+  `sdg-conn-transport0`, `-kl-affine`, `-diff-tensor`, `-torsion-sym`,
+  `-curv-cross` each have a consumed-axiom closure that reaches **none**
+  of `ax-microcancel`/`ax-microcancel2`/`ax-kl`/`ax-kl2`/`ax-gen`/
+  `ax-spec` (mechanically asserted, hard-fail). Transport KL-affinity,
+  connection difference/torsion well-definedness, and the symmetric
+  zeroth-order vanishing of curvature need **no globalization, no
+  microcancellation, nothing classical** — exactly the cleanly-provable
+  facts that do not need the W3-glob2 keystone.
+- **`conn.diff` is a pure-ring tensor-definition `$e`, NOT a boundary.**
+  It supplies the *definition* `S := G − H` as a value identity
+  (`( ap w x ) = ( ( ap g x ) + ( inv ( ap u x ) ) )`); the
+  well-definedness is then RING-ONLY congruence. It carries no
+  `ap`-congruence and no globalization.
+- **Curvature genuinely needs the globalized bracket — ONE precisely-
+  characterised boundary `$e` (`conn.hol`).** The `D×D` holonomy's
+  *symmetric zeroth-order* scalar part vanishes RING-ONLY
+  (`sdg-conn-curv-cross`, `ax-mulcom`), so the curvature is genuinely the
+  *next-order* term, not the scalar commutator. Producing the actual
+  curvature principal part `R(d₁,d₂)` — composing one direction's
+  transport *into* the other's argument, evaluating the outer Christoffel
+  symbol at the inner-transported point `( ap g ( x + … ) )` and
+  expanding it — is **BOTH** (a) `ap`-Leibniz substitution **and** (b) a
+  **globalized / generator-side derivative of the Christoffel symbol**:
+  the curvature is the synthetic *derivative* of `G` along the transport,
+  needing the pointwise→global linking rule. Here (a) and (b) are
+  **inseparable** — there is no value to substitute under `ap` until the
+  generator-side derivative of `G` is taken — so even though `eq-ap`
+  (§5j) exists in the base, it cannot discharge this alone. **This is the
+  PRECISE Book-3 dependency map: curvature/Bianchi genuinely needs
+  W3-glob2 (the globalized bracket).** It is surfaced as **EXACTLY ONE
+  loudly-labelled `$e`** (`conn.hol`); `sdgconnpure` asserts (hard-fail)
+  exactly two `conn.*` `$e` exist — the `conn.hol` boundary + the
+  pure-ring `conn.diff` tensor definition. Both obstructions are
+  **orthogonal to classicality** (`sdgconnpure` certifies the closure
+  classical-free mechanically).
+
+**Self-contained composition statement.** `data/sdg.conn.mm` is a
+rename-free extension of the frozen eq-ap-extended `data/sdg.base.mm` by
+six `sdg-conn-*` `$p`; independently kernel-checked and purity-checked;
+shares no `$p` with any other corpus; composes by concatenation. The
+honest residual is **exactly ONE boundary `$e`** (`conn.hol`) carrying
+the inseparable `ap`-congruence + W3-glob2 globalized-bracket curvature
+step — a precisely-characterised boundary (a FULL SUCCESS per the Iron
+Rule), the Book-3 dependency map, NOT a hidden assumption and NOT a
+classical smuggle. The mirror hypothesis is unaffected: no classical
+principle entered; the structural connection layer is uniformly
+intuitionistically pure, and the single thing curvature/Bianchi depends
+on is named exactly — the globalized bracket W3-glob2, Book 3's keystone.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

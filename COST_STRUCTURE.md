@@ -1,0 +1,117 @@
+# The cost structure of grounding Euclidean geometry
+
+A synthesis of what this project's instrument actually found, once it
+stopped being a Twitter rebuttal and became a measurement of where the
+cost of grounding a piece of mathematics in ZFC really lives. Every
+figure here is `[MEASURED]` (our kernel, cut-free `$a`-leaf metric),
+`[EXTRACTED]` (set.mm proof-DAG, verbatim), or a labelled `[PROJECTION]`
+with its derivation — never merged.
+
+## The three quantities (never summed)
+
+1. **Geometry proof size over F1** — G4 SAS = 383,606 cut-free
+   (10^5.58), ASA′ closed no-cheating end-to-end. `[MEASURED]`
+2. **Grounding cost** (expand F1 → ZFC via set.mm's library) — 10^45.74
+   analytic-ℝ; 10^30.75 RCF route; 10^25.95 strict extractable floor.
+   `[EXTRACTED]`
+3. **Satisfiability** — exhibit a model of F1. This is where the real
+   structure was hiding.
+
+## The through-line: every "floor" was a construction choice
+
+The headline finding. Each time we removed a *construction scaffold*,
+the apparent floor receded — it was never the mathematics:
+
+| model / route | substrate floor | what was removed |
+|---|---|---|
+| set.mm's ℝ (`CCfld`/analytic √) | **10^46.10** `[EXTRACTED]` | — |
+| native ZF model, √ a kernel theorem | **10^17.484** `[EXTRACTED]` | set.mm's analytic-√ *routing* |
+| HF carrier (Vω), proof-relativized | **10^12.810** `[EXTRACTED]` | the **ω-tower** (Axiom of Infinity) |
+
+- The 10^46 was set.mm building √ through the reals. A native ℚ-from-ZF
+  with √-satisfaction a *kernel-proved theorem* (Stage 2) dropped it to
+  10^17.484, residual = `omex` (Axiom of Infinity).
+- Seam #1 then MEASURED that `omex` is **incidental**: the closed
+  obligation is quantifier-free over finitely many named terms; ℚ-
+  constants unfold to pair-classes over only `∅` and `suc ∅` (`suc`
+  applied **once**, never iterated) — Stage-1's K=1 is the structural
+  reason. Floor → `sucexg` 10^12.810.
+- Stage 3 realized that as a kernel construction: the finite ℚ-elements
+  the proof *names*, built as hereditarily-finite sets, with quotient
+  well-definedness a finite induction-free kernel check (10 `$p`,
+  `[MEASURED]` 10^2.344). This **discharged** Stage-2's inductive
+  ≤10^4 `[PROJECTION]` into a measured finite computation.
+
+Honest residual (a full result, not a gap): 19 `gnd-*` ground ZF facts
+remain `$a`-asserted rather than unfolded to bare ∅/suc/pair/ext — but
+each is a *single variable-free, finite, non-inductive, decidable* ZF
+computation. The substrate is projection-free **modulo a finite
+decidable residual** — qualitatively unlike every earlier floor, which
+were analytic or inductive commitments.
+
+**Reading:** the cost of a ZFC model of plane geometry is not ℝ, not
+completeness, not Infinity, not even general ℚ. Chased down honestly it
+is the finite, decidable construction of a handful of named hereditarily
+-finite sets. The scaffolding was the cost; the mathematics needs almost
+none of it.
+
+## What the proof content actually is (Seam #4)
+
+Partitioning every cut-free leaf (kernel-reverified, 9,017,010 `$a`):
+
+- **SYNTAX 94.76%** — writing the coordinate formulas down. Orthogonal
+  to "proof difficulty"; a separate bucket, never folded.
+- Of *proof content*: **IDENTITY ≈ 31%** (bounded-degree polynomial
+  identities over an ordered field; localised to 5 generic lemmas, all
+  ≤ degree 4) **+ GLUE ≈ 69%**. Cost law (the one labelled
+  `[PROJECTION]` fit, R²=0.99, cross-validated): ring-identity cut-free
+  cost ≈ quadratic in monomials, sub-linear in degree.
+
+The qualified, honest reduction — and the first floor that looks
+**intrinsic, not chosen**: `loclink` (law of cosines) reduces **96.82%**
+to generic substitution-instances — near-perfect. But `sqcong`
+(a²=b² ⇒ a=b) reduces only **38.48%**; the other **61.52%** is
+irreducible ordered-field **sign reasoning** (`sqz`/`sqzhalf`/`subeq0` +
+a case-split) that is provably *not* a polynomial identity. So:
+
+> Birkhoff plane geometry = bounded-degree polynomial identities over an
+> ordered field **+ an essential, irreducible order/sign-reasoning
+> core** + syntax.
+
+The reduction is tight exactly where the content is equational and
+honestly incomplete exactly where it is order-theoretic. Of every floor
+chased, the order-core is the only one that did **not** dissolve under a
+better construction — it appears to be intrinsic to metric geometry.
+
+## The proof-complexity datum (Seam #2)
+
+Tree-like vs DAG-like proof size for the Birkhoff postulates is a
+**small constant in [0.59×, 3.35×]** — *not* exponential — and it
+**inverts** for the generic-lemma-factored proofs (5/11 have cut-free
+*smaller* than the named DAG, because substitution is free cut-free).
+A long-budget kernel-gated probe shows the production CSE figure (−81%)
+is budget-limited; real verified slack reaches **−91.83%**. Minimal-DAG
+lower bound honestly **OPEN** (smallest-grammar is NP-hard). Framed
+correctly: a fixed-instance CSE datum with measured constants —
+*explicitly not* a Frege/extended-Frege or tree/dag separation theorem.
+
+## Honest open questions (the live frontier)
+
+- **Exact reverse-math base.** Seam #1 showed the obligation is
+  quantifier-free, no ℕ-induction. *Which* weak base exactly carries
+  the closed proof (a finitely-axiomatized open theory)? Measurable.
+- **The `gnd-*` residual.** Unfold the 19 finite ground ZF computations
+  to bare ∅/suc/pair/ext in-kernel → a fully projection-free,
+  fully-measured substrate. Finite and decidable; not yet done.
+- **Is the order-core a genuine lower bound?** Seam #4's irreducible
+  ~61% sign-reasoning in `sqcong` — prove it cannot be a polynomial
+  identity (an algebraic-independence / model-theoretic argument), or
+  find the minimal order-reasoning kernel. The first floor that looks
+  real.
+- **Rank ↔ radical-depth law.** `suc` applied once *because* K=1
+  suggests minimal HF rank = f(radical tower depth) — a precise
+  measurable structural law connecting geometric to set-theoretic
+  content.
+
+Reported, not faked — including the projections, the open lower bounds,
+and the one floor that did not move.

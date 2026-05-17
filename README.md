@@ -41,11 +41,18 @@ the cheat this project exists to avoid:
    13-axiom ZF base** (full proof-DAG audit: *zero* analytic-ℝ
    reachability) collapses the certified substrate to **10^17.484**
    [EXTRACTED, machine-checked] — a **~10^28.6-order collapse**. The
-   irreducible residual is **not ℝ**: it is `omex`, the Axiom of
-   Infinity (ω is a set) — the genuine, unavoidable ZFC cost of having ℕ
-   at all. **Final thesis:** F1's model is MEASURED ~10^2; its entire
-   externally-validated ZFC substrate is **10^17.5**, dominated by
-   Infinity, not analysis — the ~10^46 was set.mm's √-routing choice.
+   residual *seemed* to be `omex` (Axiom of Infinity) — but Seam #1 then
+   **measured** even Infinity incidental (the obligation is
+   quantifier-free over finitely many named terms; `suc` applied once),
+   and Stage 3 realized the finite ℚ-elements as hereditarily-finite
+   sets, discharging the last inductive projection into a finite kernel
+   check. **Final ladder:** 10^46.10 (set.mm √-routing) → 10^17.484
+   (native ZF, Infinity) → **10^12.810** (HF, `sucexg`) `[EXTRACTED]`,
+   projection-free modulo a finite, decidable `gnd-*` residual. Every
+   "floor" was a construction choice, not the mathematics — see
+   [`COST_STRUCTURE.md`](COST_STRUCTURE.md) for the synthesis, including
+   the *one* floor that did not move: an irreducible order/sign-
+   reasoning core (~61% of `sqcong`, provably not a polynomial identity).
 
 Every digit is kernel-verified or extractor-exact; anything else is
 labelled `PROJECTION` with its derivation, never merged into a measured
@@ -79,8 +86,13 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | *Stage 2B:* one quad ext ℚ_geo(√r) @ K=1 radicand, **MEASURED** | 141 leaves | **10^2.149** |
 | *Stage 2C:* native model → set.mm genuine 13-axiom ZF base, **EXTRACTED** | — | **10^17.484** |
 | ↳ vs old `CCfld`-routed √-bridge — **collapse** | 10^46.10 → 10^17.48 | **~10^28.6** |
-| ↳ irreducible residual = `omex` (Axiom of Infinity, ω is a set) | not analytic ℝ | bare-ZF |
-| same, certified *through set.mm* (no cheaper √ to bind) | — | 10^46.10 |
+| *Seam #1:* `omex`/Infinity measured **INCIDENTAL** (closed proof quantifier-free, `suc` once) | floor → `sucexg` | **10^12.810** |
+| *Stage 3:* HF carrier — finite ℚ-elements in Vω; ≤10^4 projection **DISCHARGED→MEASURED** | 221 leaves | **10^2.344** |
+| ↳ substrate ladder | 10^46.10 → 10^17.484 → **10^12.810** | every floor a construction choice |
+| ↳ honest residual: 19 `gnd-*` ground ZF facts asserted | finite · non-inductive · decidable | (precisely characterized) |
+| *Seam #4:* proof content = bounded-deg identities + **irreducible order-core** | 31% identity / 69% glue | order-core ~not chosen |
+| *Seam #2:* tree/DAG ratio (concrete instance, not a separation thm) | [0.59×, 3.35×] | inverts; LB open |
+| same, certified *through set.mm*'s existing library (no cheaper √) | — | 10^46.10 |
 
 "F0 = 224" is the cheap, vacuous answer (assert the postulates).
 Everything else is the honest one: every Birkhoff postulate *derived*,

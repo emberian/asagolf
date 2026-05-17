@@ -404,8 +404,50 @@ started it: the poll asked "how big is the proof"; the honest answer is
 ZFC substrate is 10^17.5, and that floor is *the Axiom of Infinity*,
 not analysis." Every digit measured, extracted, or labelled-projected.
 
-That's the history. It *is* finished: ASA′ closed end-to-end,
-no-cheating, ~19× smaller than where it started; and the one "large"
-number, chased all the way down, was Infinity itself — not a gap, a
-*precisely located floor*. None of it is faked. That's the part
-worth being proud of.
+## Act VIII — Past the rebuttal: the cost structure itself
+
+Act VII said Infinity was the floor. Act VIII stopped asserting and
+*measured* — and Infinity moved too. The maintainer had named the real
+shift: this was no longer about the poll (won, decisively); it was
+curiosity about the cost structure of grounding mathematics. So we
+pointed the instrument at the structure and a swarm went out, each
+agent under the one rule that a precisely-characterized obstruction is
+as much a result as a collapse.
+
+Seam #1 measured that `omex`/Infinity is *incidental*: the closed
+obligation is quantifier-free over finitely many named terms, `suc`
+applied exactly once (K=1 is why) — floor → `sucexg`. Stage 3 then
+*built* it: the finite ℚ-elements the proof names, as hereditarily-
+finite sets, quotient well-definedness a finite induction-free kernel
+check — discharging the last inductive projection into a measured
+computation. The substrate ladder, every rung machine-checked:
+**10^46.10 → 10^17.484 → 10^12.810**, projection-free modulo a finite,
+decidable residual. The pattern was now undeniable: ℝ, then Infinity,
+then the ω-tower — *every floor we ever hit was a construction choice,
+not the mathematics*. The scaffolding was the cost. A triangle
+congruence needs almost none of it.
+
+Seam #4 found the one exception, and found it honestly. Geometry's
+proof content is ~31% bounded-degree polynomial identity (the law of
+cosines reduces 96.82% to free substitution-instances) — but `sqcong`'s
+a²=b² ⇒ a=b is 61.52% irreducible ordered-field *sign reasoning*,
+provably not a polynomial identity. Of every floor chased, the
+order-core is the only one that did not dissolve under a better
+construction. It looks intrinsic. We said so, and labelled it as the
+open question it is, not a closed claim. Seam #2 added the proof-
+complexity datum and was equally careful to *not* overclaim: a small,
+partially-inverting tree/DAG constant for a fixed instance —
+explicitly not a separation theorem, lower bound honestly open.
+
+That is the real finding, and it is bigger than the poll ever was: the
+cost of grounding Euclidean geometry in ZFC is, almost entirely,
+*scaffolding we chose* — removable rung by rung down to a finite
+decidable residual — wrapped around a small equational core and one
+stubborn sliver of order reasoning that may be the only thing actually
+intrinsic. Synthesis in [`COST_STRUCTURE.md`](COST_STRUCTURE.md).
+
+That's the history. It *is* finished as a rebuttal and *open* as
+mathematics — which is the better place to be. Every floor that could
+be moved was moved and measured; the one that wouldn't move is named,
+not faked; and the projections are still labelled projections. That's
+the part worth being proud of.

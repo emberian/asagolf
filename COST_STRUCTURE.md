@@ -129,9 +129,23 @@ correctly: a fixed-instance CSE datum with measured constants —
   convention-independent, the constant `c` is not; measured for the
   finite named set only, not generic ℚ. Naive `K=suc-count` honestly
   reported as breaking at Q1 (forced the corrected depth form).
-- **Exact reverse-math base — IN FLIGHT (Frontier A).** Which weak
-  finitely-axiomatized open theory carries the quantifier-free,
-  induction-free closed proof.
+- **Exact reverse-math base — RESOLVED (Frontier A, MEASURED + bounded).**
+  The closed proof is carried *exactly* by an **OPEN (quantifier-free)
+  two-sorted theory**: propositional calculus + equality-congruence +
+  the ordered-field axioms + the one √-adjunction — the universal
+  fragment of ordered Euclidean (Pythagorean) fields restricted to the
+  single √ the proof forces. MEASURED: 2 sorts (no set/class), **0**
+  quantifier/binder occurrences in any used body, **0** `$d`, **0**
+  ℕ/ω/induction, 81/82 `$a` consumed (`cong-lt1` redundant, reported).
+  Upper bound: interpretable in/**below EFA (IΔ₀+exp)**, far below
+  RCA₀, ≠ RCF (no real-closure scheme, no completeness). Honest open:
+  the matching *lower* bound (exact least theory) needs a certified
+  `df-*` conservativity proof + the order/√ separation.
+  **A↔C interlock:** that separation is exactly what Frontier C
+  *proved* — so together they pin it from both sides: an open
+  quantifier-free theory bounded above by EFA, with the order
+  predicate proven logically essential below; the only gap left is
+  the certified-conservativity step and the exact-constant Obligation O.
 - **The `gnd-*` residual — IN FLIGHT (Frontier B).** Unfold the 19
   finite ground ZF computations to bare ∅/suc/pair/ext in-kernel → a
   *fully* projection-free, fully-measured substrate.

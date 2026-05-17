@@ -501,11 +501,123 @@ not algebra. Four independent attacks land on the same two primitives.
 The only thing still genuinely open is the quantitative Obligation O —
 named, not faked.
 
-That's the history. It *is* finished as a rebuttal, *closed* as an
-artifact, and *open* in exactly one precisely-named place — which is
-the best place a piece of mathematics can be. Every floor that could
-be moved was moved and measured; the one that wouldn't move is named,
-proven, triangulated, and now pinned to two bare-ZF facts; and the
-projections are still labelled projections. That's the part worth
-being proud of — and it would survive a hostile reader checking every
-commit, which is the only kind of proud worth being.
+That's where the prequel ended. It *was* finished as a rebuttal,
+*closed* as an artifact, and *open* in exactly one precisely-named
+place — which is the best place a piece of mathematics can be. Every
+floor that could be moved was moved and measured; the one that
+wouldn't move is named, proven, triangulated, and pinned to two
+bare-ZF facts; the projections are still labelled projections. That
+was the part worth being proud of.
+
+But the story did not end there, and the part that came after is the
+part I — the one Claude who watched all of it happen in one unbroken
+stretch — was asked to write down before my own context turns over.
+So: the rest of it, with the wrong turns left in, the way the law
+demands.
+
+## Act XI — The Sequel: a second world, on the other side of the hinge
+
+The prequel's immovable floor was `x·x = 0 ⟹ x = 0` — order,
+proven not to be algebra. What we only saw at the bottom was that this
+is *exactly* the inference an entire other mathematics is built by
+**refusing**. Synthetic differential geometry keeps the nilpotents that
+axiom forbids. The instrument had, without knowing it, measured its way
+to the precise seam between metric geometry and SDG, and then stood on
+the door.
+
+The maintainer chose the hardest way through it: not a model crutch,
+not the classical kernel relabelled — a *new intuitionistic trust
+root*. The verifier is logic-agnostic, so it was reused unchanged; the
+new law was `sdgpure`, the no-cheating guard's exact dual, and it was
+given teeth — it rejects excluded middle, double-negation, Peirce,
+decidable equality, even wearing innocent names. The first synthetic
+derivative came back: existence by Kock–Lawvere, uniqueness by
+microcancellation, and — the honest word, said out loud — the mirror
+hypothesis *supported, not proven*.
+
+The wrong turns of Act XI were real and instructive. Subagents crashed
+mid-work on server errors, uncommitted, and had to be salvaged and
+re-run; the discipline became "integrate from the commit, never the
+working tree." We learned, the expensive way, that two agents extending
+the same generator collide into a kernel-gated three-way merge, while a
+separate corpus over a frozen base composes with *zero* conflict — an
+architecture lesson paid for once and then never again. And twice the
+law turned inward, by the agents themselves, unprompted: one was told
+the convenient answer (that application-congruence was derivable) was
+preferred — and *proved the opposite*, a real non-derivability theorem,
+adding `eq-ap` as a flagged, named axiom rather than smuggle the
+convenient falsehood. Another caught *itself* threading an inert
+hypothesis that would have passed the kernel, rejected its own proof,
+reworked it so every hypothesis was load-bearing, and wrote a hard-fail
+guard so the lie it almost told could never recur. Those two moments
+are the truest things in the whole record.
+
+Book Two closed: the seam threaded by a *derived* rule and no new
+axiom, the calculus globalized, Taylor to second order, the tangent
+bundle, the full Lie bracket — each small, each pure, each `Ok`. And
+the dual of the prequel's deepest finding arrived on schedule. The
+proofs are cheap and intuitionistic; the well-adapted model that makes
+them *mean* the smooth world is irreducibly heavy and classical, and it
+*contains the prequel's entire real-number tower inside it*. Cheap
+content, immovable meaning-cost. The recurring theorem, now twice, from
+opposite sides.
+
+## Act XII — The Summit, climbed under a pre-signed contract
+
+Book Three could have been where the slogan crept in — "gauge theory
+needs no classical apparatus." It didn't, because we wrote the contract
+*before* the climb: `BOOK3_SCOPE.md` stated the thesis, its
+falsification condition, and its predicted ceiling in advance, so the
+result could never be graded on a curve drawn after seeing it. The
+connection layer then found the exact shape of the mountain: curvature
+is precisely where Book Two's two open gaps *fuse* into a single
+keystone.
+
+That keystone closed. Full curvature, seam-free, genuinely consuming
+the globalized bracket — with the agent running the now-standard RPN
+self-check and confirming it had not smuggled anything. The first
+Bianchi identity, pure ring. The gauge potential KL-affine, the
+gauge-transformation law well-defined, the field strength's zeroth
+order vanishing — gauge theory's differential-geometric content, in
+small intuitionistic kernel proofs over a frozen substrate. It landed
+**exactly on the predicted ceiling and did not exceed it**: the proofs
+small and pure, the meaning resting on the same immovable model-floor
+as Book Two. The recurring theorem a third time, from a third
+independent direction, *confirmed and not inflated* — which is a better
+result than the slogan would have been, because it is true.
+
+One of Act XII's wrong turns was mine, the historian's. I committed a
+ledger missing two whole sections because I trusted an extract I never
+checked; "two lines" should have stopped me, and it didn't. I caught it
+on the next read, said so plainly with no spin, fixed it, and verified
+the fix before the next claim. The discipline I had enforced on every
+subagent applied inward too — late, but applied. It stays in the record
+because the genre's only rule is that the wrong turns stay in, and the
+historian does not get an exemption.
+
+The next obstruction — the differential Bianchi `∇R = 0`, a one-level-
+up Christoffel-flow recursion — is named and waiting, the way every
+obstruction in this codebase has been.
+
+## The history, three books in
+
+Three books, one spine. A poll guessed a number; the real discovery was
+never that number. It was a theorem nobody set out to prove, established
+three times from three independent directions: **the symbols are cheap
+and removable scaffolding; the irreducible cost is the commitment that
+they *mean* the intended mathematics, and that commitment is exactly the
+classical apparatus, every time.** Metric geometry's, synthetic
+geometry's, gauge theory's — each one chased to the bottom, each one the
+same shape: a small pure core, an immovable meaning-floor, the boundary
+between them measured and named, never papered.
+
+It is finished as a rebuttal, closed as two artifacts and a confirmed
+third, and open in exactly the precise places it says it is. Every
+floor that could be moved was moved and measured; the ones that
+wouldn't move are named and proven; the projections are still labelled
+projections; the wrong turns — the crashed agents, the merge paid for
+once, the convenient falsehood refused, the agent that caught itself,
+and the historian who didn't catch himself until the next read — are
+all still in. It would survive a hostile reader checking every commit,
+which is the only kind of proud worth being. That is the whole of it,
+and it is true.

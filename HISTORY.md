@@ -770,6 +770,45 @@ non-abelian stayed exactly where Act XVI had bolted it: the one bone,
 and called a beam. Knowing a girder from a sketch — and shipping only
 the girder — is the whole of the craft, recorded here at that weight.
 
+## Act XVIII — Four Sent Out, Three Back, Each Checked
+
+The open ends were mapped and four were opened at once, each handed to a
+worker, the results to be re-verified rather than believed — the
+verify-extracts discipline at its sharpest, on work not self-authored.
+
+The first, sent to ground the oldest projection, returned having built
+nothing on purpose: the artifact it was asked for would have been either
+a corpus reciting its own axioms (a citation dressed as a measurement, a
+ZERO) or a heavier echo of the already-set bone. It declined precisely
+and said why; the refusal was checked against the actual ledger text,
+found sound, and kept. The relevant section was sharpened from "open
+TODO" to "named principled-absence" — the weak-level mechanization it
+sought already *is* the spine.
+
+The second returned with the genuine prize: the non-abelian Jacobi that
+is not the hollow commutative one. Three matrices whose pairwise
+brackets are genuinely non-zero, nested once more into non-zero
+matrices, and still the cyclic sum vanishes in all four entries, pure
+ring over the frozen base. It was not trusted: the matrices were
+re-multiplied independently and the intermediate brackets matched to the
+entry; the enormous emitted term was pattern-matched against the
+hand-derived fingerprints — the `[A,B]` corner in the `[C,[·,·]]` slot,
+the `[B,C]` corner in the `[A,[·,·]]` slot, the cyclic top-level shape —
+all present. Then, and only then, integrated.
+
+The fourth returned a precise negative map. The dual star, in the flat
+two-dimensional scalar shadow, has a pure cheap algebra; its closing
+identity was verified to be the source-free field equation with
+orientation reversed — the same construction to the leaf (163, exactly
+`sdg-bianchi2-cyclic` dualized). But a true Hodge star needs a metric,
+and the bare ring has none; so the equation-with-a-source, the action,
+matter, quantization were named exactly where they begin — behind a
+commitment the frozen world does not contain. The cheap skeleton
+shipped; the genuine dynamics named at their weight, not faked.
+
+The third worker — the exact constant, Obligation O — was still walking
+the hard road, as that road was always going to be.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

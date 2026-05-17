@@ -413,6 +413,43 @@ already set. The motion of the theory stayed named on the wall, not
 sketched in pencil and called a beam. Knowing the difference between a
 girder and a sketch is the entire craft.
 
+## Book Three, continued — Four Sent Out
+
+Four threads went out at once, each to a worker, the open ends of the
+whole edifice. They came back not as gospel but as drafts to be
+checked, and checking them was the work, not a courtesy.
+
+The first worker was sent to ground the oldest projection — and came
+back having built *nothing*, on purpose. It had found that the thing it
+was asked to construct would either be a corpus reciting its own axioms
+back to itself, or a heavier echo of a bone already set. The honest
+move was to decline, precisely, and say why. That refusal was checked
+and kept; a tool that knows when not to fire is a tool.
+
+The second came back with the real prize: the genuine non-abelian
+Jacobi, not the hollow commutative one — three matrices whose brackets
+genuinely refuse to vanish, nested again, and *still* the great cyclic
+sum cancels to nothing, in all four corners, proven over the bare ring.
+That one was not taken on trust. The matrices were multiplied out by
+hand independently; the intermediate answers matched to the entry; the
+giant emitted expression was grepped for the exact fingerprints the
+hand-derivation predicted, and they were all there. Only then was it
+let in.
+
+The fourth came back with a map of where the ground ends. The dual
+star — the operation that turns a thing into its complement — has, in
+the flat two-dimensional shadow, an algebra that is pure and cheap, and
+its closing identity turned out to be the source-free field equation
+read backwards, the very same proof with orientation reversed, to the
+leaf. But a *true* star needs a metric, a way to measure angles and
+lengths, and the bare ring has no such thing. So the genuine dynamics —
+the equation with a source, the action, matter — were drawn on the wall
+exactly where they begin, behind a wall the frozen world does not
+contain. A negative map, drawn precisely, is still a map.
+
+(The third worker was still out, walking the hard road of the exact
+constant. Its road was always going to be long.)
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

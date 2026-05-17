@@ -1786,6 +1786,95 @@ the algebra of even the non-abelian field equation is cheap, pure, and
 forces nothing; the dynamics and the meaning are the named, immovable
 residuals — reported, not faked.**
 
+## 5u. The GENUINE non-vacuous non-abelian Jacobi — concrete witness, CLOSED pure-ring (the §5t residual, discharged at a witness)
+
+§5t shipped the bracket *algebra* and explicitly named the residual:
+the **Jacobi at a non-vanishing witness** (a symbolic Jacobi over the
+commutative base is vacuous `0+0+0=0`). Wave 8 discharges it at a
+concrete witness — the wave-4 concrete-separation discipline, one level
+up. Standalone corpus `data/sdg.jacobi.mm` (trio
+`sdgjacobi{build,floor,pure}`), self-contained over the FROZEN base,
+disjoint `sdg-jacobi-*` labels, 0 collisions, **independently
+re-verified by the integrator (kernel + purity + matrix recomputation +
+structural pattern-match of the literal `j11` term, not trusted)**.
+
+Witness `A=[[0,1],[0,0]]`, `B=[[0,0],[1,0]]`, `C=[[1,0],[0,0]]`
+(sl₂-style). Matrix product entrywise via ring `+`/`*`; commutator
+entry `[X,Y]_ij = (X·Y)_ij + inv((Y·X)_ij)`. The pairwise commutators
+are **genuinely non-zero matrices** — `[A,B]=[[1,0],[0,(inv 1)]]`,
+`[B,C]=[[0,0],[1,0]]`, `[C,A]=[[0,1],[0,0]]` — and the nested brackets
+are themselves non-zero (`[A,[B,C]]=[[1,0],[0,(inv 1)]]`,
+`[B,[C,A]]=[[(inv 1),0],[0,1]]`, `[C,[A,B]]=0`), yet the cyclic sum
+vanishes **entrywise** (e.g. `(1,1)`: `1 + (inv 1) + 0 = 0`). This is
+**NOT commutator-collapse** — the genuine non-abelian Jacobi.
+
+```
+sdgjacobipure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  sdg-jacobi-eqneg = 1979  ( x=y -> inv x = inv y )         [MEASURED]
+  sdg-jacobi-j11   = 64296  Jacobi cyclic-sum (1,1) entry =0 [MEASURED]
+  sdg-jacobi-j12   = 64242  Jacobi cyclic-sum (1,2) entry =0 [MEASURED]
+  sdg-jacobi-j21   = 64445  Jacobi cyclic-sum (2,1) entry =0 [MEASURED]
+  sdg-jacobi-j22   = 64130  Jacobi cyclic-sum (2,2) entry =0 [MEASURED]
+```
+
+All **4 entries** of `[A,[B,C]]+[B,[C,A]]+[C,[A,B]] = 0` closed
+entrywise, pure-ring over the unchanged frozen commutative base — NO
+new substrate commitment, nothing classical, no seam, no `eq-ap`.
+**Honest scope.** The non-vacuity itself — that `[A,B]`, `[B,C]`,
+`[C,A]` are genuinely non-zero — is **exactly `1≠0`, the already-
+GROUNDED cross-book spine** (§5r), named never faked into a `$p`.
+Named residuals: general matrix rank / arbitrary Lie algebra (this is
+the Book-One-style concrete separation, the proof of concept, not the
+whole tower); the full `DF=0` assembly and the dynamics. Model-meaning
+floor unchanged Book-Two `[PROJECTION]`, never re-summed.
+
+## 5v. The orientation-dual Hodge-⋆ algebraic skeleton — and the precise metric residual
+
+The field-theory-dynamics scoping (thread 4). Standalone corpus
+`data/sdg.hodge.mm` (trio `sdghodge{build,floor,pure}`), self-contained
+over the FROZEN base, disjoint `sdg-hodge-*` labels, 0 collisions,
+**independently re-verified (kernel + purity + statement-content +
+cross-check vs `sdg-bianchi2-cyclic`)**.
+
+In the 2D microsquare scalar reduction the Hodge `⋆` acts on the area
+2-form `( d * e )` as the orientation/duality map `( d*e )↔( e*d )` with
+a sign. Exactly that **algebraic skeleton** is pure-ring:
+
+```
+sdghodgepure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  sdg-hodge-eqneg        = 1979  inv-congruence              [MEASURED]
+  sdg-hodge-area-antisym =   67  ( d*e ) + inv( e*d ) = 0    [MEASURED]
+  sdg-hodge-starstar     = 4157  inv(inv(F·v)) = F·v (⋆⋆=id) [MEASURED]
+  sdg-hodge-star-lin     = 3057  a·(inv w) = inv(a·w)        [MEASURED]
+  sdg-hodge-codiff-dual  =  163  ( F·v·(e*d) ) + inv( F·v·(d*e) ) = 0
+                                                             [MEASURED]
+```
+
+`sdg-hodge-codiff-dual` (163) is **identical to wave-2
+`sdg-bianchi2-cyclic` with `(d*e)↔(e*d)` swapped** — verified by direct
+statement cross-check: the **coclosed condition `∇⋆F=0` is the exact
+orientation-reversed twin of the source-free differential Bianchi
+`∇F=0`**, the construction dualized, not approximated. `area-antisym`
+(67) is the `sdg-nonabgen-symvanish` shape; `starstar` is `⋆⋆=+id`
+(the 2D `(−1)^{k(n−k)}=+1` involution as `inv(inv X)=X`).
+
+**Honest scope — a precise NEGATIVE map (the iron-rule-correct
+outcome).** This is *only the orientation-dual ⋆'s algebraic skeleton*;
+it is pure-ring **precisely because** in the 2D scalar reduction `⋆`
+degenerates to orientation reversal with no metric *content*. A genuine
+metric Hodge `⋆` forces an **inner-product / metric tensor `g`**
+(`⟨α,β⟩vol = α∧⋆β`); the frozen base has **no metric symbol** — it is a
+bare commutative ring. So the precisely-named residual, each forcing a
+**NEW FLAGGED metric/bilinear commitment absent from the frozen ring**:
+the genuine metric `⋆` in dim>2, the **inhomogeneous (dynamical)
+`D⋆F=J`** with a source current (the *second* Yang–Mills/Maxwell
+equation — the dynamics, vs the source-free `∇F=0` we hold), the action
+`∫tr F∧⋆F`, matter, quantization. Not faked into any `$p`, claimed at
+exactly their weight. The model-meaning floor is the UNCHANGED
+Book-Two `[PROJECTION]`, never re-summed. **The recurring theorem
+holds once more: the orientation-dual skeleton is cheap and pure; the
+genuine dynamical/metric content is the named, immovable residual.**
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

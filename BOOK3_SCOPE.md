@@ -518,3 +518,31 @@ matter / quantization) are the **named residuals** — and the *meaning*
 remains the immovable Book-Two model `[PROJECTION]`. The recurring
 theorem, held once more — reported, not faked, not inflated past the
 contract.**
+
+**Wave 8 — the genuine non-vacuous non-abelian Jacobi at a concrete
+witness (`SEQUEL_SCOPE` §5u):** `data/sdg.jacobi.mm`, 5 kernel-verified
+pure-ring `$p`; the §5t residual discharged at the sl₂-style witness
+`A=[[0,1],[0,0]],B=[[0,0],[1,0]],C=[[1,0],[0,0]]` — all **4 entries**
+of `[A,[B,C]]+[B,[C,A]]+[C,[A,B]]=0` close entrywise (j11..j22, MEASURED
+~64k leaves each), pairwise commutators genuinely non-zero (NOT
+collapse). Integrator-reverified: kernel + purity + independent matrix
+recomputation + structural pattern-match of the literal term. **§1a/§1b
+NOT triggered.** Non-vacuity = the already-grounded spine `1≠0`, named
+not faked. Residual: general rank / arbitrary Lie algebra (the
+Book-One concrete-separation discipline).
+
+**Wave 9 — the orientation-dual Hodge-⋆ skeleton; a precise NEGATIVE
+map (`SEQUEL_SCOPE` §5v):** `data/sdg.hodge.mm`, 5 kernel-verified
+pure-ring `$p`. The 2D-scalar orientation-dual `⋆` algebra closes
+pure-ring (`area-antisym`, `starstar`=⋆⋆=id, `star-lin`, and
+`codiff-dual` = `∇⋆F=0` verified to be **exactly the orientation-dual
+of the source-free `∇F=0`**, 163 leaves identical to
+`sdg-bianchi2-cyclic`). **§1a NOT triggered; §1b honestly engaged and
+REPORTED, not crossed:** a genuine *metric* Hodge `⋆` (dim>2,
+`D⋆F=J`, action, matter, quantization) **forces a new flagged
+metric/bilinear commitment absent from the frozen bare ring** — the
+precisely-named dynamical residual, claimed at its weight, not faked
+into a `$p`. This is the iron-rule-correct deliverable: the cheap
+orientation skeleton shipped; the genuine dynamics named as the
+boundary they are. The recurring theorem, held twice more — reported,
+not inflated past the contract.**

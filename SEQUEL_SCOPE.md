@@ -269,6 +269,90 @@ Classically each `D_k` collapses to `{0}` (via the metric residue the
 substrate REFUSES) and KL_k is vacuous — the whole content is the
 intuitionistic setting, and the guard certifies it mechanically.
 
+## 5e. Pointwise-calculus layer (MEASURED; globalization deferred to SDG-K)
+
+The pointwise synthetic differentiation rules from KL, each
+kernel-verified and intuitionistic-purity-clean, delivered as the
+standalone corpus `data/sdg.calc.mm` (built by `src/bin/sdgcalcbuild.rs`,
+measured by `sdgcalcfloor`, guarded by `sdgcalcpure`).
+
+**Intended composition.** `data/sdg.calc.mm` is fully self-contained over
+the *identical* `data/sdg.base.mm` axiom surface that `data/sdg.mm` uses,
+and shares **no `$p`** with it (disjoint `sdg-calc-*` labels). The two
+corpora are independent kernel-checked / purity-checked artifacts;
+a downstream union is a rename-free concatenation of their `$p` blocks.
+Kept separate deliberately so it never merge-conflicts with the other
+in-flight SDG agents that own `data/sdg.mm`.
+
+**POINTWISE ONLY.** Every rule is stated as KL-existence (the affine
+slope reps are `$e` hypotheses, mirroring `data/sdg.mm`'s `sdg-slope`
+shape) **plus** the pointwise identifying equation. NONE consumes
+`ax-microcancel` or `ax-gen` over a linking universal — verified
+mechanically (per-theorem consumed-axiom closure). Globalization
+(discharging the pointwise identity into a quantified derivative
+equation via the pointwise→global seam) is the **separate keystone
+SDG-K** and is deliberately NOT attempted or duplicated here.
+
+| rule | what it is | consumes `d·d=0`? | leaves (MEASURED) |
+|---|---|---|---|
+| `sdg-calc-addcan` | additive cancellation, RING-ONLY | no | 406 |
+| `sdg-calc-add4` | commutative-monoid 4-shuffle, RING-ONLY | no | 303 |
+| `sdg-calc-rdistr` | right distributivity, RING-ONLY | no | 163 |
+| `sdg-calc-sum` | **SUM rule**: slope of `f+g` is `b+c` | **no** (pure ring) | 1055 |
+| `sdg-calc-prod` | **PRODUCT/Leibniz**: slope of `f·g` is `f·g'+f'·g` | **YES** (`df-D`+`ax-mul0`) | 3521 |
+| `sdg-calc-Dscale` | `(D d) ⊢ (D (b·d))`: R-scaling of an infinitesimal | **YES** (`df-D`+`ax-mul0`) | 401 |
+| `sdg-calc-chain` | **CHAIN rule**: slope of `g∘f` is `(g'∘f)·f'` | via `Dscale` | 328 |
+
+Adversarially-honest closure check (mechanical, `sdgcalcpure` +
+independent recomputation): `sdg-calc-sum` does **not** reach `df-D`
+or `ax-mul0` (it is genuinely pure ring — no `d·d=0`); `sdg-calc-prod`
+and `sdg-calc-Dscale` **do** reach both `df-D` and `ax-mul0` — the
+Leibniz proof genuinely kills the second-order term `(b·d)·(c·d)` by
+rewriting it to `(b·c)·(d·d)`, applying `df-D` to the `(D d)` hypothesis
+to get `d·d=0`, then `ax-mul0` to get `(b·c)·0=0`. This is the canonical
+SDG product proof; it is **not** hand-waved.
+
+**CHAIN — a precisely-characterised substrate-instantiation
+obstruction (reported, not faked; a FULL SUCCESS per the Iron Rule).**
+Composing `f`'s affine expansion *into* `g`'s argument is Leibniz
+substitution under the function-application symbol `ap`. The authored
+`data/sdg.base.mm` instantiates equality's congruence **only** for the
+ring operations `+` and `*` (`eq-pl1/2`, `eq-mu1/2`); it provides **no**
+`x = y → ( ap g x ) = ( ap g y )`. Adding one would modify the authored
+substrate (forbidden) — and note this gap is **not** a classical
+principle and **not** the pointwise→global keystone; it is purely that
+the substrate's Leibniz is congruence-closed for the ring ops but not
+for `ap`. Therefore the single `ap`-Leibniz instance is supplied as one
+explicit, loudly-labelled `$e` (`chain.sub`); everything genuinely SDG
+is derived — the increment `b·d` is proved infinitesimal by
+`sdg-calc-Dscale` (genuinely consuming `d·d=0`) and the scalar collapse
+`c·(b·d) = (c·b)·d` is derived. The precise finding: *the chain rule's
+"substitute the inner expansion into the outer function" step is
+intrinsically function-argument Leibniz; it is not derivable in a
+substrate whose congruence is instantiated only for the ring operations.
+This is orthogonal to both classicality and globalization.*
+
+`sdgcalcpure` verdict: **GENUINELY INTUITIONISTIC ✔** — all 7 `$p`
+intuitionistic; 40 logical `$a` audited (NAME+SHAPE), none classical,
+none in any `$p`'s consumed-axiom closure. Kernel: verified all 7 `$p`
+in `data/sdg.calc.mm` (101 statements).
+
+## 5f. Keystone integration status (honest, current)
+
+SDG-K landed on its branch (commit `4f13bac`): the §5b pointwise→global
+seam is closed there — `mc.h` `$e` removed, seam-free `sdg-deriv`
+kernel-verified, the deduction-theorem fragment + guarded `ax-gen` are
+*derived* rules (no new substrate axiom), `sdgpure` still GENUINELY
+INTUITIONISTIC. Honest measured delta: `sdg-deriv` 9 → ~2243 leaves —
+a cost *revealed, not added* (the threading was previously hidden in
+the zero-cost `$e`). It is NOT yet reflected in the integrated tree:
+SDG-K and the D_k milestone (§5d) both extended the generator from the
+same base, so a kernel-gated merge subagent is producing the union
+builder. §5b will be marked RESOLVED here only when that union
+re-verifies in-tree — not before. (Iron rule: this doc reflects the
+integrated, re-verified state, never a not-yet-integrated branch.)
+
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

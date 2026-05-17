@@ -81,7 +81,23 @@ a case-split) that is provably *not* a polynomial identity. So:
 The reduction is tight exactly where the content is equational and
 honestly incomplete exactly where it is order-theoretic. Of every floor
 chased, the order-core is the only one that did **not** dissolve under a
-better construction — it appears to be intrinsic to metric geometry.
+better construction — and Frontier C **proved** why.
+
+**Frontier C (`FRONTIER_C_ORDERCORE.md`, machine-checked separating
+arithmetic):** the qualitative irreducibility is now a **THEOREM**, not
+an appearance. Ring identities are sound over *every* commutative ring;
+`sqcong`'s conclusion `u²=v²→u=v` is false in ℤ/8 (3²≡1²≡1, 3≠1) and
+its load-bearing internal step `x²=0→x=0` is false in ℤ/4 (2²≡0, 2≠0).
+By contraposition, **no set of ring identities of any degree can
+express the order-core** — it is logically essential, localized to one
+named axiom (`of-letot`, "no nonzero nilpotents"). This is the **first
+and only intrinsic floor** in the entire project: every other floor was
+a removable construction choice; this one provably is not. What remains
+`[CONJECTURED]` is only the *exact 61.52% constant* being minimal,
+isolated to a single named open proof-complexity lemma (Obligation O: an
+unconditional cut-free lower bound for `x²=0→x=0`) — the factor-through
+clause provable, the size clause open. The intuition was right; it is
+now a precise, correct separation at the exact signature and obligation.
 
 ## The proof-complexity datum (Seam #2)
 

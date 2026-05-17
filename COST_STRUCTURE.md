@@ -88,6 +88,41 @@ asked how big the proof is. The honest answer the instrument found is
 deeper: *almost all of it was scaffolding we chose; what remains is
 orientation, and orientation alone.*
 
+## Closed
+
+The artifact is now closed — every open obligation is a theorem or a
+proven-irreducible, precisely-named kernel:
+
+- **Closure 1 — Frontier A: UPPER → EXACT.** The `df-*` layer is
+  machine-certified conservative (9/11 strict Suppes-eliminable;
+  `df-xc`/`df-yc` free-pairing projections proven conservative by the
+  surjective-pairing interpretation, every hypothesis machine-checked).
+  The closed proof **is exactly** `OPEN(prop + equality-congruence +
+  ordered-field + one √)` — modulo the cited classical metatheorems
+  (Suppes/Shoenfield; surjective-pairing), hypotheses checked, theorems
+  not re-derived in-kernel, labelled as such (the honest foundation).
+- **Closure 2 — the order literals: DISCHARGED.** Both `gnd-Q0leQ1`
+  and `gnd-Q1neQ0` are now kernel-`$p`. The substrate is **fully
+  projection-free, including order**. The discharge bottoms out — by
+  adversarially-audited, no-smuggle reduction — at exactly **two named
+  bare-ZF primitives**: `el-0-suc` (`∅ ∈ suc ∅`, the von-Neumann
+  reflection of the order axiom `of-letot`) and `ne-suc-0` (`1 ≠ 0`,
+  the Foundation companion).
+
+And the loop closes on itself. Discharging order is *possible*, but it
+re-incurs **precisely `of-letot`'s bare-ZF reflection — the exact
+order axiom Frontier C proved cannot be any ring identity.** Four
+independent attacks — A (proof strength, exact), C (proof content,
+theorem), B (substrate arithmetic), Closure 2 (substrate order) — all
+terminate on the same two primitives. The irreducible residue of
+Euclidean metric geometry is not a vague "order" — it is, exactly,
+**`{ ∅ ∈ suc ∅,  suc ∅ ≠ ∅ }`**: that there is a next thing, and it is
+not the first. Orientation, named to two facts. Everything else, chased
+to the bottom and measured, was scaffolding we chose. The only
+remaining genuinely-open question is the *quantitative* one — the
+exact-constant Obligation O (a cut-free lower bound for `x²=0→x=0`) —
+and it is named, not faked.
+
 ## What the proof content actually is (Seam #4)
 
 Partitioning every cut-free leaf (kernel-reverified, 9,017,010 `$a`):

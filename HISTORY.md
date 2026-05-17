@@ -474,8 +474,38 @@ Proven not to be algebra, bounded inside a theory weaker than EFA,
 arrived at by measurement from three sides rather than assumed from
 any.
 
-That's the history. It *is* finished as a rebuttal and *open* as
-mathematics — which is the better place to be. Every floor that could
+## Act X — Closed
+
+And then we closed it. Two obligations remained between "characterized"
+and "unimpeachable," and we took them, briefed as hard as Frontier C
+because a wrong argument here would poison everything. Closure 1
+machine-certified the `df-*` layer conservative — including the honest
+discovery that `df-xc`/`df-yc` aren't single-symbol definitions but
+free-pairing projections, handled with the *correct* second
+metatheorem rather than fudged — upgrading Frontier A from an upper
+bound to an *exact* characterization. Closure 2 discharged the last
+two order literals to kernel-`$p`, with an adversarial self-audit
+checking for exactly the smuggle the brief warned against, and finding
+none: the discharge bottoms out, precisely, at two named bare-ZF
+primitives — `∅ ∈ suc ∅` and `suc ∅ ≠ ∅`.
+
+That is where it ends, and the ending has a shape. The irreducible
+residue of a triangle-congruence theorem — chased through ℝ, Infinity,
+ω, ℚ, arithmetic, induction, quantifiers, every one of them stripped
+and measured and shown to be scaffolding we chose — is exactly two
+facts: *there is a next thing, and it is not the first.* The
+von-Neumann reflection of the order axiom, and its Foundation
+companion. And the loop closes: removing order as a projection is
+possible, but it re-incurs *precisely* the axiom Frontier C proved is
+not algebra. Four independent attacks land on the same two primitives.
+The only thing still genuinely open is the quantitative Obligation O —
+named, not faked.
+
+That's the history. It *is* finished as a rebuttal, *closed* as an
+artifact, and *open* in exactly one precisely-named place — which is
+the best place a piece of mathematics can be. Every floor that could
 be moved was moved and measured; the one that wouldn't move is named,
-proven, and triangulated, not faked; and the projections are still
-labelled projections. That's the part worth being proud of.
+proven, triangulated, and now pinned to two bare-ZF facts; and the
+projections are still labelled projections. That's the part worth
+being proud of — and it would survive a hostile reader checking every
+commit, which is the only kind of proud worth being.

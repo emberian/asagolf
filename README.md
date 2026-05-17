@@ -56,9 +56,19 @@ the cheat this project exists to avoid:
    algebra), proof strength (A: an open theory below EFA), substrate
    construction (B: strip everything, two inequalities remain) —
    triangulate on **order/orientation, and nothing else**. Every other
-   "floor" was removable scaffolding; the single irreducible residue of
-   metric geometry is the ordering. See
-   [`COST_STRUCTURE.md`](COST_STRUCTURE.md).
+   "floor" was removable scaffolding. **The artifact is now closed:**
+   Closure 1 made Frontier A *exact* (df-* machine-certified
+   conservative); Closure 2 discharged the two order literals to
+   kernel-`$p`, the substrate now fully projection-free including
+   order — bottoming out, no-smuggle-audited, at exactly two named
+   bare-ZF primitives: **`{ ∅ ∈ suc ∅,  suc ∅ ≠ ∅ }`** (the
+   von-Neumann reflection of the order axiom `of-letot` + its
+   Foundation companion — *precisely* what Frontier C proved is not
+   algebra). The irreducible residue of metric geometry is exactly
+   that: *there is a next thing, and it is not the first.* Every
+   obligation is now a theorem or a proven-irreducible, named kernel;
+   the sole remaining open question is the quantitative Obligation O,
+   named not faked. See [`COST_STRUCTURE.md`](COST_STRUCTURE.md).
 
 Every digit is kernel-verified or extractor-exact; anything else is
 labelled `PROJECTION` with its derivation, never merged into a measured

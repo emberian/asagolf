@@ -25,13 +25,18 @@ the cheat this project exists to avoid:
    route, with a strict extractable floor of **10^25.95**.
 3. **Satisfiability certificate** — F1 is consistent/non-vacuous: a
    minimal model (the Euclidean closure of ℚ) is *constructed and
-   kernel-MEASURED* at ≈ **10^8.15** (unit step 141 = 10^2.149, proved
-   once over fresh atoms — this *proves F1 does not need ℝ*); but
-   certifying it *inside externally-validated set.mm* costs ≈ **10^46**
-   [extracted], because set.mm contains no Euclidean / real-algebraic /
-   real-closed subfield to bind to. The sharpened thesis: the
-   irreducible ~10^46 is a property of *set.mm's construction choices*,
-   not of F1.
+   kernel-MEASURED*. The generic √-extension step is 141 leaves
+   (10^2.149); the closed ASA′ proof is *measured* to force exactly **one
+   un-nested radical** (K = 1), so the proof-relativized construction is
+   a fully MEASURED **10^2.149** — no projection (the former ≤10^8.15 was
+   a now-superseded K≤10⁶ projection; a model of the *entire F1 schema*
+   stays a separate, explicitly labelled projection). This *proves F1
+   does not need ℝ*. But certifying the model *inside externally-
+   validated set.mm* costs ≈ **10^46** [extracted], because set.mm
+   contains no Euclidean / real-algebraic / real-closed subfield to bind
+   to. The sharpened thesis, now sharper: F1's model for this proof is
+   ~10^2 (measured); the irreducible ~10^46 is *entirely* a property of
+   *set.mm's construction choices*, not of F1.
 
 Every digit is kernel-verified or extractor-exact; anything else is
 labelled `PROJECTION` with its derivation, never merged into a measured
@@ -58,7 +63,8 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | *grounding cost:* full ZFC model of ℝ (set.mm) | — | 10^45.74 |
 | same, real-closed-field route (no completeness) | — | 10^30.75 |
 | same, strict extractable floor | — | 10^25.95 |
-| *satisfiability:* minimal Euclidean model, constructed+**measured** | unit 141 / 10^2.149 | ≤10^8.15 |
+| *satisfiability:* minimal Euclidean model — proof-relativized, **MEASURED** (K=1 distinct un-nested radical) | 141 leaves | **10^2.149** |
+| same, full-F1-schema closure (separate, labelled) | — | [PROJECTION] |
 | same, certified *through set.mm* (no cheaper √ to bind) | — | 10^46.10 |
 
 "F0 = 224" is the cheap, vacuous answer (assert the postulates).

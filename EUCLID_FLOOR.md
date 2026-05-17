@@ -73,22 +73,40 @@ of-* ordered-field signature over fresh atoms — the SAME signature audited
 in grounded.mm — plus the conservative `df-sqrtr`. NO √ axiom is asserted.
 A derivation bug can only be a kernel REJECTION.
 
-## 4. PROJECTION: tower length K
+## 4. tower length K — now MEASURED (the projection is removed)
 
 The grounded geometry introduces √ exactly via `df-cp`'s
-`sqrt( u * inv( sqd a c ) )`. G1 (ruler) is the only √-bearing postulate;
-ASA' invokes the ruler a bounded number of times. Each distinct radical =
-one tower level = one MEASURED unit step. K is itself kernel-MEASURABLE
-(count `sqrt` leaves in the grounded cut-free tree) but is owned by the
-grounded build, so here it is a labelled **PROJECTION**. Even a generous
-K ≤ 10^6 (far above any realistic ruler multiplicity inside a ~10^6.9
-cut-free proof):
+`sqrt( u * inv( sqd a c ) )`. G1 (ruler) is the only √-bearing postulate.
+A field, once it adjoins √x, has it forever (reuse is free) — so the
+construction cost is the radical tower **depth**, i.e. the number of
+*distinct* `( sqrt … )` subterms (and their nesting), **not** the
+occurrence multiplicity (occurrences are already counted in the 10^5.58
+geometry). That depth is directly kernel-MEASURABLE; `euclidfloor` now
+measures it read-only over the kernel-verified `data/grounded.out.mm`:
 
-    construction cost  =  K · unit  ≤  10^6 · 10^2.149  =  10^8.15
-                                                          [PROVEN×PROJECTION]
+    MEASURED distinct USED radicals in the closed ASA′ corpus : 1
+        ( sqrt ( u * ( inv ( sqd a c ) ) ) )
+    MEASURED max sqrt-nesting depth                           : 1
+    (the only other `( sqrt … )` form is the bare axiom template
+     `( sqrt u )` — the F1 *schema* statement, not a used instance)
 
-i.e. the Euclidean-closure CONSTRUCTION is ~10^8 — below EVERY set.mm
-substrate figure (10^25.95 / 10^30.75 / 10^45.74).
+So the minimal field making the **closed ASA′ proof** sound needs
+exactly **one un-nested degree-2 extension** — K = 1:
+
+    proof-relativized construction = K · unit = 1 · 10^2.149
+                                   = 10^2.149            [MEASURED]
+
+The former `K ≤ 10^6  ⇒  10^8.15 [PROJECTION]` is **superseded**: for the
+proof-relativized model the construction is now a fully MEASURED
+**10^2.149** (no projection). It is ~10^2 — astronomically below EVERY
+set.mm substrate figure (10^25.95 / 10^30.75 / 10^45.74).
+
+**Separate, still-labelled PROJECTION (never conflated):** a model of the
+*entire F1 schema* (√ of *every* nonneg element) is the full Euclidean
+closure of ℚ — a countable tower, each level one MEASURED unit step.
+That is a *different quantity* from "what the closed ASA′ proof needs",
+remains an explicitly labelled PROJECTION, and is **not** the 10^2.149
+figure above.
 
 ## 5. TRANSPORT BINDING (EXTRACTED) — the decisive term
 

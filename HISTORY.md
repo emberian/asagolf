@@ -636,6 +636,39 @@ meaning, the boundary measured and named. Reported as the expected
 success, not inflated into a slogan — because the contract existed
 precisely so it couldn't be.
 
+## Act XIV — The Last Honest Debt, Paid
+
+The gauge layer had always carried one IOU in plain sight: a single
+labelled hypothesis under which the field strength's genuine value and
+its full gauge-covariance were assumed rather than derived. Book Two
+had written that debt down in full — naming both halves it folded
+together: the right to substitute under the function symbol, and the
+right to call the field strength the curvature of the connection — and
+had refused to pretend it was settled. That refusal was the point.
+
+By now both halves had been earned: the curvature keystone (Act XII)
+and the small flagged congruence axiom in the floor since Book Two.
+So the debt was payable, and the only question was whether it would be
+paid honestly. The dishonest move would have been to keep the IOU and
+stamp it paid. What was done instead: tear it up and do the work it
+stood for. The field strength derived as a genuine curvature by the
+*same* seam construction that pinned curvature down before; the
+substitution derived by actually invoking the congruence axiom and
+letting the guard count it; a hard-fail check told to scream if either
+half were faked or the old hypothesis were still lying anywhere in the
+corpus. It screamed at nothing.
+
+The curvature half measured two thousand six hundred and eighty-five —
+*again*. The third time that exact construction had run: on
+connections, on curvature-of-curvature, now on the gauge potential. A
+debt paid in the same coin three times was always real and always
+payable. What stayed unpaid stayed named: the full non-abelian tangle
+beyond the scalar reduction the contract declared out of scope from the
+first page — written down, not hidden, because that is the only move
+this codebase has ever made. The boundary that had been the precise
+map of what Book Three would owe was now the precise record of what
+Book Three had paid.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

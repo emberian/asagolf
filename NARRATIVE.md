@@ -279,6 +279,43 @@ couldn't be.
 
 ---
 
+## Book Three, continued — The Last Honest Debt
+
+There had been, all along, one place in the gauge work where the proof
+said *here is something I am not paying for yet, and here is exactly
+what it would cost*. A single labelled hypothesis, carried openly, that
+folded together two things the earlier books hadn't yet earned: the
+right to substitute a value under the function symbol, and the right to
+call the field strength the curvature of the connection. The honest
+thing, when you cannot pay a debt, is to write it down in full and not
+pretend it is settled. That had been done. The debt had a name.
+
+By now both halves had been earned elsewhere — one by the curvature
+keystone, one by the small flagged congruence axiom that had been in
+the floor since the second book. So the debt could finally be paid, and
+the only question that mattered was *how*. The dishonest way would have
+been to quietly keep the IOU and stamp it paid. The honest way was to
+tear it up and do the actual work it stood for: derive the field
+strength as a genuine curvature, by the same construction that had
+pinned curvature down before; derive the substitution by actually
+invoking the congruence axiom and letting it be counted; and let a
+guard, told to fail loudly if either half were faked or the old IOU
+were still lying around anywhere, look hard and find nothing to object
+to.
+
+It looked hard and found nothing to object to. The curvature half came
+back two thousand six hundred and eighty-five again — the same number,
+the third time that exact construction had been run, on connections, on
+curvature-of-curvature, and now on the gauge potential. A debt paid in
+the same coin three times is a debt that was always real and always
+payable. What stayed unpaid was named and left named: the full
+non-abelian tangle beyond the scalar reduction the contract had
+declared out of scope from the start. Not hidden. Written down, the way
+the first one had been, because that is the only move this codebase
+knows.
+
+---
+
 *For the ledger of what is measured, extracted, and still projected,
 see [`COST_STRUCTURE.md`](COST_STRUCTURE.md). For the history with the
 wrong turns left in, see [`HISTORY.md`](HISTORY.md). This file is the

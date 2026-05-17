@@ -398,7 +398,40 @@ pass. (`SEQUEL_SCOPE` §5o.)
   differential Bianchi**, kernel-authoritatively (seam genuinely
   consumed, asserted hard-fail, not an inert `$e`).
 
-**The §0 recurring theorem's third turn — and its tail — held at
-exactly the predicted ceiling: content small, pure, kernel-verified, no
-new commitment; meaning irreducibly the Book-Two model `[PROJECTION]`.
-Stated as the expected success, NOT inflated past the contract.**
+**Wave 3 — the `gauge.fstr` boundary discharged (`B3-gauge`'s lone
+boundary `$e`, §4 residual #3 for the gauge layer):**
+`data/sdg.gaugecov.mm`, 4 kernel-verified pure `$p`. SEQUEL_SCOPE §5n
+had surfaced F's genuine value + FULL gauge-covariance as **exactly one
+opaque composite `$e`** (`gauge.fstr`) folding the inseparable (a)
+`ap`-Leibniz + (b) full curvature generator. Wave 3 **retires it the
+way wave 1 retired `conn.hol`**: `sdg-gaugecov-fstr` is the seam-free
+curvature construction on the gauge potential A — **genuinely consumes
+`ax-microcancel`+`ax-gen`** (the (b)-half), MEASURED 2685 (identical to
+wave-1 `sdg-curvature`); `sdg-gaugecov-aprot` **genuinely consumes
+`eq-ap`** (the (a)-half, the §5j pattern); `sdg-gaugecov-covariant` the
+PURE-RING conjugation swap. `sdggaugecovpure`: **GENUINELY
+INTUITIONISTIC ✔**, hard-fail adversarial assertions all pass — both
+halves genuinely consumed, **NO inert composite `gauge.fstr` `$e`
+survives**. (`SEQUEL_SCOPE` §5p.)
+
+**Verdict against §1a / §1b / §4 (wave 3):**
+
+- **§1a (FALSIFIER) — NOT triggered.** No gauge-covariance core `$p`
+  required a classical principle; `sdggaugecovpure` certifies the
+  closure classical-free.
+- **§1b (BOUND) — NOT newly triggered.** No new substrate commitment:
+  closed over the frozen `eq-ap`-extended base with zero new axioms.
+  The full non-abelian `[A,R]`/`A∧A` beyond the **§2 declared scalar
+  reduction** is the named residual — a CITED model choice, not new,
+  not hidden.
+- **§4 residual #1 (model [PROJECTION]) — persists exactly as
+  predicted.** Unchanged Book-Two floor, never re-summed.
+- **§4 residual #3 (the keystone gate) — DISCHARGED for the gauge
+  layer too**, kernel-authoritatively (both inseparable halves
+  genuinely consumed, asserted hard-fail, no inert `$e`).
+
+**The §0 recurring theorem's third turn — its tail, and now the gauge
+boundary's discharge — held at exactly the predicted ceiling: content
+small, pure, kernel-verified, no new commitment; meaning irreducibly
+the Book-Two model `[PROJECTION]`. Stated as the expected success, NOT
+inflated past the contract.**

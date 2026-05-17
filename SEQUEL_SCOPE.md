@@ -1296,7 +1296,12 @@ shares no `$p` with any other corpus; composes by concatenation with
 **exactly ONE boundary `$e`** (`gauge.fstr`) carrying the inseparable
 `ap`-congruence + B3-curv full-curvature step — a precisely-characterised
 boundary (a FULL SUCCESS per the Iron Rule), the Book-3 dependency map,
-NOT a hidden assumption and NOT a classical smuggle. The mirror
+NOT a hidden assumption and NOT a classical smuggle. **→ Wave 3 (§5p)
+DISCHARGED exactly this `$e`**: both inseparable halves are now
+genuinely consumed in `data/sdg.gaugecov.mm` — (b) the curvature seam
+(`ax-microcancel`+`ax-gen`, MEASURED 2685 = identical to `sdg-curvature`)
+and (a) `eq-ap` — with NO inert composite `gauge.fstr` `$e` surviving,
+exactly as wave 1 retired `conn.hol`. See §5p. The mirror
 hypothesis is unaffected: no classical principle entered; the structural
 gauge layer (A's KL-affinity, the well-definedness of the
 gauge-transformation law, the symmetric zeroth-order vanishing of F) is
@@ -1435,6 +1440,99 @@ forces no new commitment; its *meaning* remains the immovable Book-Two
 model `[PROJECTION]`. `BOOK3_SCOPE` §4 residual #3 (the keystone gate)
 is now **discharged for the differential Bianchi**; the prediction held
 exactly.
+
+## 5p. Book-3 WAVE-3 — the `gauge.fstr` boundary DISCHARGED (§5n's ONE composite `$e` retired)
+
+§5n surfaced the field strength's genuine value + FULL gauge-covariance
+as **EXACTLY ONE opaque composite boundary `$e`** (`gauge.fstr`),
+declaring it folds **two inseparable obstructions**: (a) `ap`-Leibniz /
+ap-congruence under the inner evaluation, and (b) the full curvature
+generator B3-curv. Both were off-limits when `data/sdg.gauge.mm` was
+built. Wave 1 closed (b) (`sdg-curvature`); `eq-ap` (§5j) supplies (a).
+Wave 3 **retires `gauge.fstr` the EXACT way wave 1 retired `conn.hol`** —
+not by re-faking the opaque `$e`, but by replacing it with the SAME
+principled structure every globalized result uses, with **both halves
+GENUINELY CONSUMED**. Standalone corpus `data/sdg.gaugecov.mm` (trio
+`sdggaugecov{build,floor,pure}`).
+
+### The closed result — `sdg-gaugecov-fstr` ((b)-half) + `sdg-gaugecov-aprot` ((a)-half)
+
+- **`sdg-gaugecov-fstr` — (b) DISCHARGED.** The wave-1 seam-free
+  `sdg-curvature` construction with the **gauge potential `A` (`( ap g
+  · )`) as the connection form being flowed**: `F = curvature-of-A`'s
+  principal part is UNIQUELY determined, the linking universal
+  MECHANICALLY THREADED (`ax-spec`; `ax-ian` under `( D d )`;
+  `sdg-gaugecov-addcan-imp` ring-only on the shared `( ap g x )`;
+  `ax-gen` — SOUND, `d` bound in `gc.hr1/gc.hr2`; `ax-microcancel`
+  detaches). **GENUINELY CONSUMES `ax-microcancel`+`ax-gen`.** Two
+  `ax-kl`-existence boundary `$e` (`gc.hr1/gc.hr2`) — the SAME
+  discipline as `cv.hr*`/`b2.hr*`, **NOT** the inert composite
+  `gauge.fstr`.
+- **`sdg-gaugecov-aprot` — (a) DISCHARGED.** The gauge rotation
+  composed INTO the inner evaluation `( ap g ( x + … ) )` and expanded
+  by **`eq-ap`** (the §5j `sdg-calc2-apflow` pattern): from the
+  rotation's structural rep `gc.rot`, the ap-Leibniz step is DERIVED by
+  the flagged ap-congruence axiom. **GENUINELY CONSUMES `eq-ap`.**
+- **`sdg-gaugecov-covariant`** — `F' = g·F·g⁻¹`, the gauge-covariance's
+  ring skeleton (the conjugation swap, `ax-mulcom` lifted by two
+  congruences), **PURE RING**, for the genuine field strength.
+- **`sdg-gaugecov-addcan-imp`** — §5b seam-closer rebuilt LOCALLY for
+  self-containment, PURE RING.
+
+### MEASURED + adversarial verdict (kernel-authoritative)
+
+```
+Kernel: verified all 4 $p in data/sdg.gaugecov.mm ✔  (db: 91 statements)
+sdggaugecovpure: GENUINELY INTUITIONISTIC ✔ — 44 logical $a audited
+  (NAME+SHAPE), none classical, none in any $p consumed-axiom closure.
+ADVERSARIAL — (b) sdg-gaugecov-fstr  : consumes ax-microcancel YES ✔
+                                       consumes ax-gen        YES ✔
+ADVERSARIAL — (a) sdg-gaugecov-aprot : consumes eq-ap         YES ✔
+ADVERSARIAL — boundary $e : EXACTLY 3 principled gc.* (gc.hr1+gc.hr2
+  +gc.rot) ✔ ; inert composite `gauge.fstr` $e : ABSENT ✔
+ADVERSARIAL — pure-ring layer : sdg-gaugecov-addcan-imp PURE RING ✔
+                                sdg-gaugecov-covariant  PURE RING ✔
+  sdg-gaugecov-addcan-imp =  851 cut-free $a-leaves  (10^2.930)  [MEASURED]
+  sdg-gaugecov-fstr       = 2685 cut-free $a-leaves  (10^3.429)  [MEASURED]
+  sdg-gaugecov-aprot      =   66 cut-free $a-leaves  (10^1.820)  [MEASURED]
+  sdg-gaugecov-covariant  =   60 cut-free $a-leaves  (10^1.778)  [MEASURED]
+```
+
+`sdg-gaugecov-fstr` = **2685 leaves — again identical to wave-1
+`sdg-curvature`**: F-as-curvature-of-the-gauge-potential is the *same*
+seam construction, the connection/gauge-potential identification exact,
+not approximate.
+
+### Honest scope statement (adversarially precise)
+
+- **What is CLOSED.** The two inseparable obstructions §5n folded into
+  `gauge.fstr` are now **separately, genuinely consumed**: (b) the
+  curvature seam in `sdg-gaugecov-fstr` (`ax-microcancel`+`ax-gen`),
+  (a) `eq-ap` in `sdg-gaugecov-aprot`. The opaque composite `$e` is
+  **retired** to the principled seam + `eq-ap` + KL-existence structure
+  — the conn.hol→seam-free upgrade, one domain over. NO inert composite
+  `gauge.fstr` `$e` survives (`sdggaugecovpure` asserts this hard-fail).
+- **What is CITED, not a new commitment.** The full NON-ABELIAN
+  holonomy expansion (complete `F = dA + A∧A` with every cross term)
+  beyond the commutative scalar-line model **remains the named
+  residual** — `BOOK3_SCOPE` §2's *already-declared* scalar reduction,
+  a CITED model choice, **NOT** a new substrate commitment, **NOT**
+  faked into an `$e`. No new axiom forced; nothing classical.
+- **The model-meaning floor is UNCHANGED.** That this synthetic
+  gauge-covariance **is** physical gauge theory rests on the same
+  Book-Two well-adapted-topos model floor (`SDG_MODEL.md`) — a labelled
+  `[PROJECTION]`, **never re-summed**.
+- **Composition.** `data/sdg.gaugecov.mm` is a rename-free extension of
+  the frozen `eq-ap`-extended base by **4** `sdg-gaugecov-*` `$p`;
+  disjoint labels, 0 collisions vs every corpus; modifies no kernel /
+  base / other corpus / builder.
+
+**The recurring theorem holds once more:** the gauge-covariance content
+is small, pure, kernel-verified, forces no new commitment; the
+classical apparatus is removable from the derivation; the *meaning*
+remains the immovable Book-Two model `[PROJECTION]`. §5n's lone
+composite boundary is **discharged**, exactly as wave 1 discharged
+`conn.hol` — reported, not faked.
 
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 

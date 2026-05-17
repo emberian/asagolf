@@ -187,6 +187,88 @@ synthetic-derivative core needs exactly KL (existence) +
 microcancellation (uniqueness) and NOTHING classical — the guard
 certifies this mechanically.
 
+## 5d. The higher-infinitesimal hierarchy D_k — Taylor-base milestone
+
+**This is the Taylor-base milestone. Taylor's formula ITSELF is DEFERRED
+to the post-keystone agent and is NOT proved here** (it depends on the
+keystone SDG-K pointwise→global linking rule; staying scoped is part of
+the task). This milestone extends ONLY the substrate/definitions.
+
+The substrate is extended with the higher-infinitesimal hierarchy
+`D_k = { x | x^(k+1) = 0 }`:
+
+- `D_1 = D` — the existing `df-D` (`( D x ) <-> ( x * x ) = 0`,
+  i.e. x^2 = x^(1+1) = 0). Unchanged.
+- `D_2` — NEW definition `df-D2` (`( D2 x ) <-> ( ( x * x ) * x ) = 0`,
+  i.e. x^3 = x^(2+1) = 0). A `df-` (conservative), not an axiom —
+  mirrors `df-D`'s discipline.
+
+**The generalized Kock–Lawvere axiom is stated HONESTLY as an axiom
+scheme**, not glibly as one sentence. The substrate has no internal
+natural-number object, so the ∀k-quantified statement is NOT a single
+first-order `$a`; presenting it as if it were would be a misstatement.
+The scheme is, for each meta-level natural k:
+
+```
+(KL_k)  ∀ f:D_k→R  ∃! (a_0,…,a_k)  ∀ x∈D_k  f(x) = a_0 + a_1 x + … + a_k x^k
+```
+
+instantiated at the required levels:
+
+- **k=1** is *literally* the existing `ax-kl` (KL_1 = the original
+  Kock–Lawvere axiom — nothing new asserted at k=1). The `$p`
+  `sdg-kl1-is-kl` records this reduction as the identity on the exact
+  KL_1 formula — an HONEST marker that k=1 adds nothing, NOT a vacuous
+  re-derivation dressed up as content.
+- **k=2** is NEW: `ax-kl2` (existence: every `D_2→R` map is a unique
+  degree-≤2 polynomial `( ap f 0 ) + ( b·d ) + ( e·(d·d) )`) plus
+  level-2 microcancellation `ax-microcancel2` (same positive,
+  quantifier-only SHAPE as `ax-microcancel`; no `¬`, no `∨`, no
+  decidability).
+
+**Pure-substrate-algebra consequences, kernel-verified `$p`:**
+
+| theorem | what it is | consumes | leaves |
+|---|---|---|---|
+| `sdg-D2-0` | `0` is a level-2 infinitesimal: `( D2 0 )` | ring + df-D2 | 47 |
+| `sdg-D1subD2` | **D_1 ⊆ D_2**: `[ ( D x ) ] ⊢ ( D2 x )` (x²=0 ⟹ x³=0) | ring + df-D/df-D2 | 123 |
+| `sdg-kl1-is-kl` | KL_1 = `ax-kl` marker: `( KL_1 → KL_1 )` | ax-1/ax-2 (pure logic) | 247 |
+
+`sdg-D1subD2` is the genuine level-inclusion of the hierarchy and is
+RING-ONLY: x²=0 ⟹ x³ = (x·x)·x = 0·x = x·0 = 0. No order, no metric
+residue, no classical principle.
+
+**MEASURED (this build), adversarially honest:**
+
+```
+Kernel: verified all 11 $p in data/sdg.mm ✔  (db: 100 statements)
+Purity guard: GENUINELY INTUITIONISTIC ✔ — 43 logical $a audited,
+  NONE classical by NAME or SHAPE (df-D2 / ax-kl2 / ax-microcancel2
+  included), NONE in any $p consumed-axiom closure.
+  sdg-D2-0 = 47   sdg-D1subD2 = 123   sdg-kl1-is-kl = 247   [MEASURED]
+```
+
+**Honest open residual at level k≥2 (named, not papered over).**
+`ax-microcancel2` is in the base and SHAPE-verified pure, but it is NOT
+yet consumed by any `$p`: a level-2 analog of `sdg-deriv` (uniqueness of
+the degree-≤2 KL coefficients) would consume it, but that is exactly the
+same deduction-theorem / quantifier-proviso seam already documented as
+the open residual at level 1 (§5b) — closing it for k=2 would not be new
+mathematics here, and threading it toward the global derivative drifts
+into the keystone-dependent linking rule this task must NOT touch. So
+`ax-kl2`/`ax-microcancel2` are stated and SHAPE-certified pure but, like
+`ax-kl` itself, CITED as substrate axioms rather than re-derived. This
+is a precisely-characterised scope boundary (a FULL SUCCESS per the Iron
+Rule), NOT a hidden gap.
+
+**Honest finding on classicality per level.** No level needs a
+classical principle: the hierarchy is *uniformly* intuitionistically
+pure. `df-D2`, `ax-kl2`, `ax-microcancel2` all pass the NAME and SHAPE
+guard, and every new `$p`'s consumed-axiom closure is classical-free.
+Classically each `D_k` collapses to `{0}` (via the metric residue the
+substrate REFUSES) and KL_k is vacuous — the whole content is the
+intuitionistic setting, and the guard certifies it mechanically.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

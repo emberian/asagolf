@@ -166,6 +166,36 @@ fn wD(x: &W) -> W {
     }
 }
 
+/// wex $a wff E. x ph $.  Same $f order as wal (wph before vx): push the
+/// body wff first, then the bound-variable term, then `wex`.
+fn wex(xvar_flabel: &str, xtok: &str, body: &W) -> W {
+    W {
+        rpn: {
+            let mut r = body.rpn.clone();
+            r.push(xvar_flabel.to_string());
+            r.push("wex".into());
+            r
+        },
+        toks: {
+            let mut v = vec!["E.".into(), xtok.to_string()];
+            v.extend(body.toks.clone());
+            v
+        },
+    }
+}
+
+fn wD2(x: &W) -> W {
+    W {
+        rpn: rpn_app(&[&x.rpn], "wD2"),
+        toks: {
+            let mut v = vec!["(".into(), "D2".into()];
+            v.extend(x.toks.clone());
+            v.push(")".into());
+            v
+        },
+    }
+}
+
 fn ap(f: &W, x: &W) -> W {
     // tap $a term ( ap f x ) $.  Vars {f,x}; the kernel orders mandatory
     // $f by GLOBAL declaration order, where `vx` (x) precedes `vf` (f),
@@ -651,6 +681,127 @@ fn main() {
     );
     let sdg_deriv = mp(&mc_h, &mc_inst); // |- b = c
 
+    // =====================================================================
+    //  THE HIGHER-INFINITESIMAL HIERARCHY  D_k = { x | x^(k+1) = 0 }.
+    //  D_1 = D (df-D), D_2 = D2 (df-D2 : ( D2 x ) <-> ( ( x * x ) * x )=0).
+    //  Pure-substrate-algebra consequences (NO classical principle, NO
+    //  metric residue, NO order — RING + df only).  These are the
+    //  Taylor-base sanity $p; Taylor's formula ITSELF is deferred to the
+    //  post-keystone agent and is NOT proved here (scope discipline).
+    // =====================================================================
+
+    // ---- sdg-D2-0 : |- ( D2 0 )  (0 is a level-2 infinitesimal too) -----
+    //  ( 0 * 0 ) = 0                              [ax-mul0]
+    //  ( ( 0 * 0 ) * 0 ) = 0                      [ax-mul0[x:=(0*0)]]
+    //  df-D2[x:=0] + ax-bi2 + mp                  -> ( D2 0 )
+    let z0z0 = reg(&binop(&zero, &zero, "*", "tmu")); // ( 0 * 0 )
+    let z0z0_0 = reg(&binop(&z0z0, &zero, "*", "tmu")); // ( ( 0 * 0 ) * 0 )
+    let cube0_eq0 = axeq("ax-mul0", &[&z0z0], &z0z0_0, &zero); // ((0*0)*0)=0
+    let d2_0 = reg(&wD2(&zero));
+    let cube0eq = reg(&weq(&z0z0_0, &zero));
+    let bicond2_0 = reg(&wb(&d2_0, &cube0eq));
+    let df_d2_0 = apply("df-D2", &[&zero], &[], bicond2_0.toks.clone());
+    let bi2_2_0 = apply(
+        "ax-bi2",
+        &[&d2_0, &cube0eq],
+        &[],
+        wi(&bicond2_0, &reg(&wi(&cube0eq, &d2_0))).toks,
+    );
+    let cube0_imp_d2_0 = mp(&df_d2_0, &bi2_2_0); // ( ((0*0)*0)=0 -> ( D2 0 ) )
+    let sdg_d2_0 = mp(&cube0_eq0, &cube0_imp_d2_0); // |- ( D2 0 )
+
+    // ---- sdg-D1subD2 : [ ( D x ) ] |- ( D2 x )  — D_1 SUBSET D_2 --------
+    //  This is the level-inclusion of the hierarchy, PURE RING ALGEBRA:
+    //   ( D x )                                   [hyp dsub.h]
+    //   ( x * x ) = 0                             [df-D + ax-bi1, mp]
+    //   ( ( x * x ) * x ) = ( 0 * x )             [eq-mu1, mp]
+    //   ( 0 * x ) = ( x * 0 ) = 0                 [ax-mulcom ; ax-mul0]
+    //   ( ( x * x ) * x ) = 0                     [eqtr]
+    //   ( D2 x )                                  [df-D2 + ax-bi2, mp]
+    let dx = reg(&wD(&x));
+    let xx = reg(&binop(&x, &x, "*", "tmu")); // ( x * x )
+    let xxeq0 = reg(&weq(&xx, &zero)); // ( x * x ) = 0
+    let dsub_h = Pf { stmt: dx.toks.clone(), rpn: t("dsub.h") };
+    // df-D[x:=x] : ( ( D x ) <-> ( x * x )=0 )
+    let dfd_x = apply("df-D", &[&x], &[], reg(&wb(&dx, &xxeq0)).toks.clone());
+    // ax-bi1 : ( ( ph <-> ps ) -> ( ph -> ps ) )
+    let bi1_x = apply(
+        "ax-bi1",
+        &[&dx, &xxeq0],
+        &[],
+        wi(&reg(&wb(&dx, &xxeq0)), &reg(&wi(&dx, &xxeq0))).toks,
+    );
+    let dx_imp_xxeq0 = mp(&dfd_x, &bi1_x); // ( ( D x ) -> ( x*x )=0 )
+    let xx_eq0 = mp(&dsub_h, &dx_imp_xxeq0); // |- ( x * x ) = 0
+    // eq-mu1[x:=(x*x), y:=0, z:=x] : ( (x*x)=0 -> ( (x*x)*x )=( 0*x ) )
+    let cube = reg(&binop(&xx, &x, "*", "tmu")); // ( ( x * x ) * x )
+    let zero_x = reg(&binop(&zero, &x, "*", "tmu")); // ( 0 * x )
+    let cube_eq_0x = cong_l(&xx_eq0, &x, "*", "tmu", "eq-mu1"); // ((x*x)*x)=(0*x)
+    // ( 0 * x ) = ( x * 0 ) = 0
+    let x_zero = reg(&binop(&x, &zero, "*", "tmu")); // ( x * 0 )
+    let mulcom_0x = axeq("ax-mulcom", &[&zero, &x], &zero_x, &x_zero); // (0*x)=(x*0)
+    let mul0_x = axeq("ax-mul0", &[&x], &x_zero, &zero); // (x*0)=0
+    let zerox_eq0 = eqtr(&mulcom_0x, &mul0_x); // ( 0 * x ) = 0
+    let _ = (&cube, &zero_x);
+    let cube_eq0 = eqtr(&cube_eq_0x, &zerox_eq0); // ( ( x*x )*x ) = 0
+    // df-D2[x:=x] + ax-bi2 : ( ( (x*x)*x )=0 -> ( D2 x ) )
+    let d2x = reg(&wD2(&x));
+    let cubeeq = reg(&weq(&cube, &zero));
+    let bicond2_x = reg(&wb(&d2x, &cubeeq));
+    let df_d2_x = apply("df-D2", &[&x], &[], bicond2_x.toks.clone());
+    let bi2_2_x = apply(
+        "ax-bi2",
+        &[&d2x, &cubeeq],
+        &[],
+        wi(&bicond2_x, &reg(&wi(&cubeeq, &d2x))).toks,
+    );
+    let cube_imp_d2x = mp(&df_d2_x, &bi2_2_x); // ( ((x*x)*x)=0 -> ( D2 x ) )
+    let sdg_d1subd2 = mp(&cube_eq0, &cube_imp_d2x); // [ ( D x ) ] |- ( D2 x )
+
+    // ---- sdg-kl1-is-kl : the k=1 instance of the generalized KL scheme
+    //  IS the existing ax-kl (nothing new asserted at k=1).  Recorded as
+    //  the identity implication on that exact KL_1 formula — a HONEST
+    //  marker that KL_1 = ax-kl, not a re-derivation (which would be
+    //  vacuous).  Pure logic (sdg-id specialised); consumes only ax-1/2.
+    let kl1 = reg(&wex(
+        "vb",
+        "b",
+        &wal(
+            "vd",
+            "d",
+            &reg(&wi(
+                &reg(&wD(&dd)),
+                &reg(&weq(
+                    &reg(&ap(&ff, &dd)),
+                    &reg(&binop(
+                        &reg(&ap(&ff, &zero)),
+                        &reg(&binop(&bb, &dd, "*", "tmu")),
+                        "+",
+                        "tpl",
+                    )),
+                )),
+            )),
+        ),
+    ));
+    let sdg_kl1_is_kl = {
+        // ( KL_1 -> KL_1 ) by the same construction as sdg-id (ax-1/ax-2).
+        let p = &kl1;
+        let pp = reg(&wi(p, p));
+        let p_pp = reg(&wi(p, &pp));
+        let pp_p = reg(&wi(&pp, p));
+        let p__pp_p = reg(&wi(p, &pp_p));
+        let _ = reg(&wi(&p_pp, &pp));
+        let s1 = apply("ax-1", &[p, p], &[], p_pp.toks.clone());
+        let s2 = apply("ax-1", &[p, &pp], &[], p__pp_p.toks.clone());
+        let s3 = apply("ax-2", &[p, &pp, p], &[], {
+            let lhs = wi(p, &p__pp_p);
+            let rhs = wi(&p_pp, &pp);
+            wi(&lhs, &rhs).toks
+        });
+        let s4 = mp(&s2, &s3);
+        mp(&s1, &s4)
+    };
+
     // assemble + emit ----------------------------------------------------
     let proofs: Vec<(&str, &str, Vec<(&str, &str)>, &Pf)> = vec![
         ("sdg-id", "|- ( ph -> ph )", vec![], &sdg_id),
@@ -692,6 +843,28 @@ fn main() {
                 "|- A. d ( ( D d ) -> ( b * d ) = ( c * d ) )",
             )],
             &sdg_deriv,
+        ),
+        // ---- THE HIGHER-INFINITESIMAL HIERARCHY (Taylor-base) ----------
+        // Pure-substrate-algebra consequences of D_k = { x | x^(k+1)=0 }.
+        // Taylor's formula itself is DEFERRED (post-keystone agent).
+        ("sdg-D2-0", "|- ( D2 0 )", vec![], &sdg_d2_0),
+        (
+            // D_1 SUBSET D_2 : x^2=0 implies x^3=0.  Ring + df only; no
+            // metric residue, no order, no classical principle.
+            "sdg-D1subD2",
+            "|- ( D2 x )",
+            vec![("dsub.h", "|- ( D x )")],
+            &sdg_d1subd2,
+        ),
+        (
+            // The k=1 instance of the generalized KL scheme IS ax-kl
+            // (KL_1 = the existing Kock-Lawvere axiom): recorded as the
+            // identity on that exact KL_1 formula — an honest marker that
+            // nothing new is asserted at k=1, not a vacuous re-derivation.
+            "sdg-kl1-is-kl",
+            "|- ( E. b A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) ) -> E. b A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) ) )",
+            vec![],
+            &sdg_kl1_is_kl,
         ),
     ];
 

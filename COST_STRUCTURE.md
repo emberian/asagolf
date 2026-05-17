@@ -170,15 +170,23 @@ correctly: a fixed-instance CSE datum with measured constants —
   single √ the proof forces. MEASURED: 2 sorts (no set/class), **0**
   quantifier/binder occurrences in any used body, **0** `$d`, **0**
   ℕ/ω/induction, 81/82 `$a` consumed (`cong-lt1` redundant, reported).
-  Upper bound: interpretable in/**below EFA (IΔ₀+exp)**, far below
-  RCA₀, ≠ RCF (no real-closure scheme, no completeness). Honest open:
-  the matching *lower* bound (exact least theory) needs a certified
-  `df-*` conservativity proof + the order/√ separation.
-  **A↔C interlock:** that separation is exactly what Frontier C
-  *proved* — so together they pin it from both sides: an open
-  quantifier-free theory bounded above by EFA, with the order
-  predicate proven logically essential below; the only gap left is
-  the certified-conservativity step and the exact-constant Obligation O.
+  Interpretable in/**below EFA (IΔ₀+exp)**, far below RCA₀, ≠ RCF (no
+  real-closure scheme, no completeness).
+  **CLOSED (Closure 1) — bound UPPER → EXACT.** The `df-*`
+  conservativity is now machine-certified: 9/11 geometry df-* strict
+  Suppes-eliminable; `df-xc`/`df-yc` are free-pairing projections (not
+  single-symbol defs) proven conservative via the surjective-pairing
+  interpretation, *every metatheorem hypothesis machine-checked*;
+  composition ⇒ the whole geometry layer conservative over F1. So the
+  closed proof **is exactly** `OPEN(prop + equality-congruence +
+  ordered-field + one √)` — modulo the cited classical metatheorems
+  (Suppes/Shoenfield; surjective-pairing), correctly stated with
+  hypotheses checked but not re-derived in-kernel, labelled as such
+  (the honest foundation, not a gap). **A↔C interlock, both now
+  exact/proven:** an open quantifier-free theory *exactly*
+  characterized below EFA (A), the order predicate *proven* logically
+  essential (C). Remaining: the exact-constant Obligation O, and the
+  two order literals (Closure 2, in flight).
 - **The `gnd-*` residual — RESOLVED (Frontier B, MEASURED).** All 19
   ground arithmetic facts discharged to kernel-verified `$p` from bare
   ZF (`verified all 55 $p ✔`, no induction, no `om`, `suc` once). The

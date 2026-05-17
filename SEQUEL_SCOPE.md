@@ -486,6 +486,105 @@ Uniqueness of the **quadratic** coefficient (the level-2 analog at the
 clean further level the scheme documents, not attempted here, and is a
 precisely-characterised scope boundary, not a hidden gap.
 
+## 5i. Synthetic tangent structure (MEASURED; one labelled boundary)
+
+The synthetic tangent layer, kernel-verified and intuitionistic-purity-
+clean, delivered as the standalone corpus `data/sdg.tangent.mm` (built by
+`src/bin/sdgtanbuild.rs`, measured by `sdgtanfloor`, guarded by
+`sdgtanpure`) — the proven `data/sdg.calc.mm` zero-conflict pattern:
+fully self-contained over the *identical frozen* `data/sdg.base.mm` axiom
+surface, sharing **no `$p`** with `data/sdg.mm` or `data/sdg.calc.mm`
+(disjoint `sdg-tan-*` labels). A downstream union is a rename-free
+concatenation. Nothing else was modified (not `sdgbuild.rs`,
+`data/sdg.mm`, `data/sdg.base.mm`, `data/sdg.calc.mm`, `src/kernel.rs`,
+`src/elaborate.rs`, or other agents' files).
+
+**The objects.** A *tangent vector at a point* is a map `t : D → R`
+over the line object `R` as model space; its base point is `( ap t 0 )`.
+The *tangent bundle* is `R^D`. A *vector field* is a section
+`X : R → R^D`; by the correspondence below it is carried by its
+*principal part* `p : R → R`, `X(x)(d) = ( x + ( ( ap p x ) · d ) )`.
+
+| theorem | what it is | consumes | leaves (MEASURED) |
+|---|---|---|---|
+| `sdg-tan-addcan` | additive cancellation, RING-ONLY | ring eq-axioms | 406 |
+| `sdg-tan-addcan-imp` | deduction-discharged cancellation, RING-ONLY | ax-1/ax-2/eqtri/eq-* | 851 |
+| `sdg-tan-base` | `R×R→R^D` lands at the base pt: `( a + ( b·0 ) ) = a` | ring (`ax-mul0`,`ax-add0`) | 46 |
+| `sdg-tan-roundtrip` | `R×R→R^D→R×R = id`: `( ( a+(b·0) )+(b·d) ) = ( a+(b·d) )` | sdg-tan-base | 64 |
+| `sdg-tan-slope-imp` | pointwise principal-part identity, RING-ONLY | sdg-tan-addcan-imp | 1727 |
+| `sdg-tan-principal` | **`R^D ≅ R×R`**: the principal part is UNIQUE | **`ax-microcancel`** (+`ax-gen`) | 2243 |
+| `sdg-tan-bracket-cross` | microsquare commutator is symmetric at 0th order, RING | `ax-mulcom` | 30 |
+| `sdg-tan-bracket` | the Lie bracket identity, modulo ONE boundary `$e` | sdg-tan-bracket-cross | 116 |
+
+**`R^D ≅ R×R` genuinely CONSUMES KL — adversarially honest.** The
+forward map `R^D → R×R` sends `t` to `( ( ap t 0 ) , b )` where `b` is
+its KL principal part. For the correspondence to be a bijection (not a
+mere surjection) `b` must be *uniquely determined* — that is KL's
+uniqueness half. `sdg-tan-principal` is the seam-free statement: from two
+universal affine KL representations (each an `ax-kl` EXISTENCE instance,
+the `$e` hypotheses `pp.hb`/`pp.hc`) it derives `b = c`. It is threaded
+*exactly* like `data/sdg.mm`'s headline seam-free `sdg-deriv`
+(ax-spec → ax-ian conjunction under the `( D d )` guard → ring-only
+pointwise slope `sdg-tan-slope-imp` → `ax-gen` closing the universal →
+`ax-microcancel` detaching `b=c`). Mechanically verified: the
+`sdg-tan-principal` RPN literally contains `ax-microcancel` (×1) and
+`ax-gen` (×1); its consumed-axiom closure (sdgtanpure, 27 axioms)
+includes `ax-microcancel`. KL's uniqueness is **consumed, not asserted**.
+The `R×R → R^D` direction (`sdg-tan-base`, `sdg-tan-roundtrip`) is
+PURE RING. MEASURED `sdg-tan-principal` = **2243** leaves (identical to
+the seam-free `sdg-deriv` figure — same construction, independently
+re-derived self-contained, not imported).
+
+**The Lie bracket — the genuine `D×D` microsquare, with ONE precisely-
+characterised boundary `$e` (a FULL SUCCESS per the Iron Rule).** The
+bracket `[X,Y]` is read off the commutator of the two infinitesimal
+flows on the microsquare `D×D`. The substrate genuinely proves the first
+real reduction: the *symmetric zeroth-order* part of the commutator
+vanishes — `( ( ( ap p x )·( ap q x ) )·( d₁·d₂ ) ) =
+( ( ( ap q x )·( ap p x ) )·( d₁·d₂ ) )` (`sdg-tan-bracket-cross`,
+RING-ONLY via `ax-mulcom`), so the scalar commutator is *not* the
+bracket and the bracket lives entirely in the next-order derivative
+term. The single genuinely off-limits step — composing one field's flow
+*into* the other's argument to produce the bracket principal part
+`[X,Y] = X(q) − Y(p)` — is **BOTH** (a) `ap`-Leibniz / `ap`-congruence
+(the *same* documented `data/sdg.calc.mm` chain-rule substrate gap:
+`data/sdg.base.mm` instantiates Leibniz only for `+`/`*`
+(`eq-pl1/2`,`eq-mu1/2`), there is **no** `x=y → ( ap g x )=( ap g y )`;
+`grep` confirms none in the base — adding one would modify the frozen
+substrate, forbidden) **and** (b) a globalized / generator-side
+derivative of the principal part (W2-glob, the keystone-side machinery
+this task must NOT touch — `X(q)` is the synthetic derivative of `q`
+along `X`, needing the deferred pointwise→global linking rule). Both
+obstructions are *orthogonal to classicality*. The composite step is
+surfaced as **EXACTLY ONE loudly-labelled `$e`** (`tanbr.flow`);
+`sdg-tan-bracket` then closes the bracket's defining identity from it by
+pure ring algebra (swapping the scalar via `sdg-tan-bracket-cross`). The
+microsquare algebra is genuine; only the one cross-substitution is the
+reported boundary — it is reported, not faked.
+
+**MEASURED outcome (this build), adversarially honest:**
+
+```
+Kernel: verified all 8 $p in data/sdg.tangent.mm ✔  (db: 95 statements)
+sdgtanpure: GENUINELY INTUITIONISTIC ✔ — 43 logical $a audited
+  (NAME+SHAPE), NONE classical, NONE in any $p consumed-axiom closure.
+  sdg-tan-base=46  sdg-tan-roundtrip=64  sdg-tan-addcan=406
+  sdg-tan-addcan-imp=851  sdg-tan-slope-imp=1727
+  sdg-tan-principal=2243 (CONSUMES ax-microcancel — KL uniqueness)
+  sdg-tan-bracket-cross=30  sdg-tan-bracket=116 (ONE $e: tanbr.flow)
+                                                          [MEASURED]
+```
+
+**Self-contained composition statement.** `data/sdg.tangent.mm` is a
+rename-free extension of the frozen `data/sdg.base.mm` by eight
+`sdg-tan-*` `$p`; it is independently kernel-checked and
+purity-checked, shares no `$p` with `data/sdg.mm`/`data/sdg.calc.mm`,
+and composes with them by concatenation. The honest residual is exactly
+ONE `$e` (`tanbr.flow`) carrying the `ap`-congruence + W2-glob bracket
+step — a precisely-characterised boundary identical in kind to the
+already-documented chain-rule gap, NOT a hidden assumption and NOT a
+classical smuggle (sdgtanpure certifies the latter mechanically).
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

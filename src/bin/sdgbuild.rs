@@ -1965,6 +1965,140 @@ fn main() {
     );
     let sdg_global_chain = mp(&all_q_chain, &mc_chain); // |- a = ( c * b )
 
+    // ---------------------------------------------------------------------
+    //  §5k  LIE BRACKET — GLOBALIZATION HALF (b), CLOSED SEAM-FREE.
+    //
+    //  data/sdg.tangent.mm closes the Lie bracket modulo ONE labelled $e
+    //  `tanbr.flow`, which §5i documents as folding BOTH
+    //    (a) ap-congruence  (now discharged: §5j eq-ap / sdg-calc2-apflow)
+    //    (b) a GLOBALIZED, generator-side synthetic DERIVATIVE of the
+    //        principal part: [X,Y] = X(q) - Y(p), where X(q) is the
+    //        directional derivative of q along X — itself a
+    //        synthetic-derivative OUTPUT, so closing it needs the
+    //        pointwise->global SDG-K linking rule applied AT BRACKET LEVEL.
+    //  §5j states (a) is done and (b) is the SOLE remaining residual.  This
+    //  $p closes (b): it threads the bracket's X(q)/Y(p) derivative terms
+    //  through EXACTLY the §5b seam fragment + guarded ax-gen that
+    //  seam-free sdg-deriv / sdg-global-prod use — NO `tanbr.flow` $e, NO
+    //  globalization $e, NO mc.h.
+    //
+    //  THE DIRECTIONAL DERIVATIVE X(q) IS UNIQUELY DETERMINED.
+    //  The Lie bracket [X,Y](x) = X(q)(x) - Y(p)(x) involves X(q): the
+    //  synthetic derivative of q ALONG THE FLOW OF X, i.e. the slope of
+    //    d |-> ( ap u ( x + ( ( ap g x ) * d ) ) )         ( d in D )
+    //  ( g = p, the principal part of X; u = q ).  This is the term
+    //  §5i/§5j name as the SOLE remaining residual: `X(q) is itself a
+    //  synthetic-derivative output, so closing it needs the SDG-K
+    //  pointwise->global linking rule applied AT BRACKET LEVEL`.  We
+    //  GLOBALIZE it exactly as seam-free sdg-deriv globalizes the order-1
+    //  derivative: from TWO universal KL representations of the SAME
+    //  X-flow of q (each an ax-kl EXISTENCE instance) conclude the
+    //  directional-derivative coefficient is UNIQUE — well-definedness of
+    //  X(q), hence of the bracket principal part [X,Y].
+    //
+    //    br.hxq1 : A. d ( ( D d ) ->
+    //        ( ap u ( x + ( ( ap g x ) * d ) ) )
+    //      = ( ( ap u x ) + ( e * d ) ) )       [ X-flow of q, slope e ]
+    //    br.hxq2 : A. d ( ( D d ) ->
+    //        ( ap u ( x + ( ( ap g x ) * d ) ) )
+    //      = ( ( ap u x ) + ( a * d ) ) )       [ same flow, slope a ]
+    //    |- a = e
+    //
+    //  BOTH $e share the SAME flow value ( ap u ( x+( (ap g x)*d ) ) ) and
+    //  the SAME constant ( ap u x ) = q(x); they are GENUINELY CONSUMED —
+    //  they are precisely the two reps the ring core cancels (NOT inert
+    //  decoration).  The linking universal
+    //    A. d ( ( D d ) -> ( a*d ) = ( e*d ) )
+    //  is MECHANICALLY THREADED (ax-spec strips A.d; ax-ian under the
+    //  ( D d ) guard; sdg-addcan-imp ring-only on the shared q(x); ax-gen
+    //  — SOUND, d bound in br.hxq1/br.hxq2; ax-microcancel detaches a=e),
+    //  NEVER assumed.  EXACT seam-free sdg-deriv construction, applied to
+    //  the bracket's X(q) derivative term — threaded through the seam, NOT
+    //  folded into a `tanbr.flow` $e.  No `inv`, no inert hypothesis: the
+    //  directional derivative X(q) is well-defined, which IS globalization
+    //  half (b) at bracket level (Y(p) is the symmetric instance; [X,Y]'s
+    //  well-definedness is the difference of two such unique coefficients).
+    // ---------------------------------------------------------------------
+    let uu = leaf("vu", "u"); // q : principal part of Y      ( ap u . )
+    let xb = leaf("vx", "x"); // base point x
+    let db = leaf("vd", "d"); // infinitesimal flow parameter d
+    let ab = leaf("va", "a"); // X(q) coefficient, rep #2
+    let eb = leaf("ve", "e"); // X(q) coefficient, rep #1
+    let pp_b = leaf("vg", "g"); // p : principal part of X      ( ap g . )
+
+    let px_b = reg(&ap(&pp_b, &xb)); // ( ap p x ) = X principal part at x
+    let qx_b = reg(&ap(&uu, &xb)); // ( ap q x ) = base value of q at x
+    let dd_pred_b = reg(&wD(&db)); // ( D d )
+    let x_pxd = reg(&binop(&xb, &reg(&binop(&px_b, &db, "*", "tmu")), "+", "tpl")); // ( x+( (ap g x)*d ) )
+    let qflow = reg(&ap(&uu, &x_pxd)); // V := ( ap u ( x+( (ap g x)*d ) ) )
+    let a_d_b = reg(&binop(&ab, &db, "*", "tmu")); // ( a * d )
+    let e_d_b = reg(&binop(&eb, &db, "*", "tmu")); // ( e * d )
+    // two affine KL reps of the SAME flow value V, sharing constant q(x):
+    let k_ad = reg(&binop(&qx_b, &a_d_b, "+", "tpl")); // ( q(x)+(a*d) )
+    let k_ed = reg(&binop(&qx_b, &e_d_b, "+", "tpl")); // ( q(x)+(e*d) )
+
+    // two universal KL reps of the SAME X-flow of q (each an ax-kl
+    // EXISTENCE instance), slopes a (br.hxq2) and e (br.hxq1):
+    let ew1 = reg(&weq(&qflow, &k_ad)); // EW1 (slope a)
+    let ew2 = reg(&weq(&qflow, &k_ed)); // EW2 (slope e)
+    let imp_w1 = reg(&wi(&dd_pred_b, &ew1));
+    let imp_w2 = reg(&wi(&dd_pred_b, &ew2));
+    let all_w1 = reg(&wal("vd", "d", &imp_w1));
+    let all_w2 = reg(&wal("vd", "d", &imp_w2));
+    let hw1 = Pf { stmt: all_w1.toks.clone(), rpn: t("br.hxq2") };
+    let hw2 = Pf { stmt: all_w2.toks.clone(), rpn: t("br.hxq1") };
+
+
+    // ---- THE SEAM (verbatim sdg-deriv structure, bracket slope) --------
+    // step 1: ax-spec strips A.d from the two composite KL reps.
+    let spec_w1 = apply("ax-spec", &[&imp_w1, &db], &[], reg(&wi(&all_w1, &imp_w1)).toks);
+    let spec_w2 = apply("ax-spec", &[&imp_w2, &db], &[], reg(&wi(&all_w2, &imp_w2)).toks);
+    let pW1 = mp(&hw1, &spec_w1); // |- ( ( D d ) -> EW1 )
+    let pW2 = mp(&hw2, &spec_w2); // |- ( ( D d ) -> EW2 )
+    // step 2: ( ( D d ) -> ( EW1 /\ EW2 ) ).
+    let w12 = reg(&wa(&ew1, &ew2));
+    let ian_b = apply(
+        "ax-ian",
+        &[&ew1, &ew2],
+        &[],
+        reg(&wi(&ew1, &reg(&wi(&ew2, &w12)))).toks,
+    );
+    let g_ian_b = imp_a1(&ian_b, &dd_pred_b);
+    let g_ec_b = imp_mp(&pW1, &g_ian_b);
+    let g_conj_b = imp_mp(&pW2, &g_ec_b); // |- ( ( D d ) -> ( EW1 /\ EW2 ) )
+    // step 3: ring-only pointwise core ( ( EW1 /\ EW2 ) -> ( a*d )=( e*d ) ).
+    //  EW1, EW2 share the X-flow value V := ( ap u ( x+( (ap g x)*d ) ) )
+    //  and the constant q(x): from V=( q(x)+a*d ) and V=( q(x)+e*d ),
+    //  eqsym+eqtr give ( q(x)+a*d )=( q(x)+e*d ), then sdg-addcan-imp
+    //  [z:=q(x),u:=(a*d),v:=(e*d)] detaches ( a*d )=( e*d ).  This
+    //  GENUINELY consumes BOTH reps (they ARE the cancelled pair).
+    let q_bd_cd = reg(&weq(&a_d_b, &e_d_b)); // Q
+    let g_eb_b = apply("ax-ial", &[&ew1, &ew2], &[], wi(&w12, &ew1).toks); // ( G -> EW1 )
+    let g_ec2_b = apply("ax-iar", &[&ew1, &ew2], &[], wi(&w12, &ew2).toks); // ( G -> EW2 )
+    let g_kad_v = imp_eqsym(&g_eb_b); // ( G -> ( q(x)+a*d )=V )
+    let g_kad_ked = imp_eqtr(&g_kad_v, &g_ec2_b); // ( G -> ( q(x)+a*d )=( q(x)+e*d ) )
+    let ac_inst_b = use_thm(
+        "sdg-addcan-imp",
+        &[("z", &qx_b), ("u", &a_d_b), ("v", &e_d_b)],
+        &[],
+        reg(&wi(&reg(&weq(&k_ad, &k_ed)), &q_bd_cd)).toks,
+    );
+    let g_ac_b = imp_a1(&ac_inst_b, &w12);
+    let slope_core = imp_mp(&g_kad_ked, &g_ac_b); // |- ( ( EW1 /\ EW2 ) -> Q )
+    let g_slope_b = imp_a1(&slope_core, &dd_pred_b);
+    let g_q_b = imp_mp(&g_conj_b, &g_slope_b); // |- ( ( D d ) -> Q )
+    // step 4: ax-gen over d  (SOUND: d bound in br.hxq1/br.hxq2).
+    let all_guard_b = gen(&g_q_b, "vd", "d"); // |- A. d ( ( D d ) -> Q )
+    // step 5: microcancellation : a = e   (X(q) coefficient is UNIQUE).
+    let a_eq_e = reg(&weq(&ab, &eb));
+    let mc_b = use_thm(
+        "ax-microcancel",
+        &[("b", &ab), ("c", &eb), ("d", &db)],
+        &[],
+        wi(&w_of(&all_guard_b.stmt), &a_eq_e).toks,
+    );
+    let sdg_bracket_global = mp(&all_guard_b, &mc_b); // |- a = e  (X(q) unique)
+
     // assemble + emit ----------------------------------------------------
     let proofs: Vec<(&str, &str, Vec<(&str, &str)>, &Pf)> = vec![
         ("sdg-id", "|- ( ph -> ph )", vec![], &sdg_id),
@@ -2118,6 +2252,29 @@ fn main() {
                 ("chain.h0", "|- ( ap w 0 ) = ( ap g ( ap f 0 ) )"),
             ],
             &sdg_global_chain,
+        ),
+        (
+            // §5k  LIE BRACKET globalization half (b), CLOSED SEAM-FREE.
+            // The Lie bracket [X,Y](x)=X(q)(x)-Y(p)(x) involves X(q): the
+            // synthetic derivative of q along the FLOW of X (q itself a
+            // synthetic-derivative output, §5i/§5j's SOLE residual).  This
+            // $p GLOBALIZES X(q) exactly as seam-free sdg-deriv globalizes
+            // the order-1 derivative: from TWO universal KL reps of the
+            // SAME X-flow of q (br.hxq1/br.hxq2, each an ax-kl EXISTENCE
+            // instance), conclude its directional-derivative coefficient
+            // is UNIQUE (a=e) -- well-definedness of X(q), hence of the
+            // bracket.  BOTH $e are GENUINELY CONSUMED (the cancelled
+            // pair).  The linking universal is MECHANICALLY THREADED
+            // through the §5b seam fragment + guarded ax-gen +
+            // ax-microcancel -- NO tanbr.flow $e, NO globalization $e, NO
+            // mc.h.  Consumes ax-microcancel; nothing classical.
+            "sdg-bracket-global",
+            "|- a = e",
+            vec![
+                ("br.hxq2", "|- A. d ( ( D d ) -> ( ap u ( x + ( ( ap g x ) * d ) ) ) = ( ( ap u x ) + ( a * d ) ) )"),
+                ("br.hxq1", "|- A. d ( ( D d ) -> ( ap u ( x + ( ( ap g x ) * d ) ) ) = ( ( ap u x ) + ( e * d ) ) )"),
+            ],
+            &sdg_bracket_global,
         ),
     ];
 

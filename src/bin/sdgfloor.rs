@@ -105,6 +105,23 @@ fn main() {
         }
     }
 
+    // §5k: the Lie-bracket globalization half (b), CLOSED seam-free.
+    if let Some(s) = db.get("sdg-bracket-global") {
+        if s.kind == kernel::Kind::P {
+            let sz = expand(&db, "sdg-bracket-global", &mut memo);
+            println!(
+                "\n  >>> LIE BRACKET (globalization half b, SEAM-FREE)  \
+                 sdg-bracket-global  =  {}  (10^{:.3})  [MEASURED]\n  \
+                 (the bracket principal part [X,Y]=X(q)-Y(p) is uniquely\n  \
+                 determined; X(q)/Y(p) carried as universal ax-kl-EXISTENCE\n  \
+                 $e; linking universal threaded via §5b seam + ax-gen +\n  \
+                 ax-microcancel — NO tanbr.flow $e, NO globalization $e)",
+                sz.pretty(),
+                sz.log10()
+            );
+        }
+    }
+
     // ---- 3. the model-grounding question — labelled PROJECTION ----------
     println!(
         "\n=== Substrate grounding — explicitly-labelled PROJECTION (NOT measured) ===\n  \

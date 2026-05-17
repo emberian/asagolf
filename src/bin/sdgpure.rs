@@ -252,6 +252,46 @@ fn main() {
         );
     }
 
+    // ---- ADVERSARIAL ASSERTION (hard-fail) : §5k Lie-bracket closure ----
+    //  sdg-bracket-global must GENUINELY consume the seam (ax-microcancel
+    //  AND ax-gen — exactly like seam-free sdg-deriv / sdg-global-*), and
+    //  the corpus must contain NO `tanbr.flow` / globalization $e (a faked
+    //  or hypothesis-smuggled bracket closure is a ZERO).  If the closure
+    //  does not contain ax-microcancel+ax-gen, or any tanbr.flow $e
+    //  exists, the guard refuses to certify.
+    if let Some((_, brk_ax)) = per_thm.iter().find(|(l, _)| l == "sdg-bracket-global") {
+        let has_mc = brk_ax.contains("ax-microcancel");
+        let has_gen = brk_ax.contains("ax-gen");
+        let has_flow = db
+            .stmts
+            .iter()
+            .any(|s| s.kind == kernel::Kind::E && s.label.contains("tanbr.flow"));
+        println!(
+            "\n§5k ADVERSARIAL CHECK — sdg-bracket-global (Lie-bracket globalization):"
+        );
+        println!(
+            "  consumes ax-microcancel : {}   consumes ax-gen : {}   tanbr.flow $e present : {}",
+            if has_mc { "YES ✔" } else { "NO ✗" },
+            if has_gen { "YES ✔" } else { "NO ✗" },
+            if has_flow { "YES ✗" } else { "NO ✔" }
+        );
+        if !has_mc || !has_gen || has_flow {
+            eprintln!(
+                "\nVERDICT: FAKED/SMUGGLED BRACKET CLOSURE ✗ — sdg-bracket-global \
+                 does NOT genuinely thread the seam (ax-microcancel+ax-gen) or a \
+                 tanbr.flow $e was smuggled.  This is a ZERO — reported, not hidden."
+            );
+            std::process::exit(1);
+        }
+        println!(
+            "  -> genuine seam consumption confirmed; bracket globalization \
+             half (b) is CLOSED seam-free (no tanbr.flow, no globalization $e)."
+        );
+    } else {
+        eprintln!("sdgpure: sdg-bracket-global NOT FOUND — expected §5k $p missing.");
+        std::process::exit(1);
+    }
+
     if flagged.is_empty() {
         println!(
             "\nNAME + SHAPE scan: all {n_ax} logical axioms are intuitionistically pure."

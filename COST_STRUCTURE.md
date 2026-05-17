@@ -146,9 +146,15 @@ correctly: a fixed-instance CSE datum with measured constants —
   quantifier-free theory bounded above by EFA, with the order
   predicate proven logically essential below; the only gap left is
   the certified-conservativity step and the exact-constant Obligation O.
-- **The `gnd-*` residual — IN FLIGHT (Frontier B).** Unfold the 19
-  finite ground ZF computations to bare ∅/suc/pair/ext in-kernel → a
-  *fully* projection-free, fully-measured substrate.
+- **The `gnd-*` residual — RESOLVED (Frontier B, MEASURED).** All 19
+  ground arithmetic facts discharged to kernel-verified `$p` from bare
+  ZF (`verified all 55 $p ✔`, no induction, no `om`, `suc` once). The
+  substrate is now **projection-free and fully-MEASURED for all
+  arithmetic**; floor still `sucexg` 10^12.810 EXTRACTED. The entire
+  residual, after every arithmetic fact is mechanically discharged, is
+  **exactly two order literals**: `gnd-Q0leQ1` (Q0 ≤ Q1) and
+  `gnd-Q1neQ0` (Q1 ≠ Q0) — decidable, non-inductive, Infinity-free,
+  pure order decisions on concrete ℚ-constants.
 - **Minimum generic-lemma cover — RESOLVED (Frontier E, object +
   NP-hardness + near-optimal instance).** Formalized: the
   substitution-closed generalization of a straight-line program /

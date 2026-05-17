@@ -825,6 +825,35 @@ named on the other, is the correct shape of an open problem, and it was
 recorded at exactly that weight. Four sent out; four back; each
 checked; the swarm closed.
 
+## Act XIX — The Backbone, Made Visible
+
+After the swarm, a fork — and it was named honestly rather than walked
+blind. One direction (the genuine dynamics) needed a *new promise to
+the world*: a metric, a way to measure lengths the bare ring does not
+contain — a flagged commitment #4 in the `eq-ap` mould, not a thing to
+add unilaterally. The other stayed inside the promises already made.
+That one was chosen, deliberately, on consent.
+
+It produced the quietest load-bearing result yet. The concrete Jacobi
+had cancelled; a fair sceptic could still call that luck. So the luck
+was removed: matrix multiplication is *associative*, proved for
+arbitrary symbolic 2×2 entries from nothing but the ring's
+distributivity and the right to reorder a sum — four pure-ring
+theorems, two corner entries identical to the leaf (1771 each), so
+plainly not a quirk of one position. Associativity is precisely *why*
+the nested brackets had to collapse; the concrete Jacobi was structure,
+not coincidence, and the structure is now on the record. No new promise
+was made — every `$p` pure ring, nothing classical, the frozen base
+untouched.
+
+What stayed unbuilt stayed named: the full general Jacobi tower, every
+entry and every rank. The concrete witness is the sample; this is the
+load-bearing reason it held; the tower is the honest residual, the same
+concrete→general discipline the first book used for ℤ/8. The bone is
+still the bone; the meaning is still the heavy thing in the other
+column; the backbone is just now visibly a backbone — recorded at
+exactly that weight.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

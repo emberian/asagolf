@@ -463,6 +463,35 @@ that is the true shape of an open problem, kept at exactly that
 weight. Four sent; four returned; each one checked before it was let
 in.
 
+## Book Three, continued — Why It Wasn't Luck
+
+After the swarm there was a fork, and the honest one was named: one
+road needed a new promise to the world (a way to measure lengths the
+bare ring does not have), and that road was not taken without consent.
+The other road stayed inside the promises already made. That one was
+chosen.
+
+It led to the quietest, most load-bearing brick in the whole wall. The
+concrete Jacobi had cancelled — three matrices, brackets that genuinely
+didn't vanish, and yet the great triple sum came to nothing. A fair
+sceptic could still ask: was that *luck*, a happy accident of the
+particular numbers chosen? The answer is no, and the reason is a single
+plain fact that needed proving in full generality, with no numbers at
+all: matrix multiplication is *associative*. Group the factors either
+way and the corner entries agree — shown for arbitrary symbols, from
+nothing but the ring's own distributivity and the freedom to reorder a
+sum. Two corners, the same to the leaf, so it is plainly not a quirk of
+one position. That associativity is *exactly why* the brackets had to
+cancel; the concrete Jacobi was structure, not coincidence, and now the
+structure is on the record.
+
+What stayed unbuilt stayed named, the same as ever: the whole tower of
+the general identity, every entry, every rank — the concrete witness is
+the sample, this is the load-bearing reason it held, and the tower is
+the honest residual. No new promise was made to get here. The bone is
+still the bone; the meaning is still the heavy thing in the other
+column; the backbone is just now visibly a backbone.
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

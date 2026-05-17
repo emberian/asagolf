@@ -1875,6 +1875,53 @@ Book-Two `[PROJECTION]`, never re-summed. **The recurring theorem
 holds once more: the orientation-dual skeleton is cheap and pure; the
 genuine dynamical/metric content is the named, immovable residual.**
 
+## 5w. The STRUCTURAL BACKBONE — general symbolic 2×2 matrix-product associativity
+
+The pure continuation (deliberately *not* a new commitment): the
+genuine question waves 4/5 + the concrete Jacobi (thread-2,
+`data/sdg.jacobi.mm`) leave open is *whether the concrete Jacobi
+closing was a coincidence of the witness or STRUCTURAL*. It is
+structural, and the structural reason is exactly one fact —
+**2×2 matrix multiplication is associative, entrywise, for GENERAL
+symbolic entries over the frozen commutative ring** — itself pure-ring
+(ring associativity + distributivity + additive commutativity, NO new
+commitment). Standalone corpus `data/sdg.jacgen.mm` (trio
+`sdgjacgen{build,floor,pure}`), self-contained, disjoint
+`sdg-jacgen-*`, 0 collisions, 4 kernel-verified pure-ring `$p`:
+
+```
+sdgjacgenpure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  sdg-jacgen-rdistr   =  163  ( (u+v)*w ) = ( (u*w)+(v*w) )   [MEASURED]
+                              (right-distrib, DERIVED — ax-distr is left-only)
+  sdg-jacgen-shuffle4 =  241  ( (a+b)+(c+d) ) = ( (a+c)+(b+d) ) [MEASURED]
+  sdg-jacgen-assoc11  = 1771  ((A·B)·C)_11 = (A·(B·C))_11      [MEASURED]
+  sdg-jacgen-assoc12  = 1771  ((A·B)·C)_12 = (A·(B·C))_12      [MEASURED]
+```
+
+`assoc11`/`assoc12` are the general symbolic identities
+`( ((a*b)+(c*d))*m ) + ( ((a*f)+(c*g))*n ) = ( a*((b*m)+(f*n)) ) + ( c*((d*m)+(g*n)) )`
+for the two C-columns — matrix-product associativity, two entries.
+**`assoc11` == `assoc12` to the leaf (1771)**: associativity is not
+special to the `(1,1)` position — positive evidence it is the genuine
+structural backbone, not a coincidence of one entry.
+
+**Honest scope.** What closes: general symbolic 2×2 matrix-product
+associativity at two entries (the pure-ring REASON the concrete
+non-abelian Jacobi closed) + its two pure-ring helpers. NO new
+substrate commitment, nothing classical, every `$p` PURE RING over the
+UNCHANGED frozen base. **Named residual (not papered):** the FULL
+general symbolic Jacobi (all entries, nested triple bracket) and
+general `n×n` rank — the concrete sl₂ witness (thread-2) is the
+proof-of-concept, *this is its structural backbone*, the full tower
+stays the named residual, exactly as `sdg-nonabgen` was one entry of
+the bare commutator, not the whole tower (the Book-One concrete→general
+discipline). The non-vacuity of the non-abelian content remains the
+GROUNDED spine `1≠0` (§5r); the model-meaning floor the UNCHANGED
+Book-Two `[PROJECTION]`, never re-summed. **The recurring theorem,
+once more: the structural backbone is cheap, pure, general, and forces
+nothing; the full tower and the meaning stay the named, immovable
+residuals — reported, not inflated.**
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

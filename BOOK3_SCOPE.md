@@ -562,3 +562,6 @@ thread's outcome is MEASURED, a labelled `[PROJECTION]`/principled-
 absence, or a precisely-named OPEN gap — none faked, none inflated.
 The Iron Rule held across the whole swarm, hardest on the work not
 self-authored.**
+
+
+**Wave 10 — the structural backbone (`SEQUEL_SCOPE` §5w; the user's chosen pure path).** `data/sdg.jacgen.mm`, 4 kernel-verified pure-ring `$p`: general symbolic 2x2 matrix-product associativity at two entries (`assoc11`/`assoc12`, MEASURED 1771 each — identical, not special to (1,1)) + the derived `rdistr` and `shuffle4` helpers. This is the pure-ring REASON the concrete non-abelian Jacobi (wave 8) closed was STRUCTURE, not coincidence. **§1a NOT triggered, §1b NOT triggered** — no new commitment, nothing classical, pure-ring over the frozen base. Named residual: the full general symbolic Jacobi (all entries) and general n x n rank — the concrete witness is the proof-of-concept, this its backbone (the nonab->nonabgen concrete->general discipline). The recurring theorem, once more — reported, not inflated.**

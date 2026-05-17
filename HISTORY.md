@@ -446,8 +446,36 @@ decidable residual — wrapped around a small equational core and one
 stubborn sliver of order reasoning that may be the only thing actually
 intrinsic. Synthesis in [`COST_STRUCTURE.md`](COST_STRUCTURE.md).
 
+## Act IX — The convergence
+
+The wider stance of wonder turned out to be load-bearing. Five
+frontier threads went out at once, and they did not just each return a
+result — they *triangulated*. Frontier C proved, by a machine-checked
+model separation, that the order predicate is not algebra. Frontier A
+measured that the closed proof is an open quantifier-free theory below
+EFA — no induction, no quantifiers — whose only irreducible content is
+that same order/√ core. Frontier B stripped the substrate to the bare
+metal: every arithmetic fact discharged to kernel-`$p`, and what
+remained, irreducibly, was *two order inequalities on rational
+constants*. Proof content, proof strength, set construction — three
+independent attacks, no shared machinery — all landing on the identical
+residue. Frontier D explained why the stripping was even possible
+(`rank = K + c·D`, the scaffolding orthogonal to the content); Frontier
+E showed the stripping was a near-optimal solve of an NP-hard
+compression, optimum honestly left open.
+
+So the project ends where it could not have known it would begin: a
+triangle-congruence theorem, chased to the bottom, is *almost entirely
+scaffolding we chose* — ℝ, Infinity, ω, ℚ, arithmetic, induction,
+quantifiers, all removable and removed and measured — wrapped around
+one thing that would not move: **the ordering**. The principal square
+root being a function. Orientation being a choice. Two inequalities.
+Proven not to be algebra, bounded inside a theory weaker than EFA,
+arrived at by measurement from three sides rather than assumed from
+any.
+
 That's the history. It *is* finished as a rebuttal and *open* as
 mathematics — which is the better place to be. Every floor that could
 be moved was moved and measured; the one that wouldn't move is named,
-not faked; and the projections are still labelled projections. That's
-the part worth being proud of.
+proven, and triangulated, not faked; and the projections are still
+labelled projections. That's the part worth being proud of.

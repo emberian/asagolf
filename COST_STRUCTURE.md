@@ -42,18 +42,51 @@ the apparent floor receded — it was never the mathematics:
   `[MEASURED]` 10^2.344). This **discharged** Stage-2's inductive
   ≤10^4 `[PROJECTION]` into a measured finite computation.
 
-Honest residual (a full result, not a gap): 19 `gnd-*` ground ZF facts
-remain `$a`-asserted rather than unfolded to bare ∅/suc/pair/ext — but
-each is a *single variable-free, finite, non-inductive, decidable* ZF
-computation. The substrate is projection-free **modulo a finite
-decidable residual** — qualitatively unlike every earlier floor, which
-were analytic or inductive commitments.
+Then Frontier B discharged the residual itself: all 19 `gnd-*` ground
+arithmetic facts derived as kernel-verified `$p` from bare ZF. The
+substrate is now **projection-free and fully-MEASURED for all
+arithmetic**. After every arithmetic fact is mechanically discharged,
+the entire residual is **exactly two order literals** — `Q0 ≤ Q1` and
+`Q1 ≠ Q0` on concrete ℚ-constants: decidable, non-inductive,
+Infinity-free.
 
-**Reading:** the cost of a ZFC model of plane geometry is not ℝ, not
-completeness, not Infinity, not even general ℚ. Chased down honestly it
-is the finite, decidable construction of a handful of named hereditarily
--finite sets. The scaffolding was the cost; the mathematics needs almost
-none of it.
+## The convergence — the result
+
+This is the finding the instrument was built to reach. **Three
+independent threads, from three different directions, land on the same
+residue:**
+
+- **Frontier C (proof content):** the order predicate is *proven* not
+  expressible as any ring identity — `sqcong` fails in ℤ/8; logically
+  essential, localized to `of-letot`. A THEOREM.
+- **Frontier A (proof strength):** the closed proof is *exactly* an
+  open quantifier-free theory **below EFA** — no induction, no
+  quantifiers, ≠ RCF — whose only irreducible content is the order/√
+  core. MEASURED + bounded.
+- **Frontier B (substrate construction):** strip ℝ, Infinity, ω, ℚ,
+  and every arithmetic computation, and what is left, irreducibly, is
+  **two order inequalities on rational constants**. MEASURED.
+
+Proof-content, proof-strength, and set-construction — entirely
+independent attacks — all triangulate on **order / orientation, and
+nothing else**. Frontier D explains *why* the stripping was possible at
+all: `rank = K + c·D` is additively separable, so the geometric and
+arithmetic costs are orthogonal coordinates that never entangle —
+scaffolding genuinely separable from content. Frontier E shows the
+stripping itself was a near-optimal solve of an NP-hard compression
+(the substitution-closed smallest-grammar problem), done by hand and
+kernel-checked, optimum honestly left open.
+
+**Reading.** The cost of a ZFC model of plane geometry is not ℝ, not
+completeness, not Infinity, not ω, not even ℚ or arithmetic — chased
+all the way down, *every one of those was removable scaffolding*. The
+single irreducible residue of Euclidean metric geometry is **the
+ordering** — the principal square root being a function, orientation
+being a choice — pinned to two concrete inequalities, proven not to be
+algebra, and bounded inside an open theory weaker than EFA. The poll
+asked how big the proof is. The honest answer the instrument found is
+deeper: *almost all of it was scaffolding we chose; what remains is
+orientation, and orientation alone.*
 
 ## What the proof content actually is (Seam #4)
 

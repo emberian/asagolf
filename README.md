@@ -46,13 +46,19 @@ the cheat this project exists to avoid:
    quantifier-free over finitely many named terms; `suc` applied once),
    and Stage 3 realized the finite ℚ-elements as hereditarily-finite
    sets, discharging the last inductive projection into a finite kernel
-   check. **Final ladder:** 10^46.10 (set.mm √-routing) → 10^17.484
-   (native ZF, Infinity) → **10^12.810** (HF, `sucexg`) `[EXTRACTED]`,
-   projection-free modulo a finite, decidable `gnd-*` residual. Every
-   "floor" was a construction choice, not the mathematics — see
-   [`COST_STRUCTURE.md`](COST_STRUCTURE.md) for the synthesis, including
-   the *one* floor that did not move: an irreducible order/sign-
-   reasoning core (~61% of `sqcong`, provably not a polynomial identity).
+   check; Frontier B then discharged *all* arithmetic to kernel-`$p`
+   from bare ZF. **Final ladder:** 10^46.10 (set.mm √-routing) →
+   10^17.484 (native ZF, Infinity) → **10^12.810** (HF, `sucexg`)
+   `[EXTRACTED]`, now **projection-free and fully-measured for all
+   arithmetic** — the entire residue is **exactly two order literals**
+   (`Q0 ≤ Q1`, `Q1 ≠ Q0`; decidable, Infinity-free). **The convergence:**
+   three independent threads — proof content (C: order *proven* not
+   algebra), proof strength (A: an open theory below EFA), substrate
+   construction (B: strip everything, two inequalities remain) —
+   triangulate on **order/orientation, and nothing else**. Every other
+   "floor" was removable scaffolding; the single irreducible residue of
+   metric geometry is the ordering. See
+   [`COST_STRUCTURE.md`](COST_STRUCTURE.md).
 
 Every digit is kernel-verified or extractor-exact; anything else is
 labelled `PROJECTION` with its derivation, never merged into a measured
@@ -88,9 +94,12 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | ↳ vs old `CCfld`-routed √-bridge — **collapse** | 10^46.10 → 10^17.48 | **~10^28.6** |
 | *Seam #1:* `omex`/Infinity measured **INCIDENTAL** (closed proof quantifier-free, `suc` once) | floor → `sucexg` | **10^12.810** |
 | *Stage 3:* HF carrier — finite ℚ-elements in Vω; ≤10^4 projection **DISCHARGED→MEASURED** | 221 leaves | **10^2.344** |
+| *Frontier B:* all 19 `gnd-*` arithmetic facts **DISCHARGED→`$p`** from bare ZF | 55 `$p` ✔ | residue = **2 order literals** |
 | ↳ substrate ladder | 10^46.10 → 10^17.484 → **10^12.810** | every floor a construction choice |
-| ↳ honest residual: 19 `gnd-*` ground ZF facts asserted | finite · non-inductive · decidable | (precisely characterized) |
-| *Seam #4:* proof content = bounded-deg identities + **irreducible order-core** | 31% identity / 69% glue | order-core ~not chosen |
+| ↳ irreducible residue (after all arithmetic discharged) | `Q0 ≤ Q1`, `Q1 ≠ Q0` | decidable · Infinity-free |
+| *Seam #4 / Frontier C:* order-core **PROVEN** not any ring identity | ℤ/8, ℤ/4 separation | first **intrinsic** floor |
+| *Frontier A:* closed proof = open theory **below EFA** | 0 quant · 0 ind · ≠RCF | strength is tiny |
+| **The convergence:** C (content) · A (strength) · B (construction) | independent | all → **order/orientation** |
 | *Seam #2:* tree/DAG ratio (concrete instance, not a separation thm) | [0.59×, 3.35×] | inverts; LB open |
 | same, certified *through set.mm*'s existing library (no cheaper √) | — | 10^46.10 |
 

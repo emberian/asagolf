@@ -111,23 +111,34 @@ lower bound honestly **OPEN** (smallest-grammar is NP-hard). Framed
 correctly: a fixed-instance CSE datum with measured constants —
 *explicitly not* a Frege/extended-Frege or tree/dag separation theorem.
 
-## Honest open questions (the live frontier)
+## Frontier status (the live frontier — being unfolded)
 
-- **Exact reverse-math base.** Seam #1 showed the obligation is
-  quantifier-free, no ℕ-induction. *Which* weak base exactly carries
-  the closed proof (a finitely-axiomatized open theory)? Measurable.
-- **The `gnd-*` residual.** Unfold the 19 finite ground ZF computations
-  to bare ∅/suc/pair/ext in-kernel → a fully projection-free,
-  fully-measured substrate. Finite and decidable; not yet done.
-- **Is the order-core a genuine lower bound?** Seam #4's irreducible
-  ~61% sign-reasoning in `sqcong` — prove it cannot be a polynomial
-  identity (an algebraic-independence / model-theoretic argument), or
-  find the minimal order-reasoning kernel. The first floor that looks
-  real.
-- **Rank ↔ radical-depth law.** `suc` applied once *because* K=1
-  suggests minimal HF rank = f(radical tower depth) — a precise
-  measurable structural law connecting geometric to set-theoretic
-  content.
+- **Order-core lower bound — RESOLVED (Frontier C, THEOREM).** Proven:
+  no ring identity of any degree expresses the order-core; logically
+  essential, localized to `of-letot`; machine-checked separating
+  arithmetic. The first and only intrinsic floor. Open residual: the
+  *exact constant* (Obligation O, a named cut-free LB problem).
+- **Rank ↔ radical-depth — RESOLVED (Frontier D, MEASURED law).**
+  `rank(constant) = K + c·D` exactly on all 6 named constants (K =
+  suc-*depth* = radical-tower depth; D = pair-class tower-depth; c=2
+  REP / 3 CLASS). Rank is linear and **additively separable** —
+  geometric content enters *only* via K, the number-tower *only* via
+  c·D, no interaction; K=1 is why the carrier sits at the minimal
+  rank-1 Infinity-free corner of Vω. Honest hedge: class-rank is a
+  lower bound (the `gnd-*` residual); the *shape* `rank=K+Θ(D)` is
+  convention-independent, the constant `c` is not; measured for the
+  finite named set only, not generic ℚ. Naive `K=suc-count` honestly
+  reported as breaking at Q1 (forced the corrected depth form).
+- **Exact reverse-math base — IN FLIGHT (Frontier A).** Which weak
+  finitely-axiomatized open theory carries the quantifier-free,
+  induction-free closed proof.
+- **The `gnd-*` residual — IN FLIGHT (Frontier B).** Unfold the 19
+  finite ground ZF computations to bare ∅/suc/pair/ext in-kernel → a
+  *fully* projection-free, fully-measured substrate.
+- **Minimum generic-lemma cover — IN FLIGHT (Frontier E).** The cover
+  as a formal combinatorial object + its complexity + optimality
+  status of the project's hand cover.
 
 Reported, not faked — including the projections, the open lower bounds,
-and the one floor that did not move.
+the one floor that is *proven* not to move, and the honest negatives
+(D's broken naive variant) that forced the correct laws.

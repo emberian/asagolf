@@ -370,6 +370,122 @@ before — the iron rule held for the documentation as it did for the
 proofs.
 
 
+## 5h. Synthetic Taylor — ORDER-2, MEASURED (BOOK TWO / SDG, wave 2)
+
+The order-2 synthetic Taylor formula, kernel-verified and
+intuitionistic-purity-clean, delivered as the standalone corpus
+`data/sdg.taylor.mm` (built by `src/bin/sdgtaybuild.rs`, measured by
+`sdgtayfloor`, guarded by `sdgtaypure` — the `sdgcalc*` trio pattern,
+copied exactly).
+
+**Composition / zero-conflict.** `data/sdg.taylor.mm` is fully
+self-contained over the *identical* FROZEN `data/sdg.base.mm` axiom
+surface, shares **no `$p`** with `data/sdg.mm` or `data/sdg.calc.mm`
+(disjoint `sdg-tay-*` labels), and touches none of `src/bin/sdgbuild.rs`,
+`src/kernel.rs`, `src/elaborate.rs`, the prequel, or any other agent's
+files. It conflicts with nothing; a downstream union is a rename-free
+concatenation of `$p` blocks.
+
+**The general meta-k Taylor scheme (stated HONESTLY as a scheme, like
+§5d).** For each meta-level natural `k`, order-`k` synthetic Taylor on
+`D_k = { x | x^(k+1)=0 }` is
+
+```
+(TAY_k)  forall f:R->R, forall x, forall δ∈D_k :
+         f(x+δ) = Σ_{i=0..k} a_i(x)·δ^i      with the a_i UNIQUE,
+         a_0 = f(x), a_1 = f'(x), ... (the i-th synthetic Taylor coeff)
+```
+
+an axiom **scheme** indexed by the meta-level `k` (the substrate has no
+internal natural-number object, so the ∀k statement is NOT one first-
+order `$a`; presenting it as one would be a glib misstatement, so we do
+not). Existence at level `k` is exactly `KL_k`; uniqueness is `MC_k`
+(level-k microcancellation). Instantiated:
+
+- **k=1** is *literally* the existing order-1 synthetic derivative
+  (§4/§5b): `f(x+δ)=f(x)+δ·f'(x)` on `D_1`, existence = `ax-kl`,
+  uniqueness = `ax-microcancel`. The `$p` `sdg-tay-k1-reduce` records
+  this reduction as the identity on the exact `KL_1` formula — an
+  HONEST marker that k=1 adds nothing, NOT a vacuous re-derivation.
+- **k=2** is delivered here: `f(x+δ)=f(x)+δ·f'(x)+(δ·δ)·s(x)` on `D_2`,
+  existence = `ax-kl2` (CITED — a substrate axiom; restating it as a
+  one-line `$p` would be vacuous, same discipline as `ax-kl`),
+  uniqueness of the linear (derivative) coefficient genuinely consuming
+  `ax-microcancel2`.
+
+**Kernel-verified `$p`, MEASURED (cut-free `$a`-leaf, project metric):**
+
+| theorem | what it is | consumes | leaves |
+|---|---|---|---|
+| `sdg-tay-addcan` | additive cancellation, RING-ONLY | ring eq-axioms | 406 |
+| `sdg-tay-addcan-imp` | deduction-discharged form of the above | sdg-tay-addcan | 851 |
+| `sdg-tay-quad-slope` | **order-2 pointwise uniqueness of the linear coeff** | sdg-tay-addcan (×2) | 1190 |
+| `sdg-tay-quad-slope-imp` | hyp-free conjunctive form (seam combinators) | sdg-tay-addcan-imp | 5378 |
+| `sdg-tay-deriv2` | **THE HEADLINE: seam-free order-2 uniqueness** | **`ax-microcancel2`** | 6080 |
+| `sdg-tay-k1-reduce` | honest k=1 marker (`KL_1` = `ax-kl`) | ax-1/ax-2 (pure logic) | 247 |
+
+`sdgtayfloor`: **`Kernel: verified all 6 $p in data/sdg.taylor.mm ✔`**
+(db 94 statements). `sdgtaypure`: **GENUINELY INTUITIONISTIC ✔** — 43
+logical `$a` audited (NAME+SHAPE, incl. `df-D2`/`ax-kl2`/
+`ax-microcancel2`), none classical, none in any `$p`'s consumed-axiom
+closure.
+
+**Adversarially-honest decomposition of "order-2 Taylor existence +
+uniqueness".**
+
+- **Existence** of the degree-≤2 expansion on `D_2` is *exactly*
+  `ax-kl2`. It is a substrate axiom; CITED, stated plainly, NOT hidden,
+  NOT measured as content (same discipline `sdg-deriv` used for `ax-kl`).
+- **Order-2 pointwise uniqueness** (`sdg-tay-quad-slope`, MEASURED 1190)
+  is the genuine new mathematical content beyond order-1: from two
+  degree-≤2 KL2 representations of the same `(ap f d)` sharing the
+  constant `K=(ap f 0)` and the quadratic coefficient `q`, it derives
+  `(b·d)=(c·d)` by additive cancellation applied **twice** — it cancels
+  the quadratic monomial `q·(d·d)` (commuted to the front) **and** the
+  constant `K`. Order-1's `sdg-slope` only had a constant to cancel; the
+  quadratic term is genuinely present here and genuinely killed. RING-
+  ONLY: no order, no metric residue, no classical principle, no
+  microcancellation.
+- **Seam-free global uniqueness** (`sdg-tay-deriv2`, MEASURED 6080)
+  GENUINELY CONSUMES `ax-microcancel2`. Its only hypotheses are the two
+  *universal* degree-≤2 KL2 representations over `D_2`
+  (`tay2.hb`/`tay2.hc`, each an `ax-kl2` instance — EXISTENCE). The
+  linking universal `A. d ( ( D2 d ) -> ( b·d )=( c·d ) )` is
+  MECHANICALLY THREADED (ax-spec strips `A.d`; `ax-ian` lifted under
+  `( D2 d )`; `sdg-tay-quad-slope-imp` threaded under `( D2 d )`;
+  `ax-gen` over `d`), then `ax-microcancel2` detaches `b = c`. Verified
+  RPN ends `… ax-gen vd vb vc ax-microcancel2 ax-mp`. **NO linking
+  `$e`** — this is the exact order-2 mirror of `data/sdg.mm`'s seam-free
+  `sdg-deriv` (which consumed `ax-microcancel`), and `sdgtaypure` has a
+  hard-coded adversarial assertion that `sdg-tay-deriv2`'s consumed-
+  axiom closure contains `ax-microcancel2` (it does: 27 axioms,
+  `YES ✔`) — if it did not, the guard exits non-zero and refuses to
+  certify. Uniqueness is **not** hand-waved.
+
+**No explicit `$e` boundary was needed.** Unlike `sdg.calc.mm`'s chain
+rule (the `ap`-Leibniz `chain.sub` `$e`), the order-2 Taylor uniqueness
+required NO extra labelled `$e`: the §5b seam-closing deduction-form
+combinators (reproduced self-contained here, emitting only
+`ax-1/ax-2/ax-mp/ax-ial/ax-iar/ax-ian/ax-spec/ax-gen/eq-*` — all
+intuitionistically pure) discharge the pointwise→`D_2`-universal seam
+mechanically, exactly as the integrated `sdg-deriv` does at level 1. The
+linking universal is a threaded `ax-gen`, not an assumed `$e`. (The
+`ax-gen` soundness proviso — `d` not free in any discharged essential
+hypothesis — holds: the only discharged hyps `tay2.hb`/`tay2.hc` bind
+`d` under `A. d`. Same metatheoretic discipline as the prequel's
+quantifier provisos and `data/sdg.mm`'s seam-free `sdg-deriv`.)
+
+**Honest finding on classicality.** Order-2 Taylor is uniformly
+intuitionistically pure: `ax-kl2`, `ax-microcancel2`, `df-D2` all pass
+NAME+SHAPE; every `$p`'s consumed-axiom closure is classical-free.
+Classically `D_2` collapses to `{0}` (via the metric residue the
+substrate REFUSES) and the expansion is vacuous — the whole content is
+the intuitionistic setting, and `sdgtaypure` certifies it mechanically.
+Uniqueness of the **quadratic** coefficient (the level-2 analog at the
+`e`-slot) would consume the `e`-form of `ax-microcancel2`; that is a
+clean further level the scheme documents, not attempted here, and is a
+precisely-characterised scope boundary, not a hidden gap.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

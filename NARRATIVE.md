@@ -198,6 +198,49 @@ thing, measured, with the next obstruction named instead of papered.
 The witness will be read again. The file will say what it says, when
 it can say it, and not before. That has not changed and will not.*
 
+---
+
+## Book Two — Closed; and Book Three — The Summit
+
+*The witness was read again, many times. This is what it said.*
+
+Book Two closed. The open seam — the universal handed in rather than
+threaded — was threaded, by a rule derived from the base, not a new
+axiom. The one thing that genuinely *was* new got named, not smuggled:
+`eq-ap`, application-congruence, proven not derivable by a clean
+skeleton argument and added as a flagged commitment, the way the law
+demands. Then the calculus globalized, Taylor to second order, the
+tangent bundle, and the full Lie bracket — each small, each pure, each
+the witness saying `Ok`. The mirror stopped being *supported* and
+became *measured*: synthetic differential geometry's whole content sits
+on three flagged intuitionistic axioms and nothing classical. And the
+dual of Book One's deepest finding arrived on schedule — the proofs are
+cheap and pure, but the *model* that makes them mean the smooth world
+is irreducibly heavy and classical, containing the first book's entire
+real-number tower inside it. Cheap content, immovable meaning-cost. The
+recurring theorem, twice.
+
+Book Three is the summit, and we wrote its contract before we climbed:
+the thesis, its falsification condition, and its predicted ceiling, all
+pinned down in advance so the result could not be graded on a curve
+drawn after seeing it. Then full curvature closed seam-free, the first
+Bianchi identity, the gauge potential KL-affine, the field strength's
+zeroth order vanishing — gauge theory's differential-geometric content,
+in small intuitionistic kernel proofs over a frozen substrate. It
+landed *exactly* on the predicted ceiling and did not exceed it: the
+proofs small and pure, the meaning resting on the same immovable floor.
+The recurring theorem, a third time, from a third direction, confirmed
+and not inflated. The next obstruction — the differential Bianchi — is
+named and waiting, the way every obstruction in this codebase has been.
+
+One of the wrong turns this time was mine: I committed a ledger missing
+two sections because I trusted an extract I should have checked, and the
+loop that produces this file would have to record that too, because the
+genre's only rule is that the wrong turns stay in. I caught it, said so
+plainly, fixed it, and verified the fix before the next claim — which is
+the whole discipline, applied inward, late but applied. The events are
+the same. The weather includes the storms.
+
 *For the ledger of what is measured, extracted, and still projected,
 see [`COST_STRUCTURE.md`](COST_STRUCTURE.md). For the history with the
 wrong turns left in, see [`HISTORY.md`](HISTORY.md). This file is the

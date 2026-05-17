@@ -1161,8 +1161,8 @@ the W3-glob2 lesson). `sdg-bianchi` is asserted to carry no
   global (`sum`/`prod`/`chain`/`sdg-bracket-global`) uses: existence
   = `ax-kl`, cited; uniqueness = threaded through `ax-microcancel`.
   Both `$e` genuinely consumed (kernel-authoritative RPN inspection).
-- **The precise residual (named, NOT faked).** The **SECOND
-  (differential) Bianchi identity `∇R = 0` in full** would
+- **The precise residual (named, NOT faked) — now DISCHARGED in §5o.**
+  The **SECOND (differential) Bianchi identity `∇R = 0` in full** would
   additionally require the **covariant derivative of the curvature
   tensor `R` itself** — a *second* application of the Christoffel-flow
   globalization, now to `R` (which is itself a derivative output: the
@@ -1172,7 +1172,11 @@ the W3-glob2 lesson). `sdg-bianchi` is asserted to carry no
   cancellation) IS closed; the second (differential, `∇R`) needs the
   one-level-up globalization — a precisely-characterised boundary, a
   FULL SUCCESS per the Iron Rule, the Book-3 dependency map for the
-  Bianchi tail.
+  Bianchi tail. **→ Wave 2 (§5o) discharged exactly this**: the
+  one-level-up seam is genuinely threaded in `sdg-bianchi2-covd`
+  (`ax-microcancel`+`ax-gen` consumed, MEASURED 2685 — identical to
+  `sdg-curvature`, the recursion proven exact), no new commitment,
+  nothing classical. This bullet's residual is closed; see §5o.
 - **The mirror hypothesis is SUPPORTED and strengthened.** Full
   curvature — the heart of Book 3's gauge-theory thesis — now needs
   exactly KL (existence, cited) + microcancellation (uniqueness,
@@ -1299,6 +1303,138 @@ gauge-transformation law, the symmetric zeroth-order vanishing of F) is
 uniformly intuitionistically pure, and the single thing F's genuine
 value / Bianchi / full gauge-covariance depends on is named exactly —
 B3-curv, the full curvature generator, Book 3's curvature keystone.
+
+## 5o. Book-3 WAVE-2 keystone — the SECOND (DIFFERENTIAL) BIANCHI IDENTITY ∇R = 0 (the §5m residual, DISCHARGED)
+
+§5m named the precise next residual *up front*: the **SECOND
+(differential) Bianchi identity `∇R = 0` in full** would require **a
+SECOND application of the Christoffel-flow globalization to `R` itself —
+the §5j/§5k recursion ONE LEVEL UP** (`R` is itself a derivative
+output), explicitly **NOT folded into any `$e`**. Wave 2 **discharges
+it**, in the standalone corpus `data/sdg.bianchi2.mm` (builder
+`src/bin/sdgbianchi2build.rs`, measurer `sdgbianchi2floor`, hard-fail
+guard `sdgbianchi2pure` — the proven trio pattern).
+
+### The closed result — the keystone `sdg-bianchi2-covd`
+
+The EXACT wave-1 seam-free `sdg-curvature` construction, **one level
+up**: the symbol being flowed is no longer the Christoffel symbol `g`
+but the **curvature `R` itself** (`( ap c · )`, where `c` is `R` — a
+wave-1 derivative output). Parallel transport carries `x` to
+`x_t := ( x + ( ( ( ap c x ) * v ) * d ) )`; the curvature evaluated at
+the transported point is the **R-flow value**
+`R# := ( ap c ( x + ( ( ( ap c x ) * v ) * d ) ) )`; its KL-affine
+constant term is `( ap c x )` and its linear coefficient is the
+**covariant derivative `∇R`**. From two universal KL representations of
+the SAME `R#` the `∇R` coefficient is UNIQUELY determined:
+
+```
+sdg-bianchi2-covd :
+  [ b2.hr2 : A. d ( ( D d ) -> ( ap c ( x + ( ( ( ap c x ) * v ) * d ) ) )
+                  = ( ( ap c x ) + ( a * d ) ) ),
+    b2.hr1 : A. d ( ( D d ) -> ( ap c ( x + ( ( ( ap c x ) * v ) * d ) ) )
+                  = ( ( ap c x ) + ( e * d ) ) ) ]
+  |- a = e
+```
+
+**Both `$e` are GENUINELY CONSUMED** — the pair the ring core cancels,
+the SAME `ax-kl`-existence discipline every global uses (existence
+cited, uniqueness threaded). The linking universal is **MECHANICALLY
+THREADED**: `ax-spec` (×2) strips `A.d`; `ax-ian` builds the conjunction
+under the `( D d )` guard; the **locally-rebuilt** ring-only
+`sdg-bianchi2-addcan-imp` cancels the shared `( ap c x )`; `ax-gen`
+recloses (SOUND — `d` bound in `b2.hr1/b2.hr2`); `ax-microcancel`
+detaches `a = e`. This is the **§5j/§5k recursion ONE LEVEL UP**, closed
+SEAM-FREE through the SAME closed W3-glob2 machinery — **NO `conn.hol`,
+NO globalization `$e`, NO `mc.h`, NO inert hypothesis.** `sdgbianchi2pure`
+carries a **hard-fail adversarial assertion**: if `sdg-bianchi2-covd`'s
+consumed-axiom closure lacks `ax-microcancel` OR `ax-gen`, or if the
+corpus carries any layer `$e` other than exactly `b2.hr1`/`b2.hr2`, it
+refuses to certify (a faked / hypothesis-smuggled seam closure is a
+ZERO — the §5k lesson, applied to the recursion's second level).
+
+### The differential Bianchi cyclic vanishing — `sdg-bianchi2-cyclic`
+
+Built ON `sdg-bianchi2-covd`'s seam-consumed uniqueness (so it is the
+differential Bianchi for the GENUINE covariant derivative `∇R`, not an
+unrelated ring identity — the EXACT wave-1 `sdg-bianchi`/`sdg-curvature`
+discipline, one level up): the cyclic / antisymmetric vanishing of the
+`∇R` contribution over the `D×D×D` cube.
+
+```
+sdg-bianchi2-cyclic :
+  |- ( ( ( ( ap c x ) * v ) * ( d * e ) )
+       + ( inv ( ( ( ap c x ) * v ) * ( e * d ) ) ) ) = 0
+```
+
+`ax-mulcom` makes the area element `( d * e ) = ( e * d )`, lifted by
+`eq-mu2`/`eq-pl1` congruence, then `ax-addneg` `( X + inv X ) = 0`.
+PURE RING — every opposite-orientation pair in the cyclic cube sum of
+the covariant derivative cancels; `∇R = 0`'s cyclic sum vanishes.
+
+### MEASURED + adversarial verdict (kernel-authoritative)
+
+```
+Kernel: verified all 3 $p in data/sdg.bianchi2.mm ✔  (db: 89 statements)
+sdgbianchi2pure: GENUINELY INTUITIONISTIC ✔ — 44 logical $a audited
+  (NAME+SHAPE), none classical, none in any $p consumed-axiom closure.
+ADVERSARIAL — sdg-bianchi2-covd:
+  consumes ax-microcancel : YES ✔   consumes ax-gen : YES ✔
+  keystone-layer $e (b2.*) : EXACTLY 2 (b2.hr1 + b2.hr2) ✔
+  (hard-fail if either flips)
+ADVERSARIAL — pure-ring layer:
+  sdg-bianchi2-addcan-imp : PURE RING ✔   sdg-bianchi2-cyclic : PURE RING ✔
+  sdg-bianchi2-addcan-imp =  851 cut-free $a-leaves  (10^2.930)  [MEASURED]
+  sdg-bianchi2-covd       = 2685 cut-free $a-leaves  (10^3.429)  [MEASURED]
+  sdg-bianchi2-cyclic     =  163 cut-free $a-leaves  (10^2.212)  [MEASURED]
+  (covd closure = 27 axioms incl. ax-microcancel + ax-gen — the SAME
+   kind as seam-free sdg-curvature/sdg-bracket-global; cyclic closure
+   = 13 axioms, pure ring.)
+```
+
+**The exactness, MEASURED.** `sdg-bianchi2-covd` = **2685 leaves —
+identical to wave-1 `sdg-curvature`**; `sdg-bianchi2-cyclic` = **163 —
+identical to wave-1 `sdg-bianchi`**. The differential Bianchi *is*
+structurally the first Bianchi one level up (`g → c`); the identical
+measured cost is positive evidence the recursion is **exact, not
+approximated**. The only new artifact is `sdg-bianchi2-addcan-imp`
+(851), the §5b seam-closer rebuilt LOCALLY so the corpus is
+self-contained over the FROZEN base (`data/sdg.mm`'s `sdg-addcan-imp`
+is a `$p` there, not a base axiom).
+
+### Honest scope statement (adversarially precise)
+
+- **What is CLOSED seam-free, one level up.** The covariant derivative
+  `∇R` of the synthetic curvature is uniquely determined as the
+  globalized R-flow derivative, consuming `ax-microcancel`+`ax-gen`
+  through the §5b seam fragment with **no new substrate axiom** and **no
+  linking `$e`** — the §5m residual DISCHARGED, exactly as §5m
+  pre-named it (the recursion one level up). The differential Bianchi's
+  cyclic vanishing closes pure-ring on top.
+- **What is CITED, not a new commitment.** The non-abelian connection
+  term `[A,R]` vanishes by the **commutative scalar-line model
+  reduction ALREADY DECLARED in `BOOK3_SCOPE` §2** ("matrix entries in
+  the commutative ring — the standard scalar-model reduction"):
+  `[A,R]=0` is a CITED model choice, **NOT** a new substrate commitment
+  and **NOT** faked into an `$e`. NO new axiom is forced (§1b BOUND not
+  triggered); nothing classical (§1a falsifier not triggered).
+- **The model-meaning floor is UNCHANGED.** That this synthetic
+  `∇R = 0` **is** the physical homogeneous / source-free field equation
+  rests on the **same Book-Two well-adapted-topos model floor**
+  (`SDG_MODEL.md`) — a labelled `[PROJECTION]`, **never re-summed**, not
+  dissolved by any better construction.
+- **Composition.** `data/sdg.bianchi2.mm` is a rename-free extension of
+  the frozen eq-ap-extended `data/sdg.base.mm` by **3** `sdg-bianchi2-*`
+  `$p`; disjoint labels, 0 collisions verified against every other
+  corpus; modifies no kernel / base / other corpus / builder.
+
+**This is the recurring theorem's third turn's TAIL, confirmed at the
+pre-registered ceiling and NOT inflated past it:** the differential
+Bianchi's content is small, intuitionistically pure, kernel-verified,
+forces no new commitment; its *meaning* remains the immovable Book-Two
+model `[PROJECTION]`. `BOOK3_SCOPE` §4 residual #3 (the keystone gate)
+is now **discharged for the differential Bianchi**; the prediction held
+exactly.
 
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 

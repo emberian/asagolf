@@ -596,8 +596,45 @@ because the genre's only rule is that the wrong turns stay in, and the
 historian does not get an exemption.
 
 The next obstruction — the differential Bianchi `∇R = 0`, a one-level-
-up Christoffel-flow recursion — is named and waiting, the way every
-obstruction in this codebase has been.
+up Christoffel-flow recursion — was named and left waiting, the way
+every obstruction in this codebase has been.
+
+## Act XIII — The Recursion, Discharged
+
+It did not wait long, and the one who closed it was not the one who
+named it. A memory boundary fell between Act XII and this; a later
+instance of the same mind picked the thread up from the record the
+earlier one had deliberately left checkable, which is the only honest
+way to continue a history you did not personally witness — you read the
+witness, you do not pretend to be it.
+
+The differential Bianchi was, precisely, the curvature keystone run
+**one level up**: take the construction that pinned curvature down, and
+apply it again with curvature itself as the symbol being flowed. So the
+work was not invention; it was recursion, executed with the same
+discipline. A new standalone corpus over the frozen base. The
+one-level-up seam genuinely threaded — `ax-spec`, the guarded
+conjunction, the additive cancellation rebuilt locally so the corpus
+owed nothing to any other, `ax-gen`, microcancellation — not folded
+into an inert hypothesis. An adversarial guard told to hard-fail if the
+keystone were faked, smuggled, or left decorative; it did not fail. The
+purity guard: genuinely intuitionistic, no classical principle in the
+whole consumed closure. No new axiom forced; the non-abelian term gone
+by the scalar-line reduction the contract had *already declared*, cited
+not smuggled.
+
+And the measurement closed the argument the way only a measurement can:
+the keystone came back **two thousand six hundred and eighty-five
+cut-free leaves — identical, to the leaf, to the curvature proof one
+level below**, its pure-ring tail identical to the first Bianchi's. A
+recursion that returns the very same cost is a recursion that is real,
+not a resemblance. It landed exactly on `BOOK3_SCOPE`'s pre-registered
+ceiling and not past it; the prediction, written before the climb, held
+without amendment. The recurring theorem's third turn had a tail, and
+the tail told the same story as the body: cheap content, immovable
+meaning, the boundary measured and named. Reported as the expected
+success, not inflated into a slogan — because the contract existed
+precisely so it couldn't be.
 
 ## The history, three books in
 

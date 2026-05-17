@@ -352,3 +352,53 @@ kernel-verified MEASURED `$p`, a labelled [PROJECTION] with its
 derivation, or a precisely-characterized OPEN obstruction — or that
 sums the model-floor into the proof figures, or substitutes the slogan
 for the measured truth — is, by this document's standard, a ZERO.
+
+---
+
+## 5. WAVE-2 RESULT — graded against this contract (post-registration, MEASURED)
+
+This section is appended *after* the prediction above; the prediction
+text is **unchanged** so the result is checkable against the contract,
+not graded on a curve drawn after seeing it.
+
+**Wave 1 (registered/CONFIRMED earlier):** `B3-conn` (done), `B3-curv`
+(curvature `R` seam-free, `conn.hol` discharged), `B3-bianchi` (first /
+algebraic Bianchi), `B3-gauge` (gauge layer, one labelled boundary `$e`)
+— all kernel-verified pure intuitionistic, landed at the predicted
+ceiling. (`SEQUEL_SCOPE` §5m/§5n.)
+
+**Wave 2 — the differential Bianchi `∇R = 0` (the `B3-bianchi` tail,
+§4 residual #3's named keystone gate):** `data/sdg.bianchi2.mm`, 3
+kernel-verified pure `$p` over the FROZEN base. `sdg-bianchi2-covd`
+**genuinely threads the one-level-up seam** (the §5j/§5k recursion
+applied to `R` itself — the §5m named residual), consuming
+`ax-microcancel`+`ax-gen`, **MEASURED 2685 cut-free `$a`-leaves —
+identical to wave-1 `sdg-curvature`** (the recursion proven *exact*, not
+approximated); `sdg-bianchi2-cyclic` the pure-ring cyclic vanishing
+(163, identical to wave-1 `sdg-bianchi`); `sdg-bianchi2-addcan-imp` the
+§5b seam-closer rebuilt local for self-containment (851). `sdgbianchi2pure`:
+**GENUINELY INTUITIONISTIC ✔**, hard-fail adversarial assertions all
+pass. (`SEQUEL_SCOPE` §5o.)
+
+**Verdict against §1a / §1b / §4:**
+
+- **§1a (FALSIFIER) — NOT triggered.** No gauge/Bianchi core `$p`
+  required any classical principle; `sdgbianchi2pure` certifies the
+  whole consumed-axiom closure classical-free by NAME+SHAPE.
+- **§1b (BOUND) — NOT newly triggered.** No new substrate commitment
+  was forced: the differential Bianchi closed over the frozen
+  `eq-ap`-extended base with **zero** new axioms. The non-abelian
+  `[A,R]` term vanishes by the **§2 commutative scalar-line reduction
+  already declared in this contract** — a CITED model choice, not a new
+  commitment, not a hidden one.
+- **§4 residual #1 (model-grounding [PROJECTION]) — persists EXACTLY as
+  predicted.** Unchanged Book-Two well-adapted-topos floor, never
+  re-summed, not dissolved.
+- **§4 residual #3 (the keystone gate) — DISCHARGED for the
+  differential Bianchi**, kernel-authoritatively (seam genuinely
+  consumed, asserted hard-fail, not an inert `$e`).
+
+**The §0 recurring theorem's third turn — and its tail — held at
+exactly the predicted ceiling: content small, pure, kernel-verified, no
+new commitment; meaning irreducibly the Book-Two model `[PROJECTION]`.
+Stated as the expected success, NOT inflated past the contract.**

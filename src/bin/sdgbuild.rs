@@ -427,6 +427,182 @@ fn use_thm(label: &str, subst: &[(&str, &W)], ess: &[&Pf], result: Toks) -> Pf {
     Pf { stmt: result, rpn }
 }
 
+// ===========================================================================
+//  DEDUCTION-FORM COMBINATORS  (the §5b seam-closing rule).
+//
+//  These are the SOUND, intuitionistically-pure derived rules that thread
+//  a guard/antecedent `G` through an equational derivation WITHOUT taking
+//  the conclusion as an `$e` hypothesis.  Each is a derived rule of the
+//  intuitionistic substrate: it emits ONLY `ax-1`, `ax-2`, `ax-mp`,
+//  `eqtri`, `eqcom`, `eq-*`, `ax-spec`, `ax-gen` — NO classical principle
+//  (the purity guard re-verifies this mechanically).
+//
+//  Soundness argument (the intuitionistic deduction theorem, the fragment
+//  we actually use): in minimal implicational logic with `ax-1`
+//  `( ph -> ( ps -> ph ) )` and `ax-2`
+//  `( ( ph -> ( ps -> ch ) ) -> ( ( ph -> ps ) -> ( ph -> ch ) ) )`,
+//  modus ponens admits the deduction theorem.  `imp_a1` is the
+//  axiom/`weakening` case (lift a closed theorem under any antecedent via
+//  `ax-1`); `imp_mp` is the modus-ponens case (distribute the shared
+//  antecedent `G` over an implication via `ax-2`).  All higher combinators
+//  (`imp_eqtr`, `imp_eqsym`, `imp_cong_*`) are just these two applied to
+//  the equational `$a` (`eqtri`/`eqcom`/`eq-*`), which are THEMSELVES
+//  already implications, so no extra principle is introduced.  None of
+//  `ax-1`/`ax-2`/`ax-mp` is classical (no `ax-3`/Peirce/LEM/DNE), so the
+//  whole toolkit is intuitionistically pure by construction.
+// ===========================================================================
+
+/// `imp_a1` : from `p : |- X` and an antecedent wff `G`, derive
+/// `|- ( G -> X )`.  This is the WEAKENING / axiom case of the deduction
+/// theorem: `ax-1[ph:=X, ps:=G] : |- ( X -> ( G -> X ) )`, then mp.
+fn imp_a1(p: &Pf, g: &W) -> Pf {
+    let xw = w_of(&p.stmt);
+    let g_x = reg(&wi(g, &xw));
+    // ax-1 : |- ( ph -> ( ps -> ph ) )  with ph:=X, ps:=G
+    let ax1_inst = apply("ax-1", &[&xw, g], &[], reg(&wi(&xw, &g_x)).toks);
+    mp(p, &ax1_inst)
+}
+
+/// `imp_mp` : the MODUS-PONENS case of the deduction theorem.  From
+/// `pa : |- ( G -> A )` and `pab : |- ( G -> ( A -> B ) )` derive
+/// `|- ( G -> B )` via `ax-2[ph:=G, ps:=A, ch:=B]`.
+fn imp_mp(pa: &Pf, pab: &Pf) -> Pf {
+    // pa.stmt = ( G -> A ) ; pab.stmt = ( G -> ( A -> B ) )
+    let g = split_ant(&pa.stmt);
+    let a = split_impl(&pa.stmt);
+    let a_to_b = split_impl(&pab.stmt);
+    let b = split_impl(&a_to_b);
+    let gw = w_of(&g);
+    let aw = w_of(&a);
+    let bw = w_of(&b);
+    let a_b = reg(&wi(&aw, &bw));
+    let g_ab = reg(&wi(&gw, &a_b));
+    let g_a = reg(&wi(&gw, &aw));
+    let g_b = reg(&wi(&gw, &bw));
+    // ax-2 : |- ( ( G -> ( A -> B ) ) -> ( ( G -> A ) -> ( G -> B ) ) )
+    let ax2_inst = apply(
+        "ax-2",
+        &[&gw, &aw, &bw],
+        &[],
+        wi(&g_ab, &reg(&wi(&g_a, &g_b))).toks,
+    );
+    // mp(pab, ax2) : |- ( ( G -> A ) -> ( G -> B ) )
+    let step = mp(pab, &ax2_inst);
+    mp(pa, &step)
+}
+
+/// Split a wff `( A -> B )` into its ANTECEDENT token list `A`.
+fn split_ant(toks: &Toks) -> Toks {
+    assert_eq!(toks.first().map(|s| s.as_str()), Some("("));
+    assert_eq!(toks.last().map(|s| s.as_str()), Some(")"));
+    let inner = &toks[1..toks.len() - 1];
+    let mut depth = 0i32;
+    for (i, tk) in inner.iter().enumerate() {
+        match tk.as_str() {
+            "(" => depth += 1,
+            ")" => depth -= 1,
+            "->" if depth == 0 => return inner[..i].to_vec(),
+            _ => {}
+        }
+    }
+    panic!("not a top-level implication: {}", toks.join(" "));
+}
+
+/// `imp_eqtr` : transitivity UNDER a shared antecedent `G`.  From
+/// `pab : |- ( G -> a = b )` and `pbc : |- ( G -> b = c )` derive
+/// `|- ( G -> a = c )`, using `eqtri` lifted by `imp_a1`/`imp_mp`.
+fn imp_eqtr(pab: &Pf, pbc: &Pf) -> Pf {
+    let g = split_ant(&pab.stmt);
+    let (a, b) = split_eq(&split_impl(&pab.stmt));
+    let (b2, c) = split_eq(&split_impl(&pbc.stmt));
+    assert_eq!(b, b2, "imp_eqtr: middle terms differ");
+    let gw = w_of(&g);
+    let aw = w_of(&a);
+    let bw = w_of(&b);
+    let cw = w_of(&c);
+    let ab = reg(&weq(&aw, &bw));
+    let bc = reg(&weq(&bw, &cw));
+    let ac = reg(&weq(&aw, &cw));
+    let bc_ac = reg(&wi(&bc, &ac));
+    // eqtri : |- ( a = b -> ( b = c -> a = c ) )   (a closed implication)
+    let eqtri_inst = apply("eqtri", &[&aw, &bw, &cw], &[], reg(&wi(&ab, &bc_ac)).toks);
+    // lift it under G:  |- ( G -> ( a=b -> ( b=c -> a=c ) ) )
+    let g_eqtri = imp_a1(&eqtri_inst, &gw);
+    // imp_mp with pab : |- ( G -> ( b=c -> a=c ) )
+    let g_bc_ac = imp_mp(pab, &g_eqtri);
+    // imp_mp with pbc : |- ( G -> a=c )
+    imp_mp(pbc, &g_bc_ac)
+}
+
+/// `imp_eqsym` : symmetry under a shared antecedent `G`.  From
+/// `pab : |- ( G -> a = b )` derive `|- ( G -> b = a )` via `eqcom`.
+fn imp_eqsym(pab: &Pf) -> Pf {
+    let g = split_ant(&pab.stmt);
+    let (a, b) = split_eq(&split_impl(&pab.stmt));
+    let gw = w_of(&g);
+    let aw = w_of(&a);
+    let bw = w_of(&b);
+    let ab = reg(&weq(&aw, &bw));
+    let ba = reg(&weq(&bw, &aw));
+    // eqcom : |- ( a = b -> b = a )
+    let eqcom_inst = apply("eqcom", &[&aw, &bw], &[], reg(&wi(&ab, &ba)).toks);
+    let g_eqcom = imp_a1(&eqcom_inst, &gw); // |- ( G -> ( a=b -> b=a ) )
+    imp_mp(pab, &g_eqcom)
+}
+
+/// `imp_cong_l` : congruence under a shared antecedent `G`.  From
+/// `pab : |- ( G -> a = b )` derive `|- ( G -> ( a OP z ) = ( b OP z ) )`.
+fn imp_cong_l(pab: &Pf, z: &W, op: &str, tlabel: &str, eqlabel: &str) -> Pf {
+    let g = split_ant(&pab.stmt);
+    let (a, b) = split_eq(&split_impl(&pab.stmt));
+    let gw = w_of(&g);
+    let aw = w_of(&a);
+    let bw = w_of(&b);
+    let ab = reg(&weq(&aw, &bw));
+    let lhs = reg(&binop(&aw, z, op, tlabel));
+    let rhs = reg(&binop(&bw, z, op, tlabel));
+    let cong = reg(&weq(&lhs, &rhs));
+    // eq-?1 : |- ( a = b -> ( a OP z ) = ( b OP z ) )
+    let eq_inst = apply(eqlabel, &[&aw, &bw, z], &[], reg(&wi(&ab, &cong)).toks);
+    let g_eq = imp_a1(&eq_inst, &gw); // |- ( G -> ( a=b -> (aOPz)=(bOPz) ) )
+    imp_mp(pab, &g_eq)
+}
+
+/// `imp_cong_r` : symmetric congruence ( z OP a ) = ( z OP b ) under `G`.
+/// `gen` : universal generalization.  From `p : |- ph` derive
+/// `|- A. x ph` via `ax-gen` ( gen.1 $e |- ph  ->  ax-gen |- A. x ph ).
+/// SOUNDNESS PROVISO (metatheoretic, argued in SEQUEL_SCOPE §5b): the
+/// bound variable `x` must not occur free in any ESSENTIAL hypothesis on
+/// which `p` actually depends.  At the sole use-site the discharged
+/// dependencies are `deriv.hb`/`deriv.hc`, each of the form
+/// `A. d ( ... )` — `d` is BOUND there, so the proviso holds.
+fn gen(p: &Pf, xflabel: &str, xtok: &str) -> Pf {
+    let bodyw = w_of(&p.stmt);
+    // ax-gen mandatory frame: wph (body), then vx (the bound var), then
+    // gen.1 (the essential proof).  Result: A. x <body>.
+    let all = reg(&wal(xflabel, xtok, &bodyw));
+    let mut rpn = bodyw.rpn.clone();
+    rpn.push(xflabel.to_string());
+    rpn.extend(p.rpn.clone());
+    rpn.push("ax-gen".to_string());
+    Pf { stmt: all.toks, rpn }
+}
+
+fn imp_cong_r(pab: &Pf, z: &W, op: &str, tlabel: &str, eqlabel: &str) -> Pf {
+    let g = split_ant(&pab.stmt);
+    let (a, b) = split_eq(&split_impl(&pab.stmt));
+    let gw = w_of(&g);
+    let aw = w_of(&a);
+    let bw = w_of(&b);
+    let ab = reg(&weq(&aw, &bw));
+    let lhs = reg(&binop(z, &aw, op, tlabel));
+    let rhs = reg(&binop(z, &bw, op, tlabel));
+    let cong = reg(&weq(&lhs, &rhs));
+    let eq_inst = apply(eqlabel, &[&aw, &bw, z], &[], reg(&wi(&ab, &cong)).toks);
+    let g_eq = imp_a1(&eq_inst, &gw);
+    imp_mp(pab, &g_eq)
+}
+
 fn main() {
     // ---- the fixed certified-intuitionistic base (verbatim) -------------
     let base = include_str!("../../data/sdg.base.mm");
@@ -606,6 +782,79 @@ fn main() {
         slope_concl.toks.clone(),
     );
 
+    // =====================================================================
+    //  §5b SEAM-CLOSING ARTIFACT #1 — sdg-addcan-imp.
+    //
+    //  The DEDUCTION-DISCHARGED form of sdg-addcan: the SAME ring
+    //  derivation, but with its single `$e` (addcan.h) discharged into the
+    //  antecedent of a closed implication.  HYPOTHESIS-FREE:
+    //      |- ( ( z + u ) = ( z + v ) -> u = v )
+    //  This is the intuitionistic deduction theorem applied by hand to the
+    //  one place addcan.h was used (the cong_r step) — and `eq-pl2` is
+    //  ITSELF already an implication `( x=y -> (z+x)=(z+y) )`, so the
+    //  discharge is exact: the G-antecedented `s1` is literally the
+    //  `eq-pl2` instance.  Everything else (mk_collapse) is hypothesis-free
+    //  and lifted under G by `imp_a1`; transitivity by `imp_eqtr`.  Only
+    //  ax-1/ax-2/ax-mp/eqtri/eqcom/eq-* — NO classical principle.
+    // =====================================================================
+    let g_addcan = reg(&weq(&z_pl_u, &z_pl_v)); // G := ( z + u ) = ( z + v )
+    // s1 under G: eq-pl2[x:=(z+u),y:=(z+v),z:=inv z] is *exactly*
+    //   |- ( ( z+u )=( z+v ) -> ( inv z + ( z+u ) ) = ( inv z + ( z+v ) ) )
+    let iz_zu = reg(&binop(&invz, &z_pl_u, "+", "tpl"));
+    let iz_zv = reg(&binop(&invz, &z_pl_v, "+", "tpl"));
+    let s1_imp = apply(
+        "eq-pl2",
+        &[&z_pl_u, &z_pl_v, &invz],
+        &[],
+        wi(&g_addcan, &reg(&weq(&iz_zu, &iz_zv))).toks,
+    ); // |- ( G -> ( inv z+(z+u) ) = ( inv z+(z+v) ) )
+    // cu, cv are hypothesis-free (the closure helper) — lift them under G.
+    let cu_imp = imp_a1(&cu, &g_addcan); // |- ( G -> ( inv z+(z+u) ) = u )
+    let cv_imp = imp_a1(&cv, &g_addcan); // |- ( G -> ( inv z+(z+v) ) = v )
+    // u = ( inv z+(z+u) ) = ( inv z+(z+v) ) = v, all under G.
+    let sdg_addcan_imp = imp_eqtr(
+        &imp_eqsym(&cu_imp),
+        &imp_eqtr(&s1_imp, &cv_imp),
+    ); // |- ( G -> u = v )
+
+    // =====================================================================
+    //  §5b SEAM-CLOSING ARTIFACT #2 — sdg-slope-imp.
+    //
+    //  The DEDUCTION-DISCHARGED pointwise slope lemma, HYPOTHESIS-FREE,
+    //  with the two slope hypotheses packaged as a single conjunctive
+    //  antecedent (so the single-antecedent imp_* toolkit suffices):
+    //      |- ( ( EB /\ EC ) -> Q )
+    //  where EB := V = ( K + ( b*d ) ), EC := V = ( K + ( c*d ) ),
+    //        Q  := ( b*d ) = ( c*d ),  V := ( ap f d ), K := ( ap f 0 ).
+    //  Under G := ( EB /\ EC ):  ax-ial/ax-iar give ( G -> EB ), ( G -> EC );
+    //  imp_eqsym+imp_eqtr give ( G -> ( K+(b*d) )=( K+(c*d) ) ); then
+    //  sdg-addcan-imp[z:=K,u:=(b*d),v:=(c*d)], lifted under G by imp_a1 and
+    //  detached by imp_mp, yields ( G -> Q ).  Only ax-1/ax-2/ax-mp/
+    //  eqtri/eqcom/ax-ial/ax-iar + ring eq-axioms — NO classical principle.
+    // =====================================================================
+    let eb = reg(&weq(&apfd, &k_bd)); // EB := V = ( K + ( b*d ) )
+    let ec = reg(&weq(&apfd, &k_cd)); // EC := V = ( K + ( c*d ) )
+    let q_bd_cd = reg(&weq(&b_d, &c_d)); // Q := ( b*d ) = ( c*d )
+    let g_slope = reg(&wa(&eb, &ec)); // G := ( EB /\ EC )
+    // ( G -> EB )  and  ( G -> EC )  via ax-ial / ax-iar.
+    let g_eb = apply("ax-ial", &[&eb, &ec], &[], wi(&g_slope, &eb).toks);
+    let g_ec = apply("ax-iar", &[&eb, &ec], &[], wi(&g_slope, &ec).toks);
+    // ( G -> ( K+(b*d) ) = V )    [eqsym of g_eb]
+    let g_kbd_v = imp_eqsym(&g_eb);
+    // ( G -> ( K+(b*d) ) = ( K+(c*d) ) )   [eqtr through V via g_ec]
+    let g_kbd_kcd = imp_eqtr(&g_kbd_v, &g_ec);
+    // sdg-addcan-imp[z:=K, u:=(b*d), v:=(c*d)] :
+    //   |- ( ( K+(b*d) ) = ( K+(c*d) ) -> ( b*d ) = ( c*d ) )
+    let ac_inst = use_thm(
+        "sdg-addcan-imp",
+        &[("z", &apf0), ("u", &b_d), ("v", &c_d)],
+        &[],
+        reg(&wi(&reg(&weq(&k_bd, &k_cd)), &q_bd_cd)).toks,
+    );
+    // lift under G, detach with g_kbd_kcd -> ( G -> Q )
+    let g_ac = imp_a1(&ac_inst, &g_slope); // ( G -> ( (K+bd)=(K+cd) -> Q ) )
+    let sdg_slope_imp = imp_mp(&g_kbd_kcd, &g_ac); // |- ( ( EB /\ EC ) -> Q )
+
     // ---- sdg-deriv : the headline ---------------------------------------
     //  [ HB : A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) ) ,
     //    HC : A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( c * d ) ) ) ]
@@ -633,8 +882,10 @@ fn main() {
     let hb = Pf { stmt: all_b.toks.clone(), rpn: t("deriv.hb") };
     let hc = Pf { stmt: all_c.toks.clone(), rpn: t("deriv.hc") };
     // ax-spec[x:=d, ph:=imp_b] : |- ( A. d imp_b -> imp_b )
-    let spec_b = apply("ax-spec", &[&dd, &imp_b], &[], wi(&all_b, &imp_b).toks);
-    let spec_c = apply("ax-spec", &[&dd, &imp_c], &[], wi(&all_c, &imp_c).toks);
+    // ax-spec $a |- ( A. x ph -> ph ) : mandatory $f are wph(ph) then
+    // vx(x); here x:=d, ph:=imp_b/imp_c, so floats = [imp_*, dd].
+    let spec_b = apply("ax-spec", &[&imp_b, &dd], &[], reg(&wi(&all_b, &imp_b)).toks);
+    let spec_c = apply("ax-spec", &[&imp_c, &dd], &[], reg(&wi(&all_c, &imp_c)).toks);
     let _imp_b_pf = mp(&hb, &spec_b); // |- ( ( D d ) -> V=(K+(b*d)) )
     let _imp_c_pf = mp(&hc, &spec_c); // |- ( ( D d ) -> V=(K+(c*d)) )
 
@@ -655,31 +906,64 @@ fn main() {
         weq(&b_d, &c_d).toks,
     ); // [ (eq_b /\ eq_c) ] |- ( b*d )=( c*d )
 
-    // -- THE HEADLINE: uniqueness of the synthetic derivative.
-    //    Existence of the affine representation is exactly ax-kl (the
-    //    slope b exists).  Uniqueness — that the slope is DETERMINED, i.e.
-    //    ( deriv f ) is well-defined — is microcancellation applied to
-    //    the pointwise slope-equality (which sdg-slope produces and we
-    //    MEASURE).  sdg-deriv genuinely CONSUMES ax-microcancel and
-    //    concludes b = c.
+    // =====================================================================
+    //  §5b SEAM-CLOSING ARTIFACT #3 — THE SEAM-FREE HEADLINE.
     //
-    //      ax-microcancel : |- ( A. d ( ( D d ) -> ( b*d )=( c*d ) )
-    //                            -> b = c )
-    //      mc.h           : A. d ( ( D d ) -> ( b*d )=( c*d ) )
-    //      ax-mp          : |- b = c
-    let bd_eq_cd = reg(&weq(&b_d, &c_d)); // ( b * d ) = ( c * d )
-    let guard = reg(&wi(&dd_pred, &bd_eq_cd)); // ( ( D d ) -> ( b*d )=( c*d ) )
-    let all_guard = reg(&wal("vd", "d", &guard));
-    let mc_h = Pf { stmt: all_guard.toks.clone(), rpn: t("mc.h") };
-    // ax-microcancel[b:=b, c:=c] : |- ( all_guard -> b = c )
+    //  sdg-deriv, NO linking `$e`.  Hypotheses are ONLY the two universal
+    //  affine KL-representations (each an `ax-kl` instance — EXISTENCE):
+    //    deriv.hb : A. d ( ( D d ) -> EB )
+    //    deriv.hc : A. d ( ( D d ) -> EC )
+    //  Conclusion: b = c.  The linking universal
+    //    A. d ( ( D d ) -> ( b*d )=( c*d ) )
+    //  is now MECHANICALLY THREADED, not assumed:
+    //    1. ax-spec strips A.d :  pB : ( ( D d ) -> EB ),  pC : ( ( D d ) -> EC ).
+    //    2. ax-ian, lifted under the shared guard ( D d ) by imp_a1 and
+    //       detached by imp_mp twice, gives  ( ( D d ) -> ( EB /\ EC ) ).
+    //    3. sdg-slope-imp : ( ( EB /\ EC ) -> Q ); lifted under ( D d ) by
+    //       imp_a1, detached by imp_mp, gives  ( ( D d ) -> Q ).
+    //    4. gen (ax-gen) :  A. d ( ( D d ) -> Q )   — SOUND: `d` is bound
+    //       in deriv.hb/deriv.hc, the only discharged hypotheses.
+    //    5. ax-microcancel mp :  b = c.
+    //  The `$e` mc.h is GONE.  Only ax-1/ax-2/ax-mp/ax-ial/ax-iar/ax-ian/
+    //  ax-spec/ax-gen/eq-* + ax-microcancel — NO classical principle (the
+    //  purity guard re-verifies the consumed-axiom closure).
+    // =====================================================================
+    let bd_eq_cd = reg(&weq(&b_d, &c_d)); // Q := ( b * d ) = ( c * d )
+    // step 1: strip A.d off the two universal KL-representations.
+    let pB = mp(&hb, &spec_b); // |- ( ( D d ) -> EB )
+    let pC = mp(&hc, &spec_c); // |- ( ( D d ) -> EC )
+    // step 2: ( ( D d ) -> ( EB /\ EC ) ).
+    //   ax-ian : |- ( EB -> ( EC -> ( EB /\ EC ) ) )
+    let eb_ec = reg(&wa(&eq_b, &eq_c)); // ( EB /\ EC )
+    let ian = apply(
+        "ax-ian",
+        &[&eq_b, &eq_c],
+        &[],
+        reg(&wi(&eq_b, &reg(&wi(&eq_c, &eb_ec)))).toks,
+    );
+    let g_ian = imp_a1(&ian, &dd_pred); // ( (D d) -> ( EB -> ( EC -> (EB/\EC) ) ) )
+    let g_ec_conj = imp_mp(&pB, &g_ian); // ( (D d) -> ( EC -> ( EB /\ EC ) ) )
+    let g_conj = imp_mp(&pC, &g_ec_conj); // ( (D d) -> ( EB /\ EC ) )
+    // step 3: thread sdg-slope-imp : ( ( EB /\ EC ) -> Q ) under ( D d ).
+    let slope_imp_inst = use_thm(
+        "sdg-slope-imp",
+        &[("b", &bb), ("c", &cc), ("d", &dd), ("f", &ff)],
+        &[],
+        reg(&wi(&eb_ec, &bd_eq_cd)).toks,
+    );
+    let g_slope_imp = imp_a1(&slope_imp_inst, &dd_pred); // ( (D d) -> ( (EB/\EC) -> Q ) )
+    let g_q = imp_mp(&g_conj, &g_slope_imp); // |- ( ( D d ) -> Q )
+    // step 4: ax-gen over d  (SOUND: d bound in deriv.hb/deriv.hc).
+    let all_guard = gen(&g_q, "vd", "d"); // |- A. d ( ( D d ) -> Q )
+    // step 5: microcancellation.
     let b_eq_c = reg(&weq(&bb, &cc));
     let mc_inst = use_thm(
         "ax-microcancel",
         &[("b", &bb), ("c", &cc), ("d", &dd)],
         &[],
-        wi(&all_guard, &b_eq_c).toks,
+        wi(&w_of(&all_guard.stmt), &b_eq_c).toks,
     );
-    let sdg_deriv = mp(&mc_h, &mc_inst); // |- b = c
+    let sdg_deriv = mp(&all_guard, &mc_inst); // |- b = c  (seam-free)
 
     // =====================================================================
     //  THE HIGHER-INFINITESIMAL HIERARCHY  D_k = { x | x^(k+1) = 0 }.
@@ -833,15 +1117,35 @@ fn main() {
             &sdg_slope_conj,
         ),
         (
-            // THE FIRST SYNTHETIC-DIFFERENTIAL THEOREM (uniqueness half):
-            // the slope of the affine KL-representation is DETERMINED, so
-            // ( deriv f ) is well-defined.  Consumes ax-microcancel.
+            // §5b seam-closer #1: deduction-discharged additive
+            // cancellation — HYPOTHESIS-FREE.  The intuitionistic
+            // deduction theorem applied to sdg-addcan's single $e.
+            "sdg-addcan-imp",
+            "|- ( ( z + u ) = ( z + v ) -> u = v )",
+            vec![],
+            &sdg_addcan_imp,
+        ),
+        (
+            // §5b seam-closer #2: deduction-discharged pointwise slope
+            // lemma — HYPOTHESIS-FREE (conjunctive antecedent).
+            "sdg-slope-imp",
+            "|- ( ( ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) /\\ ( ap f d ) = ( ( ap f 0 ) + ( c * d ) ) ) -> ( b * d ) = ( c * d ) )",
+            vec![],
+            &sdg_slope_imp,
+        ),
+        (
+            // THE FIRST SYNTHETIC-DIFFERENTIAL THEOREM — SEAM-FREE.
+            // The linking universal is now mechanically threaded from the
+            // two universal affine KL-representations (deriv.hb/deriv.hc,
+            // each an ax-kl instance) via the deduction-form combinators +
+            // ax-spec/ax-gen; NO linking `$e`.  Consumes ax-microcancel
+            // (uniqueness) — and NOTHING classical.
             "sdg-deriv",
             "|- b = c",
-            vec![(
-                "mc.h",
-                "|- A. d ( ( D d ) -> ( b * d ) = ( c * d ) )",
-            )],
+            vec![
+                ("deriv.hb", "|- A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) )"),
+                ("deriv.hc", "|- A. d ( ( D d ) -> ( ap f d ) = ( ( ap f 0 ) + ( c * d ) ) )"),
+            ],
             &sdg_deriv,
         ),
         // ---- THE HIGHER-INFINITESIMAL HIERARCHY (Taylor-base) ----------

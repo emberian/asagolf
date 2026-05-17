@@ -143,9 +143,24 @@ Kernel-verify it; run the purity guard on it.
 
 ## 5b. MEASURED outcome (this build) — adversarially honest
 
-Kernel: verified all 8 `$p` in `data/sdg.mm` ✔ (92 statements).
-Purity guard: GENUINELY INTUITIONISTIC ✔ — 40 logical `$a`, none
-classical (NAME + SHAPE), none in any `$p` consumed-axiom closure.
+**§5b SEAM: RESOLVED — verified in the integrated tree.** The
+pointwise→global seam is closed: `mc.h` `$e` removed; seam-free
+`sdg-deriv` (RPN ends `… ax-gen vd vb vc ax-microcancel ax-mp`) is
+kernel-verified in the *integrated* union, not merely on a branch.
+The closing rule is a *derived* deduction-theorem fragment
+(`imp_a1`=ax-1, `imp_mp`=ax-2) + a guarded `ax-gen` (proviso
+discharged by hypothesis-shape, same discipline as the prequel's
+quantifier provisos) — **no new substrate axiom**. Honest measured
+delta: `sdg-deriv` 9 → **2243** leaves — a cost *revealed, not added*
+(the threading was previously hidden in the zero-cost `$e`).
+
+Integrated union: **`Kernel: verified all 13 $p in data/sdg.mm ✔
+(db 103)`** (base 8 ∪ keystone 2 ∪ D_k 3); `data/sdg.calc.mm` still
+`verified all 7 $p ✔` over the D_k-extended base (the layers compose).
+Purity guard on the union: **GENUINELY INTUITIONISTIC ✔** — 43
+logical `$a`, none classical (NAME + SHAPE), none in any `$p`
+consumed-axiom closure. (Prior single-layer S1 figure was 8 `$p` /
+92 statements; superseded by the verified union above.)
 
 The first synthetic-differential theorem is delivered as a chain, each
 piece kernel-verified and MEASURED (cut-free `$a`-leaf, project metric):
@@ -339,18 +354,20 @@ in `data/sdg.calc.mm` (101 statements).
 
 ## 5f. Keystone integration status (honest, current)
 
-SDG-K landed on its branch (commit `4f13bac`): the §5b pointwise→global
-seam is closed there — `mc.h` `$e` removed, seam-free `sdg-deriv`
-kernel-verified, the deduction-theorem fragment + guarded `ax-gen` are
-*derived* rules (no new substrate axiom), `sdgpure` still GENUINELY
-INTUITIONISTIC. Honest measured delta: `sdg-deriv` 9 → ~2243 leaves —
-a cost *revealed, not added* (the threading was previously hidden in
-the zero-cost `$e`). It is NOT yet reflected in the integrated tree:
-SDG-K and the D_k milestone (§5d) both extended the generator from the
-same base, so a kernel-gated merge subagent is producing the union
-builder. §5b will be marked RESOLVED here only when that union
-re-verifies in-tree — not before. (Iron rule: this doc reflects the
-integrated, re-verified state, never a not-yet-integrated branch.)
+**INTEGRATED.** SDG-K (commit `4f13bac`) and the D_k milestone
+(§5d, `46e08c8`) both extended the generator from the same base, so a
+kernel-gated merge subagent produced the union builder (commit
+`9ea6fe7`) — and it was honest enough to catch and flag an error in
+its own brief (its base was the common ancestor, not the Taylorbase
+HEAD, so it did a clean 3-way merge of both deltas). The union is now
+integrated and **re-verified in-tree** (see §5b): 13 `$p ✔`, seam-free
+`sdg-deriv` = 2243, D_k figures (47/123/247) reproduce, `sdg.calc.mm`
+still 7 `$p ✔` over the extended base, `sdgpure` GENUINELY
+INTUITIONISTIC on the union. The two feature sets are cleanly
+composable — the conflict was purely structural, no mathematical
+interaction. §5b is RESOLVED *because* the union re-verified here, not
+before — the iron rule held for the documentation as it did for the
+proofs.
 
 
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)

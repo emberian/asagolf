@@ -1624,7 +1624,108 @@ Book One's `COST_STRUCTURE` bottom**.
 genuine non-abelian gauge structure is cheap, pure, kernel-verified,
 forces no new commitment; and its irreducible meaning-residue is not
 merely *analogous* to Book One's but *identical* to it. Reported, not
-faked.
+faked. **→ The spine claim of this section is GROUNDED in §5r (the
+Book-Three segment as a kernel-verified transport); the general
+statement of the witness is in §5s.**
+
+## 5r. GROUNDING the cross-book spine — the Book-Three segment as a kernel-verified transport
+
+§5q's spine — "the non-abelian witness's non-vacuity IS `1≠0` = Book
+One's measured irreducible residue" — was, in §5q, a **narrative**
+finding (honestly labelled). §5r **grounds its Book-Three segment** into
+a kernel-verified transport, per the **transport-anchored-floor**
+discipline (the binding machine-checked; the bridge counted once, never
+re-summed, never re-faked). Standalone corpus `data/sdg.spine.mm` (trio
+`sdgspine{build,floor,pure}`), self-contained over the FROZEN base,
+disjoint `sdg-spine-*` labels, 0 collisions.
+
+The spine is now a **TWO-SEGMENT transport joined at the literal `1≠0`**:
+
+- **Book-Three segment — GROUNDED HERE, kernel-verified, MEASURED.**
+  `sdg-spine-eqneg` (1979) the derived `inv`-congruence (base has no
+  `eq-neg`); `sdg-spine-comm11` (2893) rebuilds the witness `(1,1)`
+  commutator entry `= 1` pure-ring over the frozen base;
+  **`sdg-spine-b3` (3008)** is the transport
+  `( ( ( ( 0 * 0 ) + ( 1 * 1 ) ) + ( inv ( ( 0 * 0 ) + ( 0 * 0 ) ) ) ) = 0 -> 1 = 0 )`
+  — i.e. *if the witness commutator's `(1,1)` entry vanishes then
+  `1 = 0`*; equivalently the non-abelian non-vacuity reduces **exactly**
+  to `1≠0`. `eqtri` on the witness identity. PURE RING, nothing
+  classical, NO new substrate commitment (`sdgspinepure`: GENUINELY
+  INTUITIONISTIC ✔ AND EVERY `$p` PURE RING ✔, exit 0). The
+  intuitionistic contrapositive (`1≠0 ⇒` the commutator is genuinely
+  non-zero) is the restatement; the positive implication **is** the
+  grounded fact (a base-level `¬`-repackaging would need hypothetical
+  syllogism — added proof-engineering risk, zero semantic gain — NOT
+  done; the implication is the honest deliverable).
+- **Book-One segment — already transport-anchored, CITED not
+  re-derived.** Book One's measured irreducible residue
+  `suc∅≠∅ ≅ 1≠0` (standard numeral interpretation `∅↦0`, `suc∅↦1`),
+  machine-checked & set.mm-anchored in Book One
+  (`COST_STRUCTURE.md` / the `transport-anchored-floor` binding). It is
+  **joined to the Book-Three segment at the identical literal `1≠0`** —
+  cited, counted **once**, NEVER re-derived / re-summed into these
+  MEASURED figures / re-faked here.
+
+**NET.** The spine is upgraded from a narrative `[PROJECTION]` to a
+**two-segment transport, BOTH segments anchored** — Book-Three
+kernel-verified here (MEASURED), Book-One cited transport-anchored (its
+prior set.mm binding). This is grounding in the only honest sense: a
+machine-checked binding, the bridge counted once. **What is NOT
+claimed:** that the two residues are the "same" by anything beyond this
+explicit transport at the literal `1≠0` — it is a **structural identity
+between two MEASURED residues, claimed at exactly that weight, never a
+grand unification.**
+
+## 5s. The GENERAL structural non-commutation theorem (the witness, generalized)
+
+§5q's `[A,B]=[[1,0],[0,(inv 1)]]` was a **concrete** witness (the
+Book-One-style ℤ/8-flavoured concrete separation). §5s gives the
+**general statement of which it was the instance**, pure-ring over the
+FROZEN base. Standalone corpus `data/sdg.nonabgen.mm` (trio
+`sdgnonabgen{build,floor,pure}`), self-contained, disjoint
+`sdg-nonabgen-*` labels, 0 collisions, **independently re-verified
+(kernel + purity + statement-content inspection)**.
+
+For general symbolic `2×2` matrices `A=[[a,b],[c,·]]`, `B=[[x,y],[z,·]]`
+(entry vars from the base's declared `$v`): `(A·B)₁₁ = ( (a*x)+(b*z) )`,
+`(B·A)₁₁ = ( (x*a)+(y*c) )`. The headline:
+
+```
+sdg-nonabgen-mixcancel :
+  |- ( ( ( a * x ) + ( b * z ) ) + ( inv ( ( x * a ) + ( y * c ) ) ) )
+   = ( ( b * z ) + ( inv ( y * c ) ) )
+```
+
+— the commutator `(1,1)` entry reduces **pure-ring** to the
+**off-diagonal mixing term** `( b*z ) − ( y*c )`, the symmetric
+(commuting) `a*x / x*a` parts cancelling **exactly** via the precise
+core `sdg-nonabgen-symvanish : ( ( a * x ) + ( inv ( x * a ) ) ) = 0`
+(`ax-mulcom` + `ax-addneg`), supported by `sdg-nonabgen-invadd`
+(`inv(u+v)=inv u+inv v`), `sdg-nonabgen-addcancel`, and the derived
+`sdg-nonabgen-eqneg`.
+
+```
+sdgnonabgenpure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  sdg-nonabgen-eqneg     = 1979 leaves (10^3.296)  [MEASURED]
+  sdg-nonabgen-invadd    = 1288 leaves (10^3.110)  [MEASURED]
+  sdg-nonabgen-symvanish =   67 leaves (10^1.826)  [MEASURED]
+  sdg-nonabgen-addcancel =  155 leaves (10^2.190)  [MEASURED]
+  sdg-nonabgen-mixcancel = 2647 leaves (10^3.423)  [MEASURED]
+```
+
+**Honest scope.** The general theorem is a pure-ring **identity**, true
+in every commutative ring **including the trivial one** — it needs **no
+`1≠0`** to state or prove, and `1≠0` is **not** a hypothesis here.
+`1≠0` was *only* the wave-4 concrete witness's **non-vacuity** (now
+grounded, §5r); the general structural theorem and the `1≠0` residue are
+**kept rigorously distinct, not conflated**. **Named residual of this
+wave (not papered):** the full general-rank / `n×n` Yang–Mills tower
+(general matrix size, full `F = dA + A∧A` assembly, differential Bianchi
+/ gauge covariance at general rank). §5s closes the `(1,1)` entry at
+general `2×2` symbolic, **not** the whole tower — exactly as Book One's
+ℤ/8 concrete separation was the proof, not the entire order theory. The
+model-meaning floor is the UNCHANGED Book-Two `[PROJECTION]`, never
+re-summed.
 
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 

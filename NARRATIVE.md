@@ -346,6 +346,44 @@ first book's bottom vertebra. Not a rhyme. The same bone. That was
 written down plainly, claimed as nothing more than what it was, and the
 proof that earned it left exactly where the proof ended.
 
+## Book Three, continued — The Bone, Set
+
+Three things were open at once, so three things were pursued at once.
+One went to a separate worker, off building the general shape of the
+non-commutation result while the main thread did the delicate part. The
+worker came back; its work was not taken on faith — it was re-run, and
+its statements read line by line to check they said what was claimed,
+because the rule about verifying extracts applies hardest to extracts
+you did not write yourself. They held. The general theorem was exactly
+the concrete witness with the numbers rubbed out: the place where order
+of operations stops being a formality is the off-diagonal corner, true
+in every commutative ring, needing nothing — least of all the thing the
+concrete witness needed.
+
+The delicate part was the bone. The previous wave had *noticed* that the
+little matrix mattered only if one is not zero, and that this was the
+same residue the first book hit at its very bottom. Noticing is not
+grounding. So the noticing was made into a proof: a tiny kernel-checked
+implication — if the witness corner vanishes, then one equals zero —
+pure ring, nothing borrowed. That is the third book's half of the
+bridge, now bolted down and measured. The first book's half was already
+bolted down, years of someone else's anchoring into the standard
+library; it was cited, not rebuilt, and the two halves were joined at
+the single rivet they share — the literal one-is-not-zero — and the
+join was counted exactly once. Not a grand unification. One bone, and
+now the X-ray to prove it is one bone.
+
+And the oldest projection of all — the heavy classical model that would
+make the synthetic calculus *mean* smooth geometry — was looked at
+again, not to finally ground it (it cannot be; there is nothing to run
+an extractor over, and pretending otherwise would be the one
+unforgivable thing) but to say, exactly, how far grounding can go. The
+answer turned out to be the same rivet: the only part of "is this even
+non-empty" you can pin down bottoms out at one-is-not-zero, which is now
+pinned. The rest stays a named projection, upright in the open, load
+unmoved. Knowing precisely where the ground ends is its own kind of
+ground.
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

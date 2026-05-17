@@ -335,6 +335,45 @@ those two readings is itself the irreducible structural content, the
 exact dual of the prequel's "almost all of it was scaffolding; the
 order-core alone was not."*
 
+### 4c. How far this CAN be grounded — and the residue identified (Book-3 follow-up)
+
+The natural question — *can the model-grounding `[PROJECTION]` itself be
+grounded?* — has a precise, adversarially-honest answer, and acting on
+it is the iron-rule-correct deliverable (ground exactly the part that
+can be; name the rest, do not fake it):
+
+- **The STRONG (well-adapted) model — NOT groundable, by principle,
+  stays `[PROJECTION]`.** There is no Metamath/ZFC formalization of a
+  well-adapted topos to run an extractor over (§0); a fabricated "model
+  cost" would be an Iron-Rule ZERO. This is the immovable dual floor of
+  §4b and is **deliberately left `[PROJECTION]`**, named not papered —
+  grounding it is not "not yet done", it is *principled-absent*.
+- **The WEAK (non-vacuity / relative-consistency) segment — its
+  irreducible residue is precisely `1≠0`, and THAT is now GROUNDED.**
+  The syntactic/term route (§4a(ii)) reduces non-vacuity to
+  non-triviality of the formal system; the *only* model the frozen
+  substrate guarantees kernel-internally is the trivial ring (`0=1`),
+  so the entire content of "the system is **non**-vacuous" bottoms out
+  at the single literal `1≠0`. That is **exactly the cross-book spine**
+  (`SEQUEL_SCOPE` §5q/§5r): the non-abelian witness's non-vacuity
+  reduces, kernel-verified, to `1≠0` (`data/sdg.spine.mm`,
+  `sdg-spine-b3`, MEASURED), joined at that literal to Book One's
+  already-set.mm-anchored `suc∅≠∅≅1≠0` (`COST_STRUCTURE`, cited, counted
+  once). So the weak segment's residue is **not independently
+  groundable beyond this** — and it does not need to be: it **is** the
+  now-transport-grounded spine. Building a heavy in-kernel trivial-ring
+  model artifact would be **ceremony weaker than this characterization**
+  (it would only re-exhibit `0=1`-consistency, which is precisely *why*
+  the residue is `1≠0`), so it is deliberately **not** done.
+
+**The honest net.** The deepest groundable thing in the
+model-grounding story is the weak segment's `1≠0` non-triviality
+residue; it is now grounded as the kernel-verified spine transport. The
+strong well-adapted model remains the named, principled-`[PROJECTION]`
+immovable floor. Grounding here means: *we determined exactly how far
+grounding can honestly go, did precisely that part, and named the rest
+— never faked a model number.*
+
 ---
 
 ## 5. What is genuinely open

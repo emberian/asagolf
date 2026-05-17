@@ -459,10 +459,43 @@ plus the derived `inv`-congruence and the non-abelian wedge.
   non-abelian meaning-residue **reduces to** Book One's — the spine is
   one bone. Reported as a named residual.
 
+**Wave 5 — the GENERAL structural non-commutation theorem
+(`SEQUEL_SCOPE` §5s):** `data/sdg.nonabgen.mm`, 5 kernel-verified
+pure-ring `$p`. The general statement of which wave-4's concrete
+witness was the instance: for general symbolic `2×2` entries the
+commutator `(1,1)` entry reduces pure-ring to the off-diagonal mixing
+term (`sdg-nonabgen-mixcancel`, MEASURED 2647), the symmetric parts
+cancelling via `sdg-nonabgen-symvanish`. Independently re-verified
+(kernel + purity + statement-content). **§1a NOT triggered, §1b NOT
+triggered** — pure-ring identity, true in every commutative ring
+including the trivial one, needs **no `1≠0`** (kept rigorously distinct
+from the wave-4 non-vacuity residue, not conflated). Named residual:
+the full general-rank/`n×n` Yang–Mills tower (the `(1,1)` entry at
+general `2×2` is closed; the tower is not — the Book-One concrete→general
+discipline).
+
+**Wave 6 — GROUNDING the cross-book spine + characterizing the
+model-grounding (`SEQUEL_SCOPE` §5r, `SDG_MODEL` §4c):** the wave-4
+spine claim, narrative in §5q, is **grounded**: `data/sdg.spine.mm`
+(3 pure-ring `$p`) kernel-verifies the transport
+`( <[A,B]₁₁-expr> = 0 -> 1 = 0 )` (`sdg-spine-b3`, MEASURED 3008) —
+the Book-Three segment; joined at the literal `1≠0` to Book One's
+already-set.mm-anchored residue (cited, counted once). The spine is
+upgraded narrative-`[PROJECTION]` → two-segment transport, both
+anchored, claimed at exactly that weight (a structural identity between
+two MEASURED residues, never a grand unification). The model-grounding
+`[PROJECTION]` is honestly characterized: the **strong** well-adapted
+model stays principled-`[PROJECTION]` (un-groundable by principle, the
+immovable dual floor); the **weak** non-vacuity segment's irreducible
+residue **is** this now-grounded spine `1≠0` — grounded exactly as far
+as it honestly can be, the rest named not faked.
+
 **The §0 recurring theorem's third turn — its tail, the gauge
-boundary's discharge, and now the non-abelian frontier — held at
-exactly the predicted ceiling: content small, pure, kernel-verified, no
-new commitment; meaning irreducibly the Book-Two model `[PROJECTION]`,
-and (wave 4) its non-abelian meaning-residue *identical to Book One's*.
-Stated as the expected success — and one genuine new structural finding
-— NOT inflated past the contract.**
+boundary's discharge, the non-abelian frontier, its general statement,
+and the grounded cross-book spine — all held at exactly the predicted
+ceiling: content small, pure, kernel-verified, no new commitment;
+meaning irreducibly the Book-Two model `[PROJECTION]`, its non-abelian
+meaning-residue *identical to Book One's* and now *transport-grounded*
+to it. Stated as the expected success — and the genuine new structural
+findings, claimed at exactly their weight — NOT inflated past the
+contract.**

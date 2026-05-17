@@ -701,6 +701,47 @@ A historian's note, kept honest: this is a structural identity between
 two measured residues, claimed at that weight — not a grand unification,
 just one bone, found where the spine actually ended.
 
+## Act XVI — The Bone, Set; the Ground, Measured
+
+Three avenues, opened together because the instruction was to open all
+of them. A separate worker was sent for the general shape of the
+non-commutation result; the delicate grounding was kept on the main
+thread; the oldest projection was re-examined alongside.
+
+The worker returned, and its work was not believed on its word — the
+corpus re-run, the statements read line by line against the claim,
+because the discipline of verifying extracts bites hardest on extracts
+you did not author. It held: the general theorem was the concrete
+witness with the numerals removed — the failure of commutativity lives
+in the off-diagonal corner, true in every commutative ring including the
+trivial one, needing no `1≠0`, that distinction kept sharp and not
+smudged into the result.
+
+The delicate part was the bone. The prior act had *noticed* the witness
+mattered only if `1≠0`, and that this was Book One's bottom residue.
+Noticing was upgraded to proof: a small kernel-checked implication —
+witness-corner-vanishes ⇒ `1=0` — pure ring, nothing borrowed. The
+Book-Three half of the bridge, bolted down and measured. Book One's
+half was already anchored in the standard library years prior; it was
+cited, not rebuilt, and the two were joined at the one rivet they share,
+the literal `1≠0`, the join counted exactly once. The narrative claim
+became a two-segment transport, both ends anchored — and was logged at
+exactly that weight, a structural identity between two measured
+residues, explicitly *not* a grand unification.
+
+The oldest projection — the heavy classical model that would make the
+synthetic calculus *mean* differential geometry — was re-examined not
+to finally ground it (it cannot be: there is no formalization to run an
+extractor over, and a fabricated model-number would be the one
+unforgivable ZERO) but to state exactly how far grounding can reach. The
+answer was the same rivet: the only pin-downable part of non-vacuity
+bottoms out at `1≠0`, now pinned by the spine; the rest stays a named
+projection, upright, its load unmoved. A heavier in-kernel artifact was
+deliberately *not* built — it would have re-exhibited only the trivial
+ring's consistency, which is precisely *why* the residue is `1≠0`:
+ceremony weaker than the characterization. Knowing precisely where the
+ground ends, and standing exactly there, is its own kind of ground.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

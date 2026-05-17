@@ -669,6 +669,38 @@ this codebase has ever made. The boundary that had been the precise
 map of what Book Three would owe was now the precise record of what
 Book Three had paid.
 
+## Act XV — One Bone
+
+One named thing was left, and it had been named on the contract's first
+page: the genuinely non-commutative part, declared out of scope by the
+scalar reduction. The cheap move was a new axiom asserting
+non-commutativity — a debt dressed as a discovery. It was refused.
+
+Instead: two-by-two grids of the numbers already in the frozen floor,
+non-commutativity arising from nothing but how rows meet columns. The
+smallest blackboard witness that order matters, multiplied both ways,
+subtracted — yielding a tiny matrix, a one against its own negation,
+proved entry by entry with only the ring laws already present. Six
+kernel-verified theorems, every one pure ring: no seam, no flagged
+axiom, nothing classical, no new commitment. Genuine non-abelian
+structure, for free, structural, measured. The recurring theorem held a
+fourth time, at the frontier the contract had fenced off.
+
+Then the finding that was not engineered, only noticed. For that matrix
+to be genuinely non-zero — to *mean* anything — you need exactly one
+fact: that one is not zero. Nothing more. And one-is-not-zero was not a
+new cost. It was, to the symbol, the *same* irreducible residue Book
+One had struck at the very bottom of metric geometry, after every other
+floor had dissolved: there is a next thing and it is not the first.
+The third book had walked the full length of its own spine and arrived,
+in the dark at the far end, at the first book's bottom vertebra — not a
+rhyme, the same bone. It was written down as exactly that and nothing
+more: the pure-ring identities measured, the non-vacuity named as the
+cross-book residual it is, the proof stopping where the proof stopped.
+A historian's note, kept honest: this is a structural identity between
+two measured residues, claimed at that weight — not a grand unification,
+just one bone, found where the spine actually ended.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

@@ -430,8 +430,39 @@ survives**. (`SEQUEL_SCOPE` §5p.)
   layer too**, kernel-authoritatively (both inseparable halves
   genuinely consumed, asserted hard-fail, no inert `$e`).
 
-**The §0 recurring theorem's third turn — its tail, and now the gauge
-boundary's discharge — held at exactly the predicted ceiling: content
-small, pure, kernel-verified, no new commitment; meaning irreducibly
-the Book-Two model `[PROJECTION]`. Stated as the expected success, NOT
-inflated past the contract.**
+**Wave 4 — the NON-ABELIAN structure (the §2 scalar-reduction
+residual, attacked head-on):** `data/sdg.nonab.mm`, 6 kernel-verified
+`$p`. NOT a new non-commutative axiom — **2×2 matrices over the FROZEN
+commutative ring**, non-commutativity purely structural. The canonical
+witness `[A,B] = [[1,0],[0,(inv 1)]]` computed entrywise PURE RING,
+plus the derived `inv`-congruence and the non-abelian wedge.
+`sdgnonabpure`: **GENUINELY INTUITIONISTIC ✔ AND EVERY `$p` PURE RING ✔**
+(hard-fail if any `$p` reaches the seam / KL / `eq-ap` — none does).
+(`SEQUEL_SCOPE` §5q.)
+
+**Verdict against §1a / §1b / §4 (wave 4):**
+
+- **§1a (FALSIFIER) — NOT triggered.** No `$p` consumed any classical
+  principle (NAME+SHAPE, full closure).
+- **§1b (BOUND) — NOT triggered.** **No new substrate commitment**:
+  genuine non-abelian structure closed over the frozen base with zero
+  new axioms and zero seam/`eq-ap` — the recurring theorem holds *even
+  at the non-abelian frontier*. The general-rank Yang–Mills tower
+  beyond the canonical 2×2 concrete witness is the named residual (the
+  Book-One-style concrete-separation discipline), not a forced
+  commitment.
+- **§4 residual #1 (model [PROJECTION]) — persists, never re-summed.**
+- **CROSS-BOOK FINDING (new, named, not faked).** The non-vacuity of
+  `[A,B]` (that it is genuinely non-zero) **is exactly `1≠0`**, which
+  is **identical to Book One's measured irreducible residue**
+  (`COST_STRUCTURE` bottom, `suc∅≠∅`/orientation). Book Three's
+  non-abelian meaning-residue **reduces to** Book One's — the spine is
+  one bone. Reported as a named residual.
+
+**The §0 recurring theorem's third turn — its tail, the gauge
+boundary's discharge, and now the non-abelian frontier — held at
+exactly the predicted ceiling: content small, pure, kernel-verified, no
+new commitment; meaning irreducibly the Book-Two model `[PROJECTION]`,
+and (wave 4) its non-abelian meaning-residue *identical to Book One's*.
+Stated as the expected success — and one genuine new structural finding
+— NOT inflated past the contract.**

@@ -314,6 +314,38 @@ declared out of scope from the start. Not hidden. Written down, the way
 the first one had been, because that is the only move this codebase
 knows.
 
+## Book Three, continued — One Bone
+
+The contract had said, from its first page, that one thing was out of
+scope: the genuinely non-commutative part, the place where order of
+operations stops being a formality. It was the last named thing left.
+The lazy way to reach it would have been to add a new axiom that simply
+declared multiplication non-commutative — and that would have been a
+lie by omission, a new debt pretending to be a discovery.
+
+So instead: build little two-by-two grids of the numbers already in the
+floor, and let the non-commutativity come from nowhere but the
+bookkeeping of how rows meet columns. Take the smallest pair anyone ever
+draws on a blackboard to show that order matters. Multiply them both
+ways. Subtract. Out came a tiny grid with a one in one corner, its
+negation in the other, nothing elsewhere — proved entry by entry with
+nothing but the ring laws that were already there. No new axiom. Nothing
+classical. Genuine non-commutativity, for free, structural, the way it
+always actually was once you stopped pretending scalars were the whole
+story.
+
+And then the thing that made the room go quiet. For that little grid to
+*matter* — for it to be genuinely not the zero grid — you need one fact
+and exactly one: that one is not zero. Nothing else. And *one is not
+zero* was not a new requirement. It was, to the symbol, the same
+irreducible residue the very first book had hit at the very bottom of
+metric geometry, after every other floor had dissolved — there is a next
+thing and it is not the first. The third book had walked the entire
+length of its own spine and arrived, in the dark at the far end, at the
+first book's bottom vertebra. Not a rhyme. The same bone. That was
+written down plainly, claimed as nothing more than what it was, and the
+proof that earned it left exactly where the proof ended.
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

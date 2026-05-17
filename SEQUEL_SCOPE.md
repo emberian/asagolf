@@ -1534,6 +1534,98 @@ remains the immovable Book-Two model `[PROJECTION]`. §5n's lone
 composite boundary is **discharged**, exactly as wave 1 discharged
 `conn.hol` — reported, not faked.
 
+## 5q. Book-3 WAVE-4 — the NON-ABELIAN structure, pure-ring over the FROZEN base; the CROSS-BOOK SPINE
+
+`BOOK3_SCOPE` §2 declared the commutative scalar-line reduction; the
+full **non-abelian** content (the matrix commutator, `F = dA + A∧A`'s
+genuine cross term) was the one explicitly-named residual. Wave 4
+attacks it the **iron-rule way — NOT a new non-commutative axiom**, but
+**2×2 matrices over the FROZEN commutative ring R**, where
+non-commutativity emerges **purely structurally** from index
+contraction (commuting entries, non-commuting product). Standalone
+corpus `data/sdg.nonab.mm` (trio `sdgnonab{build,floor,pure}`).
+
+### The closed result — the canonical witness commutator, entrywise PURE RING
+
+The witness `A = [[0,1],[0,0]]`, `B = [[0,0],[1,0]]` (the canonical
+non-commuting pair) has, computed entrywise by pure ring algebra over
+the frozen base:
+
+```
+  A·B = [[1,0],[0,0]]   B·A = [[0,0],[0,1]]
+  [A,B] = A·B − B·A = [[ 1 , 0 ],[ 0 , ( inv 1 ) ]]
+```
+
+kernel-verified as four `$p` (`sdg-nonab-comm11=1`,
+`comm12=comm21=0`, `comm22=( inv 1 )`), plus `sdg-nonab-eqneg` — the
+additive-inverse congruence `( x = y -> ( inv x ) = ( inv y ) )`,
+**DERIVED pure-ring in deduction form** (the base has `eq-pl`/`eq-mu`/
+`eq-ap` only, no `eq-neg`; this is the `inv` analog of
+`sdg-addcan-imp`), and `sdg-nonab-wedge` — the **non-abelian F wedge
+cross-term IS the commutator**, structurally **non-cancelling**, in
+deliberate contrast to the abelian `sdg-gauge-F-cross` which cancels by
+`ax-mulcom`. This is exactly where abelian and non-abelian gauge theory
+part ways, exhibited pure-ring.
+
+### MEASURED + adversarial verdict (kernel-authoritative)
+
+```
+Kernel: verified all 6 $p in data/sdg.nonab.mm ✔  (db: 90 statements)
+sdgnonabpure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  (hard-fail if ANY $p reaches ax-microcancel/2, ax-kl/2, ax-gen,
+   ax-spec, or eq-ap — NONE does; nothing classical)
+  sdg-nonab-eqneg   = 1979 cut-free $a-leaves  (10^3.296)  [MEASURED]
+  sdg-nonab-comm11  = 2893 cut-free $a-leaves  (10^3.461)  [MEASURED]
+  sdg-nonab-comm12  = 2852 cut-free $a-leaves  (10^3.455)  [MEASURED]
+  sdg-nonab-comm21  = 2852 cut-free $a-leaves  (10^3.455)  [MEASURED]
+  sdg-nonab-comm22  = 2751 cut-free $a-leaves  (10^3.439)  [MEASURED]
+  sdg-nonab-wedge   = 3016 cut-free $a-leaves  (10^3.479)  [MEASURED]
+```
+
+### THE CROSS-BOOK SPINE (the genuine new finding — NAMED, not faked)
+
+That `[A,B]` is a **genuinely NON-ZERO** matrix — its **non-vacuity** —
+is **EXACTLY `1 ≠ 0`**. The frozen base does **not** assert `1 ≠ 0`
+(it is a possibly-trivial ring; intuitionistic equality, no inequality
+primitive). And `1 ≠ 0` is **PRECISELY Book One's measured irreducible
+residue**: the bottom of metric geometry was
+`{ ∅∈suc∅ , suc∅≠∅ } ≅ 1≠0 / orientation` (`COST_STRUCTURE.md`). So
+**Book Three's non-abelian meaning-residue IS Book One's residue —
+literally the same `1≠0`.** The recurring theorem is not merely *shaped*
+the same three times; the third book's irreducible meaning-cost
+**reduces to** the first book's irreducible meaning-cost. The spine is
+one bone. This is **reported as a named residual**, never faked into a
+`$p`, never measured: the pure-ring commutator identities are MEASURED;
+the non-vacuity `1≠0` is the named cross-book residual, **identical to
+Book One's `COST_STRUCTURE` bottom**.
+
+### Honest scope statement (adversarially precise)
+
+- **What CLOSES.** Genuine non-abelian structure — the witness
+  commutator entrywise, the derived `inv` congruence, the non-abelian
+  wedge — **PURE RING, kernel-verified, over the FROZEN base. NO new
+  substrate commitment** (`§1b` BOUND **not** triggered: the recurring
+  theorem holds *even at the non-abelian frontier*). Nothing classical
+  (`§1a` falsifier not triggered).
+- **What is NAMED, not papered.** (i) The non-vacuity `1≠0` = Book
+  One's exact irreducible residue (the cross-book spine, above). (ii)
+  The 2×2 canonical witness is the **proof-of-concept concrete
+  separation** (the Book-One-style ℤ/8-flavoured concrete witness), not
+  the entire general-rank Yang–Mills tower — the general-matrix-size
+  assembly remains the named residual, exactly as the ℤ/8 separation
+  was Book One's concrete proof that `sqcong` is no ring identity.
+- **The model-meaning floor is UNCHANGED** — the Book-Two
+  well-adapted-topos `[PROJECTION]`, never re-summed.
+- **Composition.** Rename-free extension of the frozen base by **6**
+  `sdg-nonab-*` `$p`; disjoint labels, 0 collisions vs every corpus;
+  modifies no kernel / base / other corpus / builder.
+
+**The recurring theorem, fourth turn — and its deepest form yet:** even
+genuine non-abelian gauge structure is cheap, pure, kernel-verified,
+forces no new commitment; and its irreducible meaning-residue is not
+merely *analogous* to Book One's but *identical* to it. Reported, not
+faked.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

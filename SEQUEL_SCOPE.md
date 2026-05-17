@@ -1042,6 +1042,8 @@ consumption, identical in kind to seam-free `sdg-deriv` / the
   half (a) by `eq-ap`/`sdg-calc2-apflow` (§5j), half (b) by
   `sdg-bracket-global` here.
 
+
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

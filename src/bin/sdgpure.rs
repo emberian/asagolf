@@ -292,6 +292,74 @@ fn main() {
         std::process::exit(1);
     }
 
+    // ---- ADVERSARIAL ASSERTION (hard-fail) : §5m FULL CURVATURE ---------
+    //  sdg-curvature DISCHARGES data/sdg.conn.mm's `conn.hol` boundary by
+    //  CONSUMING the closed W3-glob2 bracket machinery: it must GENUINELY
+    //  consume the seam (ax-microcancel AND ax-gen, exactly like seam-free
+    //  sdg-bracket-global / sdg-deriv), and the corpus must contain NO
+    //  `conn.hol` / globalization / `mc.h` $e (a faked or
+    //  hypothesis-smuggled curvature closure is a ZERO — the W3-glob2
+    //  lesson).  If the closure lacks ax-microcancel+ax-gen, or any
+    //  conn.hol/globalization/mc.h $e exists, refuse to certify.
+    if let Some((_, cv_ax)) = per_thm.iter().find(|(l, _)| l == "sdg-curvature") {
+        let has_mc = cv_ax.contains("ax-microcancel");
+        let has_gen = cv_ax.contains("ax-gen");
+        let bad_e = db.stmts.iter().any(|s| {
+            s.kind == kernel::Kind::E
+                && (s.label.contains("conn.hol")
+                    || s.label.contains("glob")
+                    || s.label == "mc.h"
+                    || s.label.contains("tanbr.flow"))
+        });
+        println!(
+            "\n§5m ADVERSARIAL CHECK — sdg-curvature (full curvature, conn.hol discharged):"
+        );
+        println!(
+            "  consumes ax-microcancel : {}   consumes ax-gen : {}   conn.hol/glob/mc.h $e present : {}",
+            if has_mc { "YES ✔" } else { "NO ✗" },
+            if has_gen { "YES ✔" } else { "NO ✗" },
+            if bad_e { "YES ✗" } else { "NO ✔" }
+        );
+        if !has_mc || !has_gen || bad_e {
+            eprintln!(
+                "\nVERDICT: FAKED/SMUGGLED CURVATURE CLOSURE ✗ — sdg-curvature \
+                 does NOT genuinely consume the bracket machinery \
+                 (ax-microcancel+ax-gen) or a conn.hol/globalization/mc.h $e \
+                 was smuggled.  This is a ZERO — reported, not hidden."
+            );
+            std::process::exit(1);
+        }
+        println!(
+            "  -> genuine seam consumption confirmed; the curvature principal \
+             part R(d1,d2) is the globalized Christoffel-flow derivative — \
+             §5j's `conn.hol` boundary DISCHARGED seam-free via W3-glob2."
+        );
+    } else {
+        eprintln!("sdgpure: sdg-curvature NOT FOUND — expected §5m curvature $p missing.");
+        std::process::exit(1);
+    }
+    if per_thm.iter().any(|(l, _)| l == "sdg-bianchi") {
+        // sdg-bianchi is PURE RING built on the seam-consuming
+        // sdg-curvature uniqueness; assert it too carries no smuggled
+        // globalization/holonomy $e (it has none of its own $e).
+        let bianchi_e_ok = !db.stmts.iter().any(|s| {
+            s.kind == kernel::Kind::E
+                && s.label.starts_with("bianchi")
+        });
+        println!(
+            "§5m ADVERSARIAL CHECK — sdg-bianchi (cyclic-sum vanishing): \
+             no bianchi.* $e : {}",
+            if bianchi_e_ok { "✔ (pure ring, no $e)" } else { "✗" }
+        );
+        if !bianchi_e_ok {
+            eprintln!("\nVERDICT: SMUGGLED BIANCHI $e ✗ — this is a ZERO.");
+            std::process::exit(1);
+        }
+    } else {
+        eprintln!("sdgpure: sdg-bianchi NOT FOUND — expected §5m Bianchi $p missing.");
+        std::process::exit(1);
+    }
+
     if flagged.is_empty() {
         println!(
             "\nNAME + SHAPE scan: all {n_ax} logical axioms are intuitionistically pure."

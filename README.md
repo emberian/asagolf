@@ -31,12 +31,21 @@ the cheat this project exists to avoid:
    a fully MEASURED **10^2.149** — no projection (the former ≤10^8.15 was
    a now-superseded K≤10⁶ projection; a model of the *entire F1 schema*
    stays a separate, explicitly labelled projection). This *proves F1
-   does not need ℝ*. But certifying the model *inside externally-
-   validated set.mm* costs ≈ **10^46** [extracted], because set.mm
-   contains no Euclidean / real-algebraic / real-closed subfield to bind
-   to. The sharpened thesis, now sharper: F1's model for this proof is
-   ~10^2 (measured); the irreducible ~10^46 is *entirely* a property of
-   *set.mm's construction choices*, not of F1.
+   does not need ℝ*. Certifying it through set.mm's *existing* library
+   costs ≈ **10^46** [extracted] (everything there routes through
+   `CCfld`/analytic ℝ). But routing F1 through a **native ZF model**
+   instead — ℚ built from ω (`data/qzf.mm`) plus the one quadratic
+   extension (`data/qzfext.mm`), with √-satisfaction now a *kernel-proved
+   theorem* rather than bound to set.mm's analytic `resqrtth` — and
+   binding only the ZF-set-hood of its primitives to set.mm's **genuine
+   13-axiom ZF base** (full proof-DAG audit: *zero* analytic-ℝ
+   reachability) collapses the certified substrate to **10^17.484**
+   [EXTRACTED, machine-checked] — a **~10^28.6-order collapse**. The
+   irreducible residual is **not ℝ**: it is `omex`, the Axiom of
+   Infinity (ω is a set) — the genuine, unavoidable ZFC cost of having ℕ
+   at all. **Final thesis:** F1's model is MEASURED ~10^2; its entire
+   externally-validated ZFC substrate is **10^17.5**, dominated by
+   Infinity, not analysis — the ~10^46 was set.mm's √-routing choice.
 
 Every digit is kernel-verified or extractor-exact; anything else is
 labelled `PROJECTION` with its derivation, never merged into a measured
@@ -67,6 +76,10 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | same, full-F1-schema closure (separate, labelled) | — | [PROJECTION] |
 | *Stage 2A:* native ℚ-from-ZF (no `CCfld`/analytic ℝ), F1 consequences **MEASURED** | 256 leaves | **10^2.408** |
 | same, bare-ZF discharge of asserted signature (labelled) | — | [PROJECTION] ≤10^4 |
+| *Stage 2B:* one quad ext ℚ_geo(√r) @ K=1 radicand, **MEASURED** | 141 leaves | **10^2.149** |
+| *Stage 2C:* native model → set.mm genuine 13-axiom ZF base, **EXTRACTED** | — | **10^17.484** |
+| ↳ vs old `CCfld`-routed √-bridge — **collapse** | 10^46.10 → 10^17.48 | **~10^28.6** |
+| ↳ irreducible residual = `omex` (Axiom of Infinity, ω is a set) | not analytic ℝ | bare-ZF |
 | same, certified *through set.mm* (no cheaper √ to bind) | — | 10^46.10 |
 
 "F0 = 224" is the cheap, vacuous answer (assert the postulates).

@@ -70,6 +70,22 @@ height 1 over a directly-built ℚ.
   below set.mm's ℚ-through-`CCfld` (10^46.10 EXTRACTED). Confirms the
   thesis: the irreducible ~10^46 is set.mm's analytic-ℝ routing
   choice, not a property of ℚ or F1.
-- Stage 2 Milestone B (one quadratic ext, reuses the MEASURED
-  10^2.149 unit) / C (transport to the 13-axiom ZF base): not started.
-  The remaining large number is now localised *entirely* to C.
+- Stage 2 Milestone B: DONE — ℚ_geo(√r) at the Stage-1 radicand (K=1),
+  `verified all 3 $p in data/qzfext.mm ✔`, MEASURED **10^2.149** (reuses
+  the euclid unit; B makes √-satisfaction a *kernel-proved theorem* over
+  the native carrier — NOT bound to set.mm `resqrtth`).
+- Stage 2 Milestone C: DONE — transport binding of the native model
+  (qzf ⊕ qzfext) to set.mm's **genuine 13-axiom ZF base**, full
+  proof-DAG audit: every ZF primitive (`0ex/sucexg/omex/opex/zfpair2/
+  uniex/axextg`) reaches the bare ZF base with **ZERO analytic-ℝ/CCfld
+  in the DAG**. Transport-anchored native-model floor = max(A 10^2.408,
+  B 10^2.149, ZF-bind 10^17.484) = **10^17.484 [EXTRACTED-dominated;
+  A/B MEASURED]**. The ≤10^4 asserted-signature projection sits *below*
+  the floor → non-binding, still labelled/separate.
+- **VERDICT: the ~10^46 COLLAPSES to 10^17.484** (machine-checked,
+  ~10^28.6 orders). The irreducible residual is **not analytic ℝ** — it
+  is `omex` (the Axiom of Infinity: ω is a set), the heaviest bare-ZF
+  primitive the ω→ℕ→ℤ→ℚ tower needs. The ~10^46 was set.mm's analytic-ℝ
+  *routing choice for √*; a native ZF model with kernel-proved
+  √-satisfaction reduces the substrate to the genuine cost of "ℕ
+  exists." Stage 2 COMPLETE.

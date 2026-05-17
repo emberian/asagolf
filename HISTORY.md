@@ -373,8 +373,39 @@ cost (10^45.74 / RCF 10^30.75), satisfiability certificate (construct
 10^8 MEASURED vs certify-in-set.mm 10^46 EXTRACTED) — each labelled
 exactly what it is.
 
+## Act VII — The collapse, and what was actually under the 10^46
+
+The thesis said the ~10^46 was set.mm's *routing choice*, not F1's. Act
+VII tested that claim instead of asserting it. Stage 1 *measured*
+(didn't project) that the closed proof forces exactly **one** un-nested
+radical (K=1) — collapsing the construction projection to a MEASURED
+10^2.149 and, more importantly, collapsing the *scope* of what remained:
+not all of real-closed-field theory, just ℚ + one extension. Stage 2
+then built ℚ natively from ω (no `CCfld`, no Dedekind, no analytic ℝ) —
+MEASURED 10^2.408 — adjoined the one root (MEASURED 10^2.149, with
+√-satisfaction now a *kernel-proved theorem*, no longer bound to
+set.mm's analytic `resqrtth`), and bound only the ZF-set-hood of the
+construction's primitives to set.mm's genuine 13-axiom ZF base. A full
+proof-DAG audit: *zero* analytic-ℝ reachability on any binding target.
+
+The ~10^46 **collapsed to 10^17.484** — machine-checked, EXTRACTED,
+~28.6 orders. And the irreducible residual turned out to be something
+worth the whole exercise to see plainly: it is `omex` — the Axiom of
+Infinity, "ω is a set." Not ℝ. Not completeness. Not the ℤ→ℚ plumbing.
+The unavoidable cost of a ZFC model of plane geometry is, at bottom,
+*the cost of having the natural numbers at all*. The 10^46 was never
+the mathematics; it was set.mm building √ through the reals. Strip that
+routing and what's left is Infinity — and you cannot strip Infinity,
+because ℕ is genuinely needed and genuinely a set-theoretic commitment.
+
+That is the real finding, and it is cleaner than the rebuttal that
+started it: the poll asked "how big is the proof"; the honest answer is
+"the geometry is 10^5.58 and closed; the entire externally-validated
+ZFC substrate is 10^17.5, and that floor is *the Axiom of Infinity*,
+not analysis." Every digit measured, extracted, or labelled-projected.
+
 That's the history. It *is* finished: ASA′ closed end-to-end,
-no-cheating, ~19× smaller than where it started, with the one remaining
-"large" number — grounding ℝ in set.mm — not a gap but a precisely
-attributed, sharpened thesis. None of it is faked. That's the part
+no-cheating, ~19× smaller than where it started; and the one "large"
+number, chased all the way down, was Infinity itself — not a gap, a
+*precisely located floor*. None of it is faked. That's the part
 worth being proud of.

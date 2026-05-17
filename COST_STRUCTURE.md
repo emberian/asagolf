@@ -149,9 +149,22 @@ correctly: a fixed-instance CSE datum with measured constants —
 - **The `gnd-*` residual — IN FLIGHT (Frontier B).** Unfold the 19
   finite ground ZF computations to bare ∅/suc/pair/ext in-kernel → a
   *fully* projection-free, fully-measured substrate.
-- **Minimum generic-lemma cover — IN FLIGHT (Frontier E).** The cover
-  as a formal combinatorial object + its complexity + optimality
-  status of the project's hand cover.
+- **Minimum generic-lemma cover — RESOLVED (Frontier E, object +
+  NP-hardness + near-optimal instance).** Formalized: the
+  substitution-closed generalization of a straight-line program /
+  shared DAG (empty σ = grammar nonterminal, non-empty σ = parametric
+  macro). **MIN-GENERIC-LEMMA-COVER is NP-hard** (cost-preserving
+  reduction from SMALLEST GRAMMAR; no constant-factor poly-approx) —
+  the substitution-closed *superproblem* of Seam #2's minimal-DAG.
+  Measured (kernel-grounded, 267 reverified): the hand cover = **81,062
+  cut-free leaves, paid once**, certified an **irredundant 0-edge
+  substitution antichain of minimal arity** (no lemma deletable). The
+  exact minimum is an `[OPEN]` lower bound (needs an info-theoretic
+  bound or super-exponential search; NP-hardness rules out an efficient
+  approximate LB) — 81,062 is an exact kernel-grounded *upper* bound.
+  Discipline note: a speculative `loc-gen` refinement was *discarded*
+  (kernel-gating it would require write-protected code; an unverifiable
+  refactor is refused, not claimed).
 
 Reported, not faked — including the projections, the open lower bounds,
 the one floor that is *proven* not to move, and the honest negatives

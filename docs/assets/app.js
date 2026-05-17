@@ -70,21 +70,22 @@ function kindClass(kind) {
  * Color to use in Cytoscape for a given kind.
  * Must match the CSS variables defined in styles.css.
  */
+/* Stella canonical palette (colors_and_type.css primitives). No invented hexes. */
 const KIND_COLORS = {
-  postulate: '#0d6efd',
-  ring:      '#198754',
-  order:     '#fd7e14',
-  prop:      '#6f42c1',
-  eqlogic:   '#20c997',
-  axiom:     '#dc3545',
-  claim:     '#dc3545',
-  geometry:  '#0d6efd',
-  substrate: '#fd7e14',
-  demo:      '#adb5bd',
+  postulate: '#d99a3f', // lantern
+  ring:      '#5b8a5a', // moss
+  order:     '#8a6a47', // bark
+  prop:      '#2a3a55', // twilight
+  eqlogic:   '#9bb87a', // fern
+  axiom:     '#b9534a', // mushroom
+  claim:     '#b9534a', // mushroom
+  geometry:  '#5b8a5a', // moss
+  substrate: '#d99a3f', // lantern
+  demo:      '#cdd9e0', // moonlight
 };
 
 function kindColor(kind) {
-  return KIND_COLORS[(kind ?? '').toLowerCase()] ?? '#adb5bd';
+  return KIND_COLORS[(kind ?? '').toLowerCase()] ?? '#cdd9e0';
 }
 
 // ─── 1. Hero ─────────────────────────────────────────────────────────────────
@@ -164,9 +165,9 @@ function renderLogScale(models) {
   const pct = (log10) => ((log10 - LOG_MIN) / range) * 100;
 
   const MARKER_COLORS = {
-    geometry:  '#3b82f6',
-    substrate: '#f97316',
-    claim:     '#ef4444',
+    geometry:  '#5b8a5a', // moss
+    substrate: '#d99a3f', // lantern
+    claim:     '#b9534a', // mushroom
   };
 
   // Sort models so labels don't stack on top of each other
@@ -176,7 +177,7 @@ function renderLogScale(models) {
   let markersHtml = '';
   sorted.forEach((m, i) => {
     const left = pct(m.log10).toFixed(2);
-    const color = MARKER_COLORS[m.kind] ?? '#8b949e';
+    const color = MARKER_COLORS[m.kind] ?? '#8a6a47';
     const label = `${m.label}: ${fmtLogText(m.log10)}`;
     // Alternate label side to reduce overlap for very close markers
     markersHtml += `
@@ -341,8 +342,8 @@ async function renderDag(data) {
             'font-size':       10,
             'text-valign':     'bottom',
             'text-margin-y':   4,
-            'color':           'var(--clr-text, #212529)',
-            'text-outline-color': 'var(--clr-surface, #fff)',
+            'color':           '#2a2620',
+            'text-outline-color': '#faf6ea',
             'text-outline-width': 2,
             'text-outline-opacity': 1,
           }
@@ -351,8 +352,8 @@ async function renderDag(data) {
           selector: 'edge',
           style: {
             'width':             2,
-            'line-color':        '#8b949e',
-            'target-arrow-color':'#8b949e',
+            'line-color':        '#8a6a47',
+            'target-arrow-color':'#8a6a47',
             'target-arrow-shape':'triangle',
             'curve-style':       'bezier',
             'opacity':           0.7,
@@ -362,7 +363,7 @@ async function renderDag(data) {
           selector: 'node:selected',
           style: {
             'border-width': 3,
-            'border-color': '#58a6ff',
+            'border-color': '#d99a3f',
           }
         }
       ],
@@ -794,7 +795,7 @@ async function main() {
     data = await loadData();
   } catch (e) {
     document.body.insertAdjacentHTML('afterbegin',
-      `<div style="background:#ffd7d7;color:#6d0000;padding:1rem 1.5rem;font-weight:600">
+      `<div style="background:#b9534a;color:#faf6ea;padding:1rem 1.5rem;font-weight:600;font-family:'Spectral',Georgia,serif">
         Error loading data: ${esc(e.message)}
       </div>`);
     return;

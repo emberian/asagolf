@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How big is a "simple" proof, really? — asagolf field journal</title>
+<meta name="description" content="A field-journal account of measuring the fully-expanded ZFC proof size of basic triangle congruence. Every number kernel-verified, extracted, or labelled a projection." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" />
+<!-- Vendored Stella token sheets (owned by WEB-A). Linked first so their
+     identical custom properties win the cascade when present. -->
+<link rel="stylesheet" href="assets/stella/colors_and_type.css" />
+<link rel="stylesheet" href="assets/stella/stella.css" />
+<!-- Self-contained page styles, with verbatim-Stella token fallbacks
+     baked in so the page is never unstyled if the vendored sheets are
+     absent at build time. -->
+<link rel="stylesheet" href="assets/asa.css" />
+</head>
+<body>
+<div class="fj-layout">
+
+  <header class="fj-mast">
+    <svg class="fj-mast__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2c2.5 4 6 5.5 6 10a6 6 0 0 1-12 0c0-4.5 3.5-6 6-10Z" fill="currentColor" opacity="0.85"/>
+      <path d="M12 8v11M12 19c-2 0-3.5-1-4.5-2.5M12 15c1.6 0 3-.8 4-2.2" stroke="var(--cream)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="fj-mast__title">asagolf</div>
+      <div class="fj-mast__sub">Field Journal · the Measurement</div>
+    </div>
+    <div class="fj-mast__edition">Book One — closed; one question named open</div>
+  </header>
+
+  <nav class="fj-toc" aria-label="Contents">
+    <div class="fj-toc__section">Book One — The Measurement</div>
+    <a class="fj-toc__item" href="#q"><span class="fj-toc__num">I</span>The question</a>
+    <a class="fj-toc__item" href="#f0"><span class="fj-toc__num">II</span>F0 = 224, the vacuous answer</a>
+    <a class="fj-toc__item" href="#f1"><span class="fj-toc__num">III</span>No cheating</a>
+    <a class="fj-toc__item" href="#golf"><span class="fj-toc__num">IV</span>The generic-lemma golf</a>
+    <a class="fj-toc__item" href="#descent"><span class="fj-toc__num">V</span>The substrate descent</a>
+    <a class="fj-toc__item" href="#converge"><span class="fj-toc__num">VI</span>The convergence</a>
+    <a class="fj-toc__item" href="#intrinsic"><span class="fj-toc__num">VII</span>The one floor that would not move</a>
+    <div class="fj-toc__section">Book Two — The Sequel</div>
+    <a class="fj-toc__item" href="#sdg"><span class="fj-toc__num">VIII</span>The dual: cheap proofs, heavy meaning</a>
+    <div class="fj-toc__section">Apparatus</div>
+    <a class="fj-toc__item" href="#provenance"><span class="fj-toc__num">·</span>How to read a number here</a>
+  </nav>
+
+  <main class="fj-reader">
+  <article class="fj-article">
+
+    <div class="fj-eyebrow">Field report · foundations of geometry</div>
+    <h1 class="fj-title">How big is a "simple" proof, really?</h1>
+    <p class="fj-lede">A poll guessed more than ten to the thousandth. So we built the
+      proof object and let a sound kernel count it. The geometry came back at ten to the
+      five-point-six — and the interesting result was not the size at all.</p>
+    <div class="fj-meta">
+      <span class="by">asagolf</span>
+      <span class="dot">·</span>
+      <span>every number kernel-verified, extracted, or labelled a projection</span>
+      <span class="dot">·</span>
+      <span>sources: README · HISTORY · NARRATIVE · COST_STRUCTURE · SUBSTRATE_FLOOR · SDG_MODEL</span>
+    </div>
+
+    <div class="fj-prose">
+
+      <section id="q" class="lead-section">
+        <h2><span class="sec-no">I</span> The question, and the method</h2>
+        <p>It began with a number someone said out loud without building it. A Twitter poll
+          estimated that the fully-expanded, machine-checked proof of a basic
+          triangle-congruence theorem — <strong>ASA</strong>, in a Birkhoff
+          ruler/protractor formalism, reduced all the way down to ZFC — exceeds
+          <strong>10<sup>1000</sup></strong> steps. Nobody had pushed it. An unbuilt number
+          is not a measurement; it is a rumor about one.</p>
+        <p>So the method is the answer: build the proof object and count it. A small sound
+          Metamath-subset verifier — <code>src/kernel.rs</code>, the entire trust story —
+          re-checks hand-built proofs and reports exact cut-free step counts. The headline
+          counts are deliberately cut-free, fully-inlined, with no lemma reuse: that
+          <em>is</em> the metric, because it makes "size of a fully-expanded proof"
+          concrete. If <code>verify()</code> returns <code>Ok</code>, every <code>$p</code>
+          was derived from the <code>$a</code> axioms by substitution and the stack
+          discipline. Nothing else has to be believed.</p>
+        <p>There is one law, older than any of the code, and this page is bound by it too:</p>
+        <blockquote>Reported, not faked. Every number measured or extracted; anything else
+          labelled a projection, with its derivation shown, never merged into a measured line.</blockquote>
+        <p>A project that exists to rebut an over-claim cannot itself over-claim. So every
+          figure below carries its exact provenance tag as it appears in the in-repo
+          artifacts: <span class="tag tag--measured">measured</span> by the kernel,
+          <span class="tag tag--extracted">extracted</span> from the set.mm proof DAG, or a
+          labelled <span class="tag tag--projection">projection</span> with its derivation.
+          Three quantities are reported and <em>never summed</em> — conflating them is the
+          exact cheat this project exists to avoid.</p>
+      </section>
+
+      <div class="fj-divider"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg></div>
+
+      <section id="f0">
+        <h2><span class="sec-no">II</span> F0 = 224 — the cheap, vacuous answer</h2>
+        <p>If you simply <em>assert</em> the seven Birkhoff postulates as axioms and prove
+          ASA directly on top of them, the fully-expanded cut-free proof is exactly
+          <strong>224 steps</strong> <span class="tag tag--measured">measured</span>
+          (≈ 10<sup>2.4</sup>; <code>cargo run --bin asa</code>, source: README results
+          table). That is the entire honest content of the "&gt; 10<sup>1000</sup>"
+          objection, answered in three digits.</p>
+        <p>It is also vacuous. Asserting the postulates assumes precisely the geometric
+          facts that make the theorem hard; nothing has been grounded. F0 = 224 is the
+          number you get for free, and it is reported here only so the honest number has
+          something to be measured against. Everything after this is the non-vacuous
+          version: every Birkhoff postulate <em>derived</em>, none asserted.</p>
+      </section>
+
+      <section id="f1">
+        <h2><span class="sec-no">III</span> "No cheating," defined precisely</h2>
+        <p>The substrate <strong>F1</strong> is an ordered commutative ring with 1, exactly
+          <strong>one</strong> square-root primitive (<code>ax-sqrt</code>, principal
+          root), and first-order logic with equality. Nothing geometric is an axiom.
+          Points, lines, distance, dot product, angle congruence, the oriented-area
+          discriminator (<code>crs</code>) and the ruler point (<code>cp</code>) are
+          <strong>conservative definitions</strong> (<code>df-*</code>), eliminable, scored
+          <em>Definition</em> — never GenuineAxiom.</p>
+        <p>Every Birkhoff postulate — ruler G1, incidence G2, ray-angle G3a,
+          protractor-uniqueness G3b, ray-line G3c, SAS G4, congruence-substitution G0 — is
+          a kernel-verified <code>$p</code> proved bottom-up from F1, <em>none asserted as
+          <code>$a</code></em>. The end-to-end re-expression, ASA′, is a
+          <strong>complete no-cheating closure</strong>: <code>asaprime</code> prints
+          <code>COMPLETE NO-CHEATING CLOSURE</code> with no PENDING <code>$a</code> and no
+          open leaf. All seven postulates are kernel-verified in one run — 96 lemmas, a
+          267-statement database, <code>verified all ✔</code>
+          <span class="tag tag--measured">measured</span> (source: README, honest status).</p>
+
+        <div class="fj-ledger-wrap">
+        <table class="fj-ledger">
+          <caption>The derived postulates — exact, kernel-verified (README results table)</caption>
+          <thead><tr><th>quantity</th><th>exact</th><th>≈</th><th>prov.</th></tr></thead>
+          <tbody>
+            <tr><td>F0 — postulates <em>asserted</em> as axioms</td><td class="num">224</td><td class="num">10<sup>2.4</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr class="is-headline"><td>G4 SAS — derived, no cheating (hardest)</td><td class="num">383,606</td><td class="num">10<sup>5.58</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr><td>↳ before generic-lemma golf</td><td class="num">7,251,714</td><td class="num">10<sup>6.86</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr><td>G3a ray-angle — derived</td><td class="num">4,720,242</td><td class="num">10<sup>6.7</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr><td>G2 incidence — derived</td><td class="num">607,583</td><td class="num">10<sup>5.8</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr><td>G1 · G3b′ · g4a-sss · g3a-dotprop · G0 · G3c</td><td class="num">small</td><td class="num">10<sup>3</sup>–10<sup>5</sup></td><td><span class="tag tag--measured">meas</span></td></tr>
+            <tr><td>shared-DAG total (cruncher lower bound)</td><td class="num">10,134,529 → 1,916,586</td><td class="num">−81%</td><td><span class="tag tag--measured">meas</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>The hardest postulate, G4 SAS, fully expanded and cut-free, is
+          <strong>383,606 steps</strong> ≈ <strong>10<sup>5.58</sup></strong>
+          <span class="tag tag--measured">measured</span>. Against the poll's
+          10<sup>1000</sup>, the geometry overshoots by roughly <strong>994 orders of
+          magnitude</strong> — stated honestly as a gap, not rounded. That ~994-OOM
+          poll-gap turned out to be the <em>least</em> interesting thing found.</p>
+      </section>
+
+      <section id="golf">
+        <h2><span class="sec-no">IV</span> The generic-lemma golf</h2>
+        <p>The size weapon is the generic-lemma template: prove a tiny identity once over
+          fresh <code>$f</code> atoms, then instantiate big subterms by
+          <em>substitution</em> — which is free in a cut-free metric. The headline counts
+          stay cut-free and fully-inlined; the golf only changes which lemma is proved
+          generically, never what is counted.</p>
+        <ul class="fj-ladder">
+          <li><span class="rung">3.18M → 67k</span><span class="what"><code>loclink</code> (the law-of-cosines link) — 3,180,000 → 67,217 <span class="tag tag--measured">measured</span></span></li>
+          <li><span class="rung">390k → 68k</span><span class="what"><code>sqcong</code> — 390,380 → 68,276 <span class="tag tag--measured">measured</span></span></li>
+          <li><span class="rung">~19×</span><span class="what">G4 SAS 7,251,714 → <em>383,606</em>; 10<sup>6.86</sup> → <strong>10<sup>5.58</sup></strong>, still <code>verified all 96 ✔</code></span></li>
+        </ul>
+        <p>A kernel-gated metasearcher closes the loop honestly. <strong>S1</strong>
+          (normalizer-strategy search) returns a <em>kernel-verified negative</em>: the
+          production normalizer is already optimal-spine, so association/order is not a
+          remaining lever. <strong>S2</strong> plus the CSE minimizer give a sound,
+          kernel-re-verified <strong>−81%</strong> on the shared-DAG total
+          (10,134,529 → 1,916,586 <span class="tag tag--measured">measured</span>) — but
+          provably <em>cannot</em> move the cut-free figure, because CSE is invisible to a
+          fully-inlined metric by construction. That wall is not an apology: it is exactly
+          why cut-free is the honest hard metric for the poll's question.</p>
+      </section>
+
+      <section id="descent">
+        <h2><span class="sec-no">V</span> The substrate descent — every floor a construction choice</h2>
+        <p>The question changed under the work. It stopped being <em>how big</em> and became
+          <em>where does the bigness live</em>. The geometry is small; the cost is in
+          grounding F1 in ZFC. Three quantities, kept rigorously apart and
+          <strong>never summed</strong> (source: COST_STRUCTURE §1):</p>
+
+        <div class="fj-note">
+          <div class="fj-note__eyebrow">The three quantities · never summed</div>
+          <p><strong>1 · Geometry over F1</strong> — G4 SAS = 383,606 cut-free
+            (10<sup>5.58</sup>), ASA′ closed no-cheating end-to-end.
+            <span class="tag tag--measured">measured</span></p>
+          <p><strong>2 · Grounding cost</strong> — expand F1 → ZFC via set.mm's library:
+            <strong>10<sup>45.74</sup></strong> analytic-ℝ;
+            <strong>10<sup>30.75</sup></strong> via a real-closed-field route (no
+            completeness); a strict extractable floor of
+            <strong>10<sup>25.95</sup></strong>.
+            <span class="tag tag--extracted">extracted</span></p>
+          <p><strong>3 · Satisfiability</strong> — exhibit a model of F1. This is where the
+            real structure was hiding.</p>
+        </div>
+
+        <p>The grounding split is exact, not asserted. set.mm's 10<sup>45.74</sup> is not
+          completeness and not the completion definitions (0.6%): it is ℤ→ℚ pair-plumbing
+          over <em>any</em> constructed ℝ. The achievable real-closed-field floor is
+          <strong>10<sup>30.75</sup></strong> <span class="tag tag--extracted">extracted</span>
+          (dominated by the constructed twin <code>axmulass</code>), with a strict
+          extractable lower bound of <strong>10<sup>25.95</sup></strong>
+          <span class="tag tag--extracted">extracted</span> (cheapest needed twin,
+          <code>axresscn</code>); completeness <code>ax-pre-sup</code> is genuinely
+          excluded and is lower-order anyway (10<sup>30.85</sup>). A minimal real-closed
+          field is <em>not</em> mechanized — set.mm contains no such construction, so that
+          number is not invented (source: SUBSTRATE_FLOOR, honest residual).</p>
+
+        <h3>Satisfiability — where the structure was hiding</h3>
+        <p>F1 is consistent and non-vacuous: a minimal model is constructed and
+          kernel-measured. The generic √-extension step is 141 leaves
+          (10<sup>2.149</sup>). The closed ASA′ proof is <em>measured</em> to force
+          exactly <strong>one un-nested radical</strong> (K = 1), so the
+          proof-relativized construction is a fully measured
+          <strong>10<sup>2.149</sup></strong>
+          <span class="tag tag--measured">measured</span> — no projection. (A model of the
+          <em>entire F1 schema</em> stays a separate, explicitly labelled
+          <span class="tag tag--projection">projection</span>.) This <em>proves F1 does not
+          need ℝ.</em></p>
+        <p>Certifying that model through set.mm's <em>existing</em> library still costs
+          ≈ <strong>10<sup>46</sup></strong> <span class="tag tag--extracted">extracted</span>
+          — everything there routes through analytic ℝ, and set.mm has no cheaper
+          √-of-nonneg to certify against. That refusal to fake a smaller number
+          <em>sharpens</em> the thesis. Routing F1 through a native ZF model instead — ℚ
+          built from ω, plus one quadratic extension, with √-satisfaction a kernel-proved
+          theorem — collapses the certified substrate to
+          <strong>10<sup>17.484</sup></strong>
+          <span class="tag tag--extracted">extracted, machine-checked</span>: a
+          ~10<sup>28.6</sup>-order collapse. The residual <em>seemed</em> to be the Axiom
+          of Infinity — but Seam #1 then <em>measured</em> even Infinity incidental (the
+          obligation is quantifier-free over finitely many named terms; <code>suc</code>
+          applied once), and Stage 3 realized the finite ℚ-elements as
+          hereditarily-finite sets, discharging the last inductive projection into a finite
+          kernel check. Frontier B then discharged <em>all</em> arithmetic to
+          kernel-<code>$p</code> from bare ZF.</p>
+
+        <ul class="fj-ladder">
+          <li><span class="rung">10<sup>46.10</sup></span><span class="what">set.mm √-routing (<code>CCfld</code>/analytic √) <span class="tag tag--extracted">extracted</span></span></li>
+          <li><span class="rung">10<sup>17.484</sup></span><span class="what">native ZF model, √ a kernel theorem — <em>set.mm's analytic-√ routing removed</em> <span class="tag tag--extracted">extracted</span></span></li>
+          <li><span class="rung">10<sup>12.810</sup></span><span class="what">HF carrier (V<sub>ω</sub>), via <code>sucexg</code> — <em>the ω-tower (Axiom of Infinity) removed</em>; projection-free, fully-measured for all arithmetic <span class="tag tag--extracted">extracted</span></span></li>
+        </ul>
+        <p>Each level that looked like bedrock was a trapdoor. After every arithmetic fact
+          is mechanically discharged, the entire residual is <strong>exactly two order
+          literals</strong>: <code>Q0 ≤ Q1</code> and <code>Q1 ≠ Q0</code> on concrete
+          ℚ-constants — decidable, non-inductive, Infinity-free. Closure 2 then discharged
+          even those two literals to kernel-<code>$p</code>, and the discharge bottoms out,
+          under an adversarial no-smuggle audit, at exactly two named bare-ZF primitives.</p>
+      </section>
+
+      <section id="converge">
+        <h2><span class="sec-no">VI</span> The convergence</h2>
+        <p>Three independent attacks — what the proof <em>says</em>, how <em>strong</em>
+          the proof is, what the <em>model</em> is built from — walked in from three
+          different doors and stood on the same residue. This was measured, not arranged.</p>
+        <div class="fj-note fj-note--key">
+          <div class="fj-note__eyebrow">The convergence · three threads triangulate</div>
+          <p><strong>Frontier C (proof content):</strong> the order predicate is
+            <em>proven</em> not expressible as any ring identity — a
+            <span class="tag tag--theorem">theorem</span>, localized to
+            <code>of-letot</code>.</p>
+          <p><strong>Frontier A (proof strength):</strong> the closed proof is
+            <em>exactly</em> an open quantifier-free theory <strong>below EFA</strong> —
+            0 quantifiers, 0 induction, ≠ RCF, far below RCA₀.
+            <span class="tag tag--measured">measured</span> + bounded; made exact by
+            Closure 1 (the <code>df-*</code> layer machine-certified conservative).</p>
+          <p><strong>Frontier B (substrate construction):</strong> strip ℝ, Infinity, ω,
+            ℚ and every arithmetic computation, and what is left, irreducibly, is two
+            order inequalities on rational constants.
+            <span class="tag tag--measured">measured</span></p>
+        </div>
+        <p>Proof-content, proof-strength and set-construction — entirely independent —
+          all triangulate on <strong>order / orientation, and nothing else</strong>. Every
+          other floor was removable scaffolding. The irreducible residue of Euclidean
+          metric geometry is exactly two bare-ZF facts:</p>
+        <div class="fj-residue">
+          <div class="lit">{ ∅ ∈ suc ∅ , &nbsp; suc ∅ ≠ ∅ }</div>
+          <div class="gloss">there is a next thing, and it is not the first.</div>
+        </div>
+        <p>These are <code>el-0-suc</code> (the von-Neumann reflection of the order axiom
+          <code>of-letot</code>) and <code>ne-suc-0</code> (its Foundation companion) —
+          precisely what Frontier C proved is not algebra. Discharging order is
+          <em>possible</em>, but it re-incurs precisely <code>of-letot</code>'s bare-ZF
+          reflection: the loop closes on itself.</p>
+      </section>
+
+      <section id="intrinsic">
+        <h2><span class="sec-no">VII</span> The one floor that would not move</h2>
+        <p>Every floor chased dissolved under a better construction — except one. The
+          load-bearing step inside <code>sqcong</code> says something a child knows:
+          if two things have the same square and point the same way, they are the same
+          thing. A subagent, briefed to be merciless, did the small brutal arithmetic.</p>
+        <blockquote>In ℤ/8, 3² ≡ 1² ≡ 1, and 3 ≠ 1. The inference is false in an ordinary
+          commutative ring. No polynomial identity of any degree gets you across it. Only
+          order does.</blockquote>
+        <p>Frontier C makes this a <span class="tag tag--theorem">theorem</span>, not an
+          appearance. Ring identities are sound over <em>every</em> commutative ring;
+          <code>sqcong</code>'s conclusion <code>u²=v²→u=v</code> is false in ℤ/8, and its
+          load-bearing internal step <code>x²=0→x=0</code> is false in ℤ/4
+          (2² ≡ 0, 2 ≠ 0). By contraposition, no set of ring identities of any degree can
+          express the order-core; it is logically essential, localized to the one named
+          axiom <code>of-letot</code> ("no nonzero nilpotents"). This is the
+          <strong>first and only intrinsic floor</strong> in the entire project — order is
+          provably not algebra.</p>
+        <p>Partitioning every cut-free leaf (kernel-reverified, 9,017,010 <code>$a</code>
+          <span class="tag tag--measured">measured</span>): SYNTAX is 94.76% — writing the
+          coordinate formulas down, a separate bucket never folded into "difficulty." Of
+          proof <em>content</em>: <code>loclink</code> (law of cosines) reduces 96.82% to
+          generic substitution-instances — near-perfect — but <code>sqcong</code> reduces
+          only 38.48%; the other 61.52% is irreducible ordered-field sign reasoning that
+          is provably not a polynomial identity.</p>
+        <div class="fj-note fj-note--open">
+          <div class="fj-note__eyebrow">The one open question · named, not papered</div>
+          <p>What remains genuinely open is only the <em>quantitative</em> question:
+            <strong>Obligation O</strong> — an unconditional cut-free lower bound for
+            <code>x²=0 → x=0</code> — i.e. that the 61.52% sign-reasoning constant is
+            minimal. The factor-through clause is provable; the size clause is
+            <span class="tag tag--open">open</span>. It is named here, not hidden. A page
+            that overclaims would be the cardinal public sin for a project that exists to
+            rebut overclaiming. Companion open datum: tree-vs-DAG ratio is a small
+            constant in [0.59×, 3.35×] for a fixed instance — explicitly <em>not</em> a
+            Frege/extended-Frege separation theorem; the minimal-DAG lower bound is
+            <span class="tag tag--open">open</span> (smallest-grammar is NP-hard).</p>
+        </div>
+      </section>
+
+      <div class="fj-divider"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg></div>
+
+      <section id="sdg">
+        <h2><span class="sec-no">VIII</span> The dual — cheap proofs, immovable meaning</h2>
+        <p>There was a hinge at the bottom of Book One, visible only from the floor. The
+          thing that would not move — <code>x²=0 ⟹ x=0</code> — is the exact axiom that
+          synthetic differential geometry is built by <em>refusing</em>. Keep the
+          nilpotents it forbids and the derivative falls out of an axiom instead of a
+          limit. Book Two opens that door with the same witness, which does not care which
+          logic you hand it.</p>
+        <p>Book Two has its own dual law: where Book One's cardinal sin was
+          <em>asserting what should be proven</em>, Book Two's is <em>assuming what should
+          be refused</em> — a classical principle smuggled into an intuitionistic proof.
+          The witness has read it:
+          <code>verified all 8 $p in data/sdg.mm ✔</code>
+          <span class="tag tag--measured">measured</span>. The purity guard was given
+          teeth and rejects excluded middle, double-negation, Peirce and decidable
+          equality even under innocent names; all forty logical axioms came back pure
+          (source: NARRATIVE, Book Two; SDG_MODEL).</p>
+        <p>Book Two keeps its own dual pair of quantities, never summed. The synthetic
+          proofs are <span class="tag tag--measured">measured</span>: the seam-free first
+          synthetic derivative (<code>sdg-deriv</code>) is <strong>2,243 leaves</strong>;
+          the threaded sum rule (<code>sdg-global-sum</code>) is
+          <strong>23,508 leaves</strong>. The <em>model</em> grounding is, by design and
+          on principle, a labelled <span class="tag tag--projection">projection</span>
+          throughout — there is no Metamath/ZFC formalization of a well-adapted topos in
+          any library we possess, so no model-cost number is invented; the honest analog
+          computes only a structural citation-ladder depth.</p>
+        <p>The recurring theorem across both books: cheap pure content, immovable
+          meaning-cost. The first synthetic derivative exists by Kock–Lawvere and is
+          unique by microcancellation, with nothing classical spent to say so. One seam is
+          open and named: the universal linking the pointwise law to the global one is
+          handed in rather than threaded. The mirror hypothesis is not proven — it is
+          <em>supported</em>, which is the honest word, and the only one the law allows.</p>
+      </section>
+
+      <section id="provenance">
+        <h2><span class="sec-no">·</span> How to read a number on this page</h2>
+        <p>Every figure carries exactly one tag, taken verbatim from the in-repo
+          artifacts. None is invented; none rounded up.</p>
+        <div class="fj-ledger-wrap">
+        <table class="fj-ledger">
+          <caption>Provenance discipline (COST_STRUCTURE · README · SDG_MODEL)</caption>
+          <thead><tr><th>tag</th><th>means</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag--measured">measured</span></td><td><code>src/kernel.rs</code>, our cut-free <code>$a</code>-leaf metric; reproducible by the named binary.</td></tr>
+            <tr><td><span class="tag tag--extracted">extracted</span></td><td>set.mm proof-DAG, verbatim, via the <code>src/metamath.rs</code> extractor.</td></tr>
+            <tr><td><span class="tag tag--projection">projection</span></td><td>a labelled structural / citation derivation; never a measured or extracted size, never merged into one.</td></tr>
+            <tr><td><span class="tag tag--open">open</span></td><td>a genuinely unresolved question, named — chiefly Obligation O and the minimal-DAG lower bound.</td></tr>
+            <tr><td><span class="tag tag--theorem">theorem</span></td><td>machine-checked separating arithmetic; an irreducibility proven, not asserted.</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="fj-foot">
+          The witness read the whole thing and returned <code>Ok</code>. Book One is closed
+          as an artifact and open in exactly one honest place. The poll asked how big the
+          proof is; the honest answer the instrument found is deeper — almost all of it was
+          scaffolding we chose, and what remains is orientation, and orientation alone.
+          <br /><br />
+          Sources, all in-repo and quoted by their exact numbers and labels:
+          <code>README.md</code>, <code>HISTORY.md</code>, <code>NARRATIVE.md</code>,
+          <code>COST_STRUCTURE.md</code>, <code>SUBSTRATE_FLOOR.md</code>,
+          <code>SDG_MODEL.md</code>. Reported, not faked — including the parts still open.
+        </p>
+      </section>
+
+    </div>
+  </article>
+  </main>
+
+</div>
+
+<script>
+  // Scroll-spy for the TOC. Pure progressive enhancement; the page is
+  // fully readable with JS disabled.
+  (function () {
+    var items = Array.prototype.slice.call(document.querySelectorAll('.fj-toc__item'));
+    var map = {};
+    items.forEach(function (a) {
+      var id = a.getAttribute('href').slice(1);
+      var sec = document.getElementById(id);
+      if (sec) map[id] = a;
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          items.forEach(function (i) { i.classList.remove('is-active'); });
+          var a = map[e.target.id];
+          if (a) a.classList.add('is-active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    Object.keys(map).forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) obs.observe(sec);
+    });
+  })();
+</script>
+</body>
+</html>

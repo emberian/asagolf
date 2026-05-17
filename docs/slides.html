@@ -6,6 +6,7 @@
   <title>asagolf slides - proof-size story</title>
   <meta name="description"
         content="A polished presentation deck for the asagolf Birkhoff proof-size measurement." />
+  <link rel="icon" type="image/svg+xml" href="assets/stella/logo/stella-mark.svg" />
   <link rel="stylesheet" href="assets/slides.css" />
 </head>
 <body>
@@ -46,11 +47,11 @@
 
     <div class="number-pair">
       <div>
-        <span data-metric="full-zfc-log">10^52.56</span>
-        <small>geometry plus set.mm real model</small>
+        <span data-metric="full-zfc-log">10^51.32</span>
+        <small>geometry plus the set.mm real model</small>
       </div>
       <div>
-        <span data-metric="poll-gap">~947</span>
+        <span data-metric="poll-gap">~949</span>
         <small>orders of magnitude below 10^1000</small>
       </div>
     </div>
@@ -166,27 +167,30 @@
     </div>
 
     <div class="metric-row">
-      <div><span data-metric="lemma-count">57</span><small>verified lemmas</small></div>
-      <div><span data-metric="db-statements">195</span><small>database statements</small></div>
-      <div><span data-metric="shared-total">4,931,739</span><small>shared total</small></div>
+      <div><span data-metric="lemma-count">96</span><small>verified lemmas</small></div>
+      <div><span data-metric="db-statements">267</span><small>database statements</small></div>
+      <div><span data-metric="shared-total">1,916,586</span><small>shared total (DAG-CSE)</small></div>
     </div>
   </section>
 
   <section class="slide slide-lemmas" id="slide-7" aria-labelledby="slide-7-title">
     <div class="slide-copy">
       <p class="eyebrow">where the expansion concentrates</p>
-      <h2 id="slide-7-title">The law-of-cosines bridge dominates.</h2>
+      <h2 id="slide-7-title">No single lemma runs away.</h2>
       <p>
-        The largest local cost is not a mysterious geometric axiom. It is the ring
-        normalizer proving the algebraic bridge that SAS needs twice.
+        After the generic-lemma golf the cost spreads evenly: the
+        law-of-cosines bridge, the square-squeeze cancellation, and the
+        positive-factor cancel each land in the tens of thousands of
+        primitive steps — none of them a mysterious geometric axiom, all of
+        them ring normalisation and order.
       </p>
     </div>
 
     <div class="lemma-bars" id="lemma-bars" aria-label="Largest proof-size contributors">
       <div class="lemma-bar-row">
-        <span>loclink</span>
-        <strong>3,179,167</strong>
-        <div><i style="width: 44%"></i></div>
+        <span>G4-sas</span>
+        <strong>383,606</strong>
+        <div><i style="width: 100%"></i></div>
       </div>
     </div>
 
@@ -197,29 +201,31 @@
 
   <section class="slide slide-substrate" id="slide-8" aria-labelledby="slide-8-title">
     <div class="slide-copy">
-      <p class="eyebrow">where the big numbers live</p>
-      <h2 id="slide-8-title">The ZFC cost is mostly the real-number model.</h2>
+      <p class="eyebrow">where the big numbers were</p>
+      <h2 id="slide-8-title">The ZFC cost was a construction choice, and it descends.</h2>
       <p>
-        The geometry uses a Euclidean-field substrate. Discharging that substrate
-        against a full construction of the real numbers is the expensive part.
+        Routing the substrate through set.mm's analytically-constructed real
+        field is expensive — but every floor we got close enough to measure
+        turned out to be removable scaffolding. The projection-free floor sits
+        far below where the routing put it.
       </p>
     </div>
 
     <div class="substrate-grid">
-      <article class="substrate-panel">
-        <p>minimal Euclidean-field model</p>
-        <h3 data-metric="minimal-total-log">10^43.86</h3>
-        <span>sqrt as a model primitive</span>
-      </article>
       <article class="substrate-panel substrate-panel-hot">
-        <p>set.mm real-number model</p>
-        <h3 data-metric="full-zfc-log">10^52.56</h3>
-        <span>dominated by analytic sqrt machinery</span>
+        <p>geometry plus set.mm real model (√-routed, top of the ladder)</p>
+        <h3 data-metric="full-zfc-log">10^51.32</h3>
+        <span>removable scaffolding — set.mm constructs ℝ analytically</span>
+      </article>
+      <article class="substrate-panel">
+        <p>geometry plus the closed, projection-free HF carrier floor</p>
+        <h3 data-metric="minimal-total-log">10^18.39</h3>
+        <span>residue = exactly two order facts {∅∈suc∅, suc∅≠∅}</span>
       </article>
       <article class="substrate-panel">
         <p>poll estimate</p>
         <h3>10<sup>1000</sup></h3>
-        <span>still far outside the measured scale</span>
+        <span>still ~949 orders outside the measured scale</span>
       </article>
     </div>
   </section>
@@ -250,30 +256,31 @@
   <section class="slide slide-status" id="slide-10" aria-labelledby="slide-10-title">
     <div class="slide-copy">
       <p class="eyebrow">what is proved today</p>
-      <h2 id="slide-10-title">This is strong evidence with a clear remaining boundary.</h2>
+      <h2 id="slide-10-title">All 7 postulates derived; the boundary is honest.</h2>
       <p>
-        The measured grounded work covers the hard SAS postulate and supporting
-        lemmas. A completely regrounded ASA route still has remaining Birkhoff
-        postulates to derive.
+        Every Birkhoff postulate is a kernel-verified derived theorem and the
+        end-to-end ASA′ regrounding is closed, no-cheating. The remaining
+        substrate-ladder grounding steps are reported as labelled projections,
+        never counted as verified.
       </p>
     </div>
 
     <div class="status-grid">
       <div class="status-item done">
         <strong>done</strong>
-        <span>G3c ray-line lemma</span>
+        <span>all 7 Birkhoff postulates derived (G0–G4), kernel-verified</span>
       </div>
       <div class="status-item done">
         <strong>done</strong>
-        <span>G4 SAS from algebra</span>
+        <span>ASA′ closed end to end, no-cheating</span>
       </div>
       <div class="status-item done">
         <strong>done</strong>
-        <span>model splice to set.mm real field</span>
+        <span>substrate descent measured to the projection-free floor</span>
       </div>
       <div class="status-item next">
         <strong>next</strong>
-        <span>remaining Birkhoff postulates for end-to-end ASA'</span>
+        <span>kernel-close the remaining ladder steps now carried as [PROJECTION]</span>
       </div>
     </div>
   </section>

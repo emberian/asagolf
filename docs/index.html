@@ -5,26 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>asagolf — the cost structure of grounding geometry</title>
   <meta name="description"
-        content="A poll guessed 10^1000. We built the proof and counted: the geometry is 10^5.6, kernel-verified and closed. Every 'floor' down to ZFC turned out to be removable scaffolding — the one irreducible residue is two order facts. Reported, not faked." />
+        content="A poll guessed 10^1000. We built the proof and counted: the geometry is 10^5.58, kernel-verified and ASA′ closed. Every 'floor' down to ZFC turned out to be removable scaffolding — the irreducible residue is two order facts. Reported, not faked." />
 
   <!-- Open Graph / Twitter Card: makes the link unfurl with title + summary -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="asagolf" />
-  <meta property="og:title" content="asagolf — the poll said 10^1000; the geometry is 10^5.6, and the rest was scaffolding" />
+  <meta property="og:title" content="asagolf — the poll said 10^1000; the geometry is 10^5.58, and the rest was scaffolding" />
   <meta property="og:description"
         content="Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof, traced from ordered-ring axioms through ZFC. Every Birkhoff postulate derived, not asserted." />
   <meta property="og:url" content="https://emberian.github.io/asagolf/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="asagolf — the poll said 10^1000; the geometry is 10^5.6, and the rest was scaffolding" />
+  <meta name="twitter:title" content="asagolf — the poll said 10^1000; the geometry is 10^5.58, and the rest was scaffolding" />
   <meta name="twitter:description"
         content="Exact, kernel-verified step counts for a Birkhoff triangle-congruence proof, traced from ordered-ring axioms through ZFC. Derived, not asserted." />
 
-  <!-- Inline SVG favicon (no extra asset request) -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d1117'/%3E%3Ctext x='32' y='44' font-size='34' font-family='ui-monospace,monospace' fill='%2358a6ff' text-anchor='middle'%3E%E2%88%A0%3C/text%3E%3C/svg%3E" />
+  <!-- Stella roundel as favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/stella/logo/stella-mark.svg" />
 
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
-<body>
+<body class="stella-paper">
+
+<!-- ─── Site nav ───────────────────────────────────────────────────────────── -->
+<nav class="site-nav" aria-label="Primary">
+  <a class="site-nav__brand" href="index.html">
+    <img src="assets/stella/logo/stella-mark.svg" alt="" aria-hidden="true" />
+    asa<span>golf</span>
+  </a>
+  <div class="site-nav__links">
+    <a href="#reverify-section">Re-verify</a>
+    <a href="#results-section">Results</a>
+    <a href="#status-section">Status</a>
+    <a href="#explorer-section">Theorem browser</a>
+    <a href="#what-section">What this means</a>
+    <a href="asa.html" class="is-cta">Deep dive · /asa</a>
+    <a href="slides.html">Slides &#8599;</a>
+  </div>
+</nav>
 
 <!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
 <header id="hero" role="banner">
@@ -38,17 +55,17 @@
         <span class="ha-v">10<sup>1000</sup></span>
         <span class="ha-c">steps to expand ASA to ZFC</span>
       </div>
-      <div class="ha-op" aria-hidden="true">→</div>
+      <div class="ha-op" aria-hidden="true">&rarr;</div>
       <div class="ha-item ha-real">
         <span class="ha-k">We built &amp; counted</span>
-        <span class="ha-v">10<sup>5.6</sup></span>
-        <span class="ha-c">geometry, closed · every substrate "floor" (10<sup>46</sup>→10<sup>12.8</sup>) was removable scaffolding</span>
+        <span class="ha-v">10<sup>5.58</sup></span>
+        <span class="ha-c">geometry, ASA&prime; closed &middot; every substrate floor (10<sup>46.10</sup>&rarr;10<sup>12.81</sup>) was removable scaffolding</span>
       </div>
       <div class="ha-op" aria-hidden="true">=</div>
       <div class="ha-item ha-gap">
         <span class="ha-k">Off by</span>
         <span class="ha-v">~994</span>
-        <span class="ha-c">orders of magnitude</span>
+        <span class="ha-c">orders of magnitude on the geometry</span>
       </div>
     </div>
 
@@ -57,8 +74,11 @@
       <strong>kernel-checked</strong>, and the artifact now
       <strong>closed</strong> — the proof, chased to the bottom, is almost
       all removable scaffolding around <strong>two order facts</strong>.
-      <a href="slides.html" class="hero-cta">▶ 15-minute talk</a>
-      <a href="https://github.com/emberian/asagolf/blob/main/NARRATIVE.md" class="hero-cta">▶ the novelization</a>
+      We report what the kernel re-checked; we do not round up to the
+      number the poll imagined.
+      <a href="slides.html" class="hero-cta">15-minute talk</a>
+      <a href="https://github.com/emberian/asagolf/blob/main/NARRATIVE.md" class="hero-cta">The novelization</a>
+      <a href="asa.html" class="hero-cta">The deep dive</a>
     </p>
 
     <div class="hero-stats" role="list" aria-label="Headline statistics">
@@ -68,17 +88,17 @@
           (<span id="stat-log">~10^5.58</span>)</div>
       </div>
       <div class="stat-card" role="listitem">
-        <div class="stat-value">10<sup>12.8</sup></div>
-        <div class="stat-label">ZFC substrate floor — down a ladder from 10<sup>46</sup>;
+        <div class="stat-value">10<sup>12.81</sup></div>
+        <div class="stat-label">ZFC substrate floor — down a ladder from 10<sup>46.10</sup>;
           every higher floor was removable scaffolding</div>
       </div>
       <div class="stat-card" role="listitem">
-        <div class="stat-value" style="color:#f87171">10<sup>1000</sup></div>
+        <div class="stat-value" style="color:var(--mushroom)">10<sup>1000</sup></div>
         <div class="stat-label">the poll's claim — off by ~994 OOM on the geometry</div>
       </div>
       <div class="stat-card" role="listitem">
         <div class="stat-value" id="stat-lemmas" aria-label="Number of lemmas">96</div>
-        <div class="stat-label">kernel-verified lemmas — all 7 postulates, ASA′ closed
+        <div class="stat-label">kernel-verified lemmas — all 7 postulates, ASA&prime; closed
           (<span id="stat-stmts">267</span>-statement DB)</div>
       </div>
       <div class="stat-card" role="listitem">
@@ -88,7 +108,7 @@
     </div>
 
     <nav class="hero-nav" aria-label="Page sections">
-      <a href="#reverify-section">Re-verify ▶</a>
+      <a href="#reverify-section">Re-verify</a>
       <a href="#results-section">Results</a>
       <a href="#status-section">Status</a>
       <a href="#dag-section">Proof DAG</a>
@@ -96,11 +116,12 @@
       <a href="#lemma-section">Lemmas</a>
       <a href="#model-section">Model variation</a>
       <a href="#what-section">What this means</a>
+      <a href="asa.html" class="hero-nav-slides">Deep dive &#8599;</a>
       <a href="slides.html" class="hero-nav-slides">Slides &#8599;</a>
     </nav>
 
-    <p class="text-muted" style="font-size:.78rem;color:#8b949e">
-      Generated: <span id="generated-date">—</span>
+    <p class="text-muted" style="font-size:.82rem">
+      Generated: <span id="generated-date">&mdash;</span>
     </p>
   </div>
 </header>
@@ -152,10 +173,10 @@
           <!-- Axis tick labels populated by app.js -->
         </div>
       </div>
-      <figcaption class="text-muted" style="font-size:.8rem;margin-top:.5rem">
+      <figcaption class="text-muted" style="font-size:.85rem;margin-top:.6rem">
         Each marker shows a model or claim on a log<sub>10</sub> scale.
         The poll overshoots the geometry by ~994 orders; the substrate is a
-        descending ladder (10<sup>46</sup>→10<sup>17.5</sup>→10<sup>12.8</sup>),
+        descending ladder (10<sup>46.10</sup>&rarr;10<sup>17.484</sup>&rarr;10<sup>12.81</sup>),
         every higher floor a removable construction choice.
       </figcaption>
     </figure>
@@ -194,26 +215,25 @@
     <div class="status-grid">
       <div class="status-card status-done">
         <div class="status-tag">Verified in this build</div>
-        <h3>All 7 Birkhoff postulates — no cheating · ASA′ closed</h3>
+        <h3>All 7 Birkhoff postulates — no cheating &middot; ASA&prime; closed</h3>
         <p>
           <strong><span id="status-lemmas">96</span> lemmas,
           a <span id="status-stmts">267</span>-statement database</strong>,
           one run, bottom-up from <code>ax-1/2/3/mp</code> + the ordered-ring
-          and one-√ axioms. Every Birkhoff postulate is a kernel-verified
+          and one-&radic; axioms. Every Birkhoff postulate is a kernel-verified
           <em>derived</em> <code>$p</code>, none asserted, and the end-to-end
-          ASA′ regrounding is <strong>closed, no-cheating</strong>:
+          ASA&prime; regrounding is <strong>closed, no-cheating</strong>:
           <code>G0&#8209;congsub</code>, <code>G3c&#8209;rayline</code>,
           <strong><code>G4&#8209;sas</code></strong>
           (<span id="status-g4">383,606</span> cut-free steps after the
           generic-lemma golf, law of
-          cosines), <strong><code>G3a&#8209;rayangle</code></strong>
-          (4,720,242), <strong><code>G2&#8209;incid</code></strong>
-          (607,583), <strong><code>G1&#8209;ruler</code></strong>
-          (<code>sqd a (cp a c u)=u</code> &amp; <code>Ray a c (cp a c u)</code>),
-          and <strong><code>G3bp&#8209;protuniq&#8209;oriented</code></strong>
-          (the faithful oriented protractor-uniqueness — see note). The single
-          Metamath kernel re-checks the whole assembled DB and prints the
-          verdict before any number on this page is written.
+          cosines), <strong><code>G3a&#8209;rayangle</code></strong>,
+          <strong><code>G2&#8209;incid</code></strong>,
+          <strong><code>G1&#8209;ruler</code></strong>, and
+          <strong><code>G3bp&#8209;protuniq&#8209;oriented</code></strong>
+          (the faithful oriented protractor-uniqueness). The single Metamath
+          kernel re-checks the whole assembled DB and prints the verdict
+          before any number on this page is written.
         </p>
       </div>
 
@@ -221,17 +241,17 @@
         <div class="status-tag">Mechanized, not asserted</div>
         <h3>The substrate is a ZFC theorem</h3>
         <p>
-          The of-* / √ axioms are the <em>minimal</em> ordered-Euclidean-field
+          The of-* / &radic; axioms are the <em>minimal</em> ordered-Euclidean-field
           substrate the geometry needs (no completeness, no Archimedean). Each
           is mechanically bound to the metamath/set.mm theorem proving the
-          same fact from ZFC (<code>ax-sqrt&nbsp;↔&nbsp;resqrtth</code>,
-          <code>of-recip&nbsp;↔&nbsp;axrrecex</code>, …) — so they <em>are</em>
+          same fact from ZFC (<code>ax-sqrt&nbsp;&harr;&nbsp;resqrtth</code>,
+          <code>of-recip&nbsp;&harr;&nbsp;axrrecex</code>, …) — so they <em>are</em>
           modelled by the standard construction, shown by machine. Fully
-          ZFC-grounded against set.mm the substrate is ≈10<sup>45.7</sup> —
+          ZFC-grounded against set.mm the substrate is &asymp;10<sup>46.10</sup> —
           but that is a <em>routing</em> artifact, and the descent proves it:
-          native ZF model ≈10<sup>17.5</sup>, then (Infinity incidental;
+          native ZF model &asymp;10<sup>17.484</sup>, then (Infinity incidental;
           arithmetic and order discharged to verified proof) a
-          fully-projection-free floor ≈<strong>10<sup>12.8</sup></strong>.
+          fully-projection-free floor &asymp;<strong>10<sup>12.81</sup></strong>.
           The proof-theoretic strength is an open theory below EFA; the
           irreducible residue is exactly two order facts. The one large
           number was always a model-choice artifact, never the geometry —
@@ -240,23 +260,21 @@
       </div>
 
       <div class="status-card status-todo">
-        <div class="status-tag">Final step — in progress</div>
-        <h3>End-to-end ASA&prime; closure</h3>
+        <div class="status-tag">Honest boundary</div>
+        <h3>What the kernel has not closed</h3>
         <p>
-          The regrounded ASA proof (<code>asaprime</code>) is already
-          <em>structurally</em> kernel-verified against the derived
-          postulates; the remaining work is wiring its last placeholder
-          leaves to the now-verified <code>$p</code> (with G3b&prime; in its
-          mathematically-faithful vertex-b form) plus two tiny bridge lemmas.
-          Honest status: the postulates are done; the literal end-to-end
-          re-expression is the last finite step and nothing here counts it as
-          finished until <code>asaprime</code> prints a real no-cheating
-          closure.
+          The derived postulates and the end-to-end ASA&prime; closure are
+          kernel-verified. The remaining substrate ladder steps (G1/G2/G3a/G3b
+          model-grounding and the regrounded ASA&prime;) sit behind labelled
+          <code>[PROJECTION]</code> estimates where a step is projected rather
+          than re-checked — those are reported as projections, never as
+          verified counts. Nothing on this page is counted as finished until
+          the kernel prints a real no-cheating closure for it.
         </p>
       </div>
     </div>
 
-    <p class="text-muted mt-2" style="font-size:.82rem;max-width:74ch">
+    <p class="text-muted mt-2" style="font-size:.88rem;max-width:74ch">
       Why this matters: asserting the Birkhoff postulates as axioms makes
       "ASA" about 200 steps and the question vacuous. Here every postulate
       used is a theorem derived from an ordered commutative ring with 1, one
@@ -331,7 +349,7 @@
       </small>
     </h2>
     <div class="tb-controls">
-      <label for="tb-select">Lemma:</label>
+      <label for="tb-select">Lemma</label>
       <select id="tb-select" class="tb-select" aria-label="Pick a lemma">
         <option value="">— pick a lemma —</option>
       </select>
@@ -350,7 +368,7 @@
     </h2>
 
     <div class="table-controls">
-      <label for="lemma-filter">Filter:</label>
+      <label for="lemma-filter">Filter</label>
       <input
         type="search"
         id="lemma-filter"
@@ -367,12 +385,12 @@
              aria-label="Lemma list, sortable and filterable">
         <thead>
           <tr>
-            <th scope="col" data-sort="idx"      >#<span class="sort-indicator"> ⇅</span></th>
-            <th scope="col" data-sort="name"     >Name<span class="sort-indicator"> ⇅</span></th>
-            <th scope="col" data-sort="kind"     >Kind<span class="sort-indicator"> ⇅</span></th>
-            <th scope="col" data-sort="statement">Statement<span class="sort-indicator"> ⇅</span></th>
-            <th scope="col" data-sort="inlined"  >Inlined<span class="sort-indicator"> ⇅</span></th>
-            <th scope="col" data-sort="shared"   >Shared<span class="sort-indicator"> ⇅</span></th>
+            <th scope="col" data-sort="idx"      >#<span class="sort-indicator"> &#8645;</span></th>
+            <th scope="col" data-sort="name"     >Name<span class="sort-indicator"> &#8645;</span></th>
+            <th scope="col" data-sort="kind"     >Kind<span class="sort-indicator"> &#8645;</span></th>
+            <th scope="col" data-sort="statement">Statement<span class="sort-indicator"> &#8645;</span></th>
+            <th scope="col" data-sort="inlined"  >Inlined<span class="sort-indicator"> &#8645;</span></th>
+            <th scope="col" data-sort="shared"   >Shared<span class="sort-indicator"> &#8645;</span></th>
           </tr>
         </thead>
         <tbody id="lemma-tbody">
@@ -418,7 +436,7 @@
           </div>
         </div>
 
-        <p class="text-muted mt-1" style="font-size:.82rem;max-width:42ch">
+        <p class="text-muted mt-1" style="font-size:.88rem;max-width:42ch">
           The geometry cost is the same in every model. Substrate cost depends on
           how the ordered field with square roots is constructed.
         </p>
@@ -427,7 +445,7 @@
       <!-- Right: live result -->
       <div class="model-result" aria-live="polite" aria-atomic="true">
         <div class="total-label">Combined headline (log<sub>10</sub> steps)</div>
-        <div class="total-value" id="model-total" aria-label="Computed combined log10">—</div>
+        <div class="total-value" id="model-total" aria-label="Computed combined log10">&mdash;</div>
         <div class="total-note" id="model-note"></div>
 
         <div class="model-breakdown mt-2" id="model-breakdown">
@@ -438,7 +456,7 @@
   </div>
 </section>
 
-<!-- ─── What this means ───────────────────────────────────────────────────── -->
+<!-- ─── What this means (Field-Journal reading idiom) ─────────────────────── -->
 <section class="section" id="what-section" aria-labelledby="what-heading">
   <div class="container">
     <h2 class="section-title" id="what-heading">What this means</h2>
@@ -454,7 +472,7 @@
         checker (the kernel), a hand-and-machine-assembled proof from ordered-ring
         axioms upward, and an exact cut-free step count that the kernel re-verifies.
         The answer is not close to 10<sup>1000</sup> — the geometry is around
-        10<sup>5.6</sup>, kernel-verified and now <strong>closed</strong> end to
+        10<sup>5.58</sup>, kernel-verified and now <strong>closed</strong> end to
         end. But the rebuttal turned out to be the least interesting thing here.
         Chasing the cost all the way to the bottom showed that almost everything
         below the geometry was <strong>removable scaffolding we had chosen</strong>,
@@ -480,32 +498,32 @@
         postulate — was about 7.25 million primitive steps fully expanded; proving
         the law of cosines once over fresh symbols and instantiating it for free
         (the generic-lemma template) cut it to <strong>383,606</strong>, about
-        10<sup>5.6</sup>, an astronomical distance below 10<sup>1000</sup>. The
-        geometry is cheap, and ASA′ is closed end to end with no postulate asserted.
+        10<sup>5.58</sup>, an astronomical distance below 10<sup>1000</sup>. The
+        geometry is cheap, and ASA&prime; is closed end to end with no postulate asserted.
       </p>
 
       <h3>The descent: every floor was a construction choice</h3>
       <p>
         The one genuinely large term is exhibiting a model of the substrate in ZFC.
-        Against set.mm's analytically-constructed real field it is ≈10<sup>46</sup>
+        Against set.mm's analytically-constructed real field it is &asymp;10<sup>46.10</sup>
         — but each time we got close enough to <em>measure</em> a floor, it turned
         out to be a thing we had chosen. It was not the real numbers; it was set.mm
         <em>routing</em> through analysis. Build a native ZF model and the floor
-        drops to ≈10<sup>17.5</sup>; its residual looked like the Axiom of Infinity,
+        drops to &asymp;10<sup>17.484</sup>; its residual looked like the Axiom of Infinity,
         but the proof never iterates it — the floor drops again to
-        ≈<strong>10<sup>12.8</sup></strong>, and the substrate is then
-        <strong>fully projection-free</strong>. ℝ, completeness, Infinity, ω, ℚ,
+        &asymp;<strong>10<sup>12.81</sup></strong>, and the substrate is then
+        <strong>fully projection-free</strong>. &reals;, completeness, Infinity, &omega;, &#8474;,
         even arithmetic — all stripped, measured, shown removable.
       </p>
 
       <h3>What would not move</h3>
       <p>
-        One thing did not dissolve. The inference <code>a²=b² ⟹ a=b</code> is
-        <em>false</em> in ordinary rings (3²≡1² in ℤ/8, 3≠1); no polynomial
+        One thing did not dissolve. The inference <code>a²=b² &rArr; a=b</code> is
+        <em>false</em> in ordinary rings (3²&equiv;1² in &#8484;/8, 3&ne;1); no polynomial
         identity of any degree crosses it — only <em>order</em> does. Three
         independent measurements — what the proof says, how strong it is, what its
         model is built from — all terminate on the same irreducible residue:
-        exactly two order facts, <code>∅∈suc∅</code> and <code>suc∅≠∅</code> —
+        exactly two order facts, <code>&empty;&isin;suc&empty;</code> and <code>suc&empty;&ne;&empty;</code> —
         <em>there is a next thing, and it is not the first</em>. That is the whole
         intrinsic cost of metric geometry; everything else, chased to the bottom and
         measured, was scaffolding. See the
@@ -532,7 +550,9 @@
         sub-proof reuse at all — a deliberately pessimistic metric. The
         <em>shared size</em> is the same proof kept as a directed acyclic graph with
         common sub-proofs shared once; it is far smaller and is what a real proof
-        library stores. Both are exact and re-checked by the kernel.
+        library stores. Both are exact and re-checked by the kernel. For the full
+        argument and the per-step ledger, see the
+        <a href="asa.html">deep dive</a>.
       </p>
 
     </article>
@@ -542,9 +562,11 @@
 <!-- ─── Footer ─────────────────────────────────────────────────────────────── -->
 <footer role="contentinfo">
   <div class="container">
+    <img src="assets/stella/glyphs/leaf.svg" alt="" aria-hidden="true" />
     <p>
       asagolf &mdash; kernel-verified proof sizes &mdash;
-      data generated by <code>cargo run --bin grounded -- --emit-json</code>
+      data generated by <code>cargo run --bin grounded -- --emit-json</code>.
+      Numbers reported, not faked.
     </p>
   </div>
 </footer>

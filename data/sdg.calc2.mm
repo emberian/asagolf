@@ -274,3 +274,27 @@ $( LEVEL-2 MICROCANCELLATION: if two degree-<=2 monomial families agree on
    coefficient (the form consumed to make ( deriv f ) well-defined at
    level 2); same positive, quantifier-only SHAPE as ax-microcancel.     $)
 ax-microcancel2 $a |- ( A. d ( ( D2 d ) -> ( b * d ) = ( c * d ) ) -> b = c ) $.
+
+$( ================================================================
+   SEAM-FREE CHAIN RULE (sdgcalc2build) — the ap-congruence keystone.
+   The `chain.sub` ap-Leibniz $e of data/sdg.calc.mm is DISCHARGED:
+   ap-congruence is verdict B (NOT derivable — see data/sdg.base.mm
+   header + SEQUEL_SCOPE §5j), so it is the FLAGGED positive-Horn
+   substrate axiom eq-ap; this $p USES eq-ap (one inference) to
+   derive the substitution step.  No microcancellation, no
+   classical principle, no $e for the substitution.  Self-contained
+   over the eq-ap-extended data/sdg.base.mm; disjoint sdg-calc2-*
+   labels; composes by concatenation with the other corpora.
+   ================================================================ $)
+
+${
+  chain.hf $e |- ( ap f d ) = ( ( ap f 0 ) + ( b * d ) ) $.
+  chain.hg $e |- ( ap g ( ( ap f 0 ) + ( b * d ) ) ) = ( ( ap g ( ap f 0 ) ) + ( c * ( b * d ) ) ) $.
+  chain.hh $e |- ( ap w d ) = ( ap g ( ap f d ) ) $.
+  chain.hh0 $e |- ( ap w 0 ) = ( ap g ( ap f 0 ) ) $.
+  sdg-calc2-chain $p |- ( ap w d ) = ( ( ap w 0 ) + ( ( c * b ) * d ) ) $= t0 vf tap vg tap vc vb tmu vd tmu tpl t0 vw tap vc vb tmu vd tmu tpl weq vd vw tap t0 vw tap vc vb tmu vd tmu tpl weq t0 vf tap vg tap t0 vw tap weq t0 vf tap vg tap vc vb tmu vd tmu tpl t0 vw tap vc vb tmu vd tmu tpl weq t0 vw tap t0 vf tap vg tap weq t0 vf tap vg tap t0 vw tap weq chain.hh0 t0 vw tap t0 vf tap vg tap eqcom ax-mp t0 vf tap vg tap t0 vw tap vc vb tmu vd tmu eq-pl1 ax-mp vd vw tap t0 vf tap vg tap vc vb tmu vd tmu tpl weq t0 vf tap vg tap vc vb tmu vd tmu tpl t0 vw tap vc vb tmu vd tmu tpl weq vd vw tap t0 vw tap vc vb tmu vd tmu tpl weq wi t0 vf tap vg tap vc vb vd tmu tmu tpl t0 vf tap vg tap vc vb tmu vd tmu tpl weq vd vw tap t0 vf tap vg tap vc vb tmu vd tmu tpl weq vc vb vd tmu tmu vc vb tmu vd tmu weq t0 vf tap vg tap vc vb vd tmu tmu tpl t0 vf tap vg tap vc vb tmu vd tmu tpl weq vc vb tmu vd tmu vc vb vd tmu tmu weq vc vb vd tmu tmu vc vb tmu vd tmu weq vc vb vd ax-mulass vc vb tmu vd tmu vc vb vd tmu tmu eqcom ax-mp vc vb vd tmu tmu vc vb tmu vd tmu t0 vf tap vg tap eq-pl2 ax-mp vd vw tap t0 vf tap vg tap vc vb vd tmu tmu tpl weq t0 vf tap vg tap vc vb vd tmu tmu tpl t0 vf tap vg tap vc vb tmu vd tmu tpl weq vd vw tap t0 vf tap vg tap vc vb tmu vd tmu tpl weq wi t0 vf tap vb vd tmu tpl vg tap t0 vf tap vg tap vc vb vd tmu tmu tpl weq vd vw tap t0 vf tap vg tap vc vb vd tmu tmu tpl weq chain.hg vd vw tap t0 vf tap vb vd tmu tpl vg tap weq t0 vf tap vb vd tmu tpl vg tap t0 vf tap vg tap vc vb vd tmu tmu tpl weq vd vw tap t0 vf tap vg tap vc vb vd tmu tmu tpl weq wi vd vf tap vg tap t0 vf tap vb vd tmu tpl vg tap weq vd vw tap t0 vf tap vb vd tmu tpl vg tap weq vd vf tap t0 vf tap vb vd tmu tpl weq vd vf tap vg tap t0 vf tap vb vd tmu tpl vg tap weq chain.hf vd vf tap t0 vf tap vb vd tmu tpl vg eq-ap ax-mp vd vw tap vd vf tap vg tap weq vd vf tap vg tap t0 vf tap vb vd tmu tpl vg tap weq vd vw tap t0 vf tap vb vd tmu tpl vg tap weq wi chain.hh vd vw tap vd vf tap vg tap t0 vf tap vb vd tmu tpl vg tap eqtri ax-mp ax-mp vd vw tap t0 vf tap vb vd tmu tpl vg tap t0 vf tap vg tap vc vb vd tmu tmu tpl eqtri ax-mp ax-mp vd vw tap t0 vf tap vg tap vc vb vd tmu tmu tpl t0 vf tap vg tap vc vb tmu vd tmu tpl eqtri ax-mp ax-mp vd vw tap t0 vf tap vg tap vc vb tmu vd tmu tpl t0 vw tap vc vb tmu vd tmu tpl eqtri ax-mp ax-mp $.
+$}
+${
+  flow.inner $e |- ( ap f d ) = z $.
+  sdg-calc2-apflow $p |- ( ap g ( x + ( ap f d ) ) ) = ( ap g ( x + z ) ) $= vx vd vf tap tpl vx vz tpl weq vx vd vf tap tpl vg tap vx vz tpl vg tap weq vd vf tap vz weq vx vd vf tap tpl vx vz tpl weq flow.inner vd vf tap vz vx eq-pl2 ax-mp vx vd vf tap tpl vx vz tpl vg eq-ap ax-mp $.
+$}

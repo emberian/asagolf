@@ -669,6 +669,149 @@ step — a precisely-characterised boundary identical in kind to the
 already-documented chain-rule gap, NOT a hidden assumption and NOT a
 classical smuggle (sdgtanpure certifies the latter mechanically).
 
+## 5j. The `ap`-congruence resolution — KEYSTONE (verdict B, PROVEN)
+
+This is the Book Two keystone: the rigorous A-vs-B classification of
+function-application congruence, the discharged `chain.sub` `$e`, the
+Lie-bracket `ap`-half, MEASURED, and the honest trust-story statement.
+
+### The QUESTION, answered: VERDICT B (NOT A) — with proof
+
+`x = y → ( ap g x ) = ( ap g y )` is **GENUINELY NOT DERIVABLE** from
+the substrate's equality discipline. It is **B**, not A.
+
+**Why it is not A.** Despite the `data/sdg.base.mm` header prose
+"Leibniz substitution", the substrate's *actual* equality theory is, in
+full: `eqid` (reflexivity), `eqcom` (symmetry), `eqtri` (transitivity),
+and the **four per-operation congruence axioms** `eq-pl1/2`, `eq-mu1/2`
+for `+` and `*` **only**. There is **no** general Leibniz schema
+`( x = y → ( ph → ph[y/x] ) )` and **no** congruence rule for any other
+term constructor (`ap`, `inv`, `deriv`). Equality here is an
+equivalence relation equipped with *hand-picked* congruence rules for
+the ring operations and nothing else. Congruence under an arbitrary
+constructor is therefore *not* "normally a consequence of Leibniz
+substitution" **in this substrate**, because this substrate has no
+Leibniz substitution — only the listed instances.
+
+**Proof of non-derivability (syntactic, kernel-faithful — the exact
+discipline `src/kernel.rs` enforces).** Define the *ap-skeleton* of a
+term as the multiset of its maximal `( ap _ _ )` subterms. Claim: every
+closed equation `s = u` derivable from `{ eqid, eqcom, eqtri,
+eq-pl1/2, eq-mu1/2, df-D }` + pure logic with **no equality `$e`**
+satisfies `skeleton(s) = skeleton(u)`. Induction on the derivation:
+`eqid` gives `s = s` (trivial); `eqcom`/`eqtri` are the
+equivalence-closure of a relation already having the invariant;
+`eq-pl1/2`, `eq-mu1/2` rewrite a subterm sitting in a `+`/`*` position
+and **never** inside the argument slot of an `( ap _ _ )`; `df-D`
+introduces only ring/`0` equations. **No axiom's conclusion can rewrite
+the argument position of an `ap`.** Hence for distinct variables `x`,
+`y` (`x = y` itself underivable, distinct skeletons), the equation
+`( ap g x ) = ( ap g y )` has unequal skeletons and is outside the
+derivable set. **QED — B is proven, not assumed.** (Model gloss:
+quotient the term algebra by the ring-axiom congruence and let `ap` act
+non-extensionally on distinct-but-ring-equal arguments — every `$a`
+above holds, `ap`-congruence fails.)
+
+### The resolution: ONE flagged, intuitionistically-pure substrate axiom
+
+Per the B branch of the task: added `eq-ap` to `data/sdg.base.mm`,
+**FLAGGED exactly as `ax-kl` / `ax-microcancel`** (a long named-block
+header: "FLAGGED NON-CONSERVATIVE SUBSTRATE COMMITMENT #3"):
+
+```
+eq-ap $a |- ( x = y -> ( ap g x ) = ( ap g y ) ) $.
+```
+
+**Intuitionistic acceptability (rigorous, mechanically certified).**
+`eq-ap` is a **positive Horn congruence schema**: one atomic-equality
+antecedent, one atomic-equality consequent, **no `¬`, no `∨`**, no
+`→`-nesting, no quantifier alternation, no decidability/stability/
+apartness. It is the literal structural twin of the already-present
+`eq-pl1/2`, `eq-mu1/2` (same shape, different constructor) and is the
+eq-elimination/transport rule of every intuitionistic type theory,
+valid in every Heyting-valued/topos model. All five purity guards
+(`sdgpure`, `sdgcalcpure`, `sdgtanpure`, `sdgtaypure`, `sdgcalc2pure`)
+re-certify **GENUINELY INTUITIONISTIC ✔** — now **44** logical `$a`
+(was 43; +1 = `eq-ap`), `eq-ap` passing NAME and SHAPE, none classical,
+none classical in any `$p`'s consumed-axiom closure.
+
+### Deliverable 1 — seam-free chain rule (DISCHARGED, MEASURED)
+
+New self-contained corpus `data/sdg.calc2.mm` (builder
+`src/bin/sdgcalc2build.rs`, guard+floor `src/bin/sdgcalc2pure.rs`):
+disjoint `sdg-calc2-*` labels, rename-free-concatenation composition,
+shares no `$p` with any other corpus. `sdg-calc2-chain` re-proves the
+pointwise chain rule **with NO `chain.sub` `$e`** — the substitution
+step `( ap g ( ap f d ) ) = ( ap g ( ( ap f 0 ) + ( b·d ) ) )` is now
+one `eq-ap` inference off the KL slope hypothesis of `f`.
+
+| theorem | what it is | consumes | leaves (MEASURED) |
+|---|---|---|---|
+| `sdg-calc-chain` (old, `data/sdg.calc.mm`) | chain rule WITH `chain.sub` `$e` | (ap-Leibniz `$e`) | **328** |
+| `sdg-calc2-chain` (new, seam-free) | chain rule, NO `$e`, USES `eq-ap` | **`eq-ap`** (no `ax-microcancel`) | **349** |
+| `sdg-calc2-apflow` | Lie-bracket `ap`-half: `[ ( ap f d )=z ] ⊢ ( ap g ( x+( ap f d ) ) )=( ap g ( x+z ) )` | `eq-pl2`+**`eq-ap`** | **24** |
+
+**MEASURED cut-free cost of the discharged chain rule: 349 leaves**
+(project metric, OUR kernel over `data/sdg.calc2.mm`). The honest delta
+is **+21 leaves** vs the `$e`-bearing `sdg-calc-chain` (328): a cost
+*revealed, not added* — it is exactly the `eq-ap` instantiation
+(`vd vf tap | t0 vf tap vb vd tmu tpl | vg eq-ap ax-mp` + its `wi`
+construction) that was previously **hidden inside the zero-cost
+`chain.sub` `$e`**. Kernel-authoritative adversarial assertions in
+`sdgcalc2pure` (hard-fail if false): `sdg-calc2-chain` **genuinely
+consumes `eq-ap`** (YES ✔), does **NOT** consume `ax-microcancel`
+(NO ✔ — still pointwise), and **NO `chain.sub` `$e` exists** in the
+corpus (NO ✔ — discharged).
+
+### Deliverable 2 — Lie-bracket `ap`-half: UNBLOCKED; W2-glob residual precise
+
+`data/sdg.tangent.mm`'s `tanbr.flow` `$e` was documented (§5i) as
+folding together **(a)** `ap`-congruence **and (b)** W2-glob
+generator-side globalization. With `eq-ap`, **half (a) is now
+unblocked**: `sdg-calc2-apflow` mechanically discharges the
+flow-composition `ap`-Leibniz step as a pure `eq-pl2`+`eq-ap`
+derivation (6 axioms, 24 leaves, intuitionistic, **no
+microcancellation, no globalization**). **Half (b) remains the
+precisely-characterised residual** and is **NOT** closed: `X(q)` is the
+synthetic *derivative* of `q` along `X`, which needs the
+pointwise→global SDG-K linking rule (off-limits this round). **The full
+Lie bracket does NOT close here — claiming it would be faking it.** The
+honest status: the `ap` half is closed (eq-ap, kernel-verified,
+demonstrated); the globalization half is exactly the SDG-K linking
+residual already documented at §5b/§5g, now isolated as the *sole*
+remaining obstruction in the bracket (the `ap` half no longer
+contributes).
+
+### Deliverable 3 — purity across everything touched
+
+All five guards GENUINELY INTUITIONISTIC ✔ on the eq-ap-extended base:
+`sdgpure` (`data/sdg.mm`, 18 `$p`, 125 stmts), `sdgcalcpure`
+(`data/sdg.calc.mm`, 7 `$p`), `sdgtanpure` (`data/sdg.tangent.mm`,
+8 `$p`), `sdgtaypure` (`data/sdg.taylor.mm`, 6 `$p`), `sdgcalc2pure`
+(`data/sdg.calc2.mm`, 2 `$p`). Adding an axiom is monotone: every
+pre-existing `$p` in every corpus still kernel-verifies unchanged.
+`eq-ap` passes NAME+SHAPE in all of them (positive Horn — no `¬`,
+no `∨`).
+
+### THE HONEST TRUST-STORY STATEMENT (did the substrate gain an axiom?)
+
+**YES. The substrate GAINED ONE NAMED AXIOM, `eq-ap`.** Book Two's
+trust story is therefore stated plainly: **`ap`-congruence is a NEW
+NAMED intuitionistic substrate axiom (verdict B), NOT a derived rule.**
+It is *not* a consequence of the pre-existing equality discipline (the
+ap-skeleton proof shows this rigorously); it is a flagged,
+non-conservative, but *intuitionistically pure* (positive Horn
+congruence — mechanically certified, zero classical content) commitment
+of the same status as `ax-kl` and `ax-microcancel`. The honest
+classification is the deliverable and it is: **B, with `eq-ap` added
+and flagged, not smuggled.** The mirror hypothesis is unaffected — no
+classical principle entered; the new axiom is the constructive
+transport rule for the `ap` term former, which every intuitionistic
+type theory already has. The cut-free chain rule is genuinely
+seam-free at MEASURED 349 leaves; the Lie bracket's `ap` half is
+closed and its sole residual is the orthogonal, pre-documented SDG-K
+globalization, not the `ap` gap.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

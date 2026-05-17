@@ -1727,6 +1727,65 @@ general `2×2` symbolic, **not** the whole tower — exactly as Book One's
 model-meaning floor is the UNCHANGED Book-Two `[PROJECTION]`, never
 re-summed.
 
+## 5t. The NON-ABELIAN bracket algebra — the toolkit of `DF = ∇F + [A,F] = 0` (the field-theory question, answered precisely)
+
+The honest answer to *"are we constructing a field theory?"*: we have
+the **kinematic / geometric core** of a classical gauge field theory —
+connection `A` (§5n), curvature/field-strength `F` (§5m), the
+**homogeneous / source-free field equation** (the Bianchi identities,
+algebraic §5m + the differential `∇R=0` §5o — `∇F=0` *is* one of the
+two Yang–Mills/Maxwell field equations), gauge-covariance `F'=gFg⁻¹`
+(§5p), and genuine non-abelian structure (§5q/§5s). What we do **not**
+have, and do not claim: the **dynamics** — no action `∫tr F∧⋆F`, no
+metric/Hodge `⋆`, no **inhomogeneous** equation `D⋆F=J`, no matter, no
+quantization; and the *meaning* rests on the unchanged Book-Two model
+`[PROJECTION]`.
+
+Wave 7 (`data/sdg.nonabF.mm`, trio `sdgnonabF{build,floor,pure}`) adds
+the **pure-ring bracket algebra** the non-abelian homogeneous equation
+`DF = ∇F + [A,F] = 0` rests on, with an honest catch stated **up
+front**: over the **commutative** base every *symbolic* bracket
+`[x,y]:=(x*y)+inv(y*x)` is identically `0` (`ax-mulcom`+`ax-addneg`),
+so a **symbolic Jacobi would be VACUOUS** (`0+0+0=0`) and is
+**deliberately NOT shipped** as "the engine". What *is* genuine,
+non-vacuous and tractable is the `inv`/distribution toolkit (true in
+**any** ring, not commutator-collapse), 7 kernel-verified pure-ring
+`$p`:
+
+```
+sdgnonabFpure: GENUINELY INTUITIONISTIC ✔ AND EVERY $p PURE RING ✔
+  sdg-nonabF-eqneg       = 1979  ( x=y -> inv x = inv y )   [MEASURED]
+  sdg-nonabF-neguniq     = 1542  ( (u+v)=0 -> v = inv u )   [MEASURED]
+  sdg-nonabF-invinv      = 1610  ( inv ( inv x ) ) = x      [MEASURED]
+  sdg-nonabF-invadd      = 1985  inv(u+v)=(inv u)+(inv v)   [MEASURED]
+  sdg-nonabF-mulneg      = 1686  ( a*( inv w ) )=inv(a*w)   [MEASURED]
+  sdg-nonabF-mulnegr     = 3749  ( ( inv w )*a )=inv(w*a)   [MEASURED]
+  sdg-nonabF-brktantisym = 3825  ( a*b + inv(b*a) )
+                                 = inv( b*a + inv(a*b) )    [MEASURED]
+```
+
+`sdg-nonabF-brktantisym` is the genuine headline: **the bracket is
+antisymmetric, `[a,b] = inv [b,a]` (= −[b,a])** — proven pure-ring via
+`invadd`+`invinv` as an `inv`-distribution identity, **not** via
+`[.,.]=0`, so it is non-vacuous and holds in any ring. Antisymmetry +
+scalar-bilinearity (`mulneg`/`mulnegr`) is exactly the structural
+algebra the homogeneous field equation needs.
+
+**Honest scope.** This is the **bracket *algebra*** of the non-abelian
+homogeneous field equation — NOT the full `DF=0` assembly, NOT the
+matrix-level Jacobi at a non-vanishing witness, NOT the **inhomogeneous
+(dynamical)** `D⋆F=J`, NOT action/Hodge/matter/quantization. Those are
+the **named residuals** — the *dynamics* of field theory, as opposed to
+the *kinematic skeleton + source-free equation* we now hold; the genuine
+non-abelian non-vacuity is exactly the **already-grounded spine `1≠0`**
+(§5r). PURE RING, nothing classical, **NO new substrate commitment**,
+disjoint `sdg-nonabF-*` labels, 0 collisions, modifies no kernel / base
+/ other corpus. The model-meaning floor is the UNCHANGED Book-Two
+`[PROJECTION]`, never re-summed. **The recurring theorem, once more:
+the algebra of even the non-abelian field equation is cheap, pure, and
+forces nothing; the dynamics and the meaning are the named, immovable
+residuals — reported, not faked.**
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

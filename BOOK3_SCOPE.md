@@ -499,3 +499,22 @@ meaning-residue *identical to Book One's* and now *transport-grounded*
 to it. Stated as the expected success — and the genuine new structural
 findings, claimed at exactly their weight — NOT inflated past the
 contract.**
+
+**Wave 7 — the non-abelian bracket algebra; the field-theory question
+answered precisely (`SEQUEL_SCOPE` §5t):** `data/sdg.nonabF.mm`, 7
+kernel-verified pure-ring `$p` — the `inv`/distribution toolkit of the
+homogeneous Yang–Mills equation `DF=∇F+[A,F]=0`, headlined by bracket
+**antisymmetry** `[a,b]=inv[b,a]` (proven as an `inv`-distribution
+identity, genuine & non-vacuous in any ring). Stated up front and
+honestly: a *symbolic* Jacobi over the commutative base is **vacuous**
+and is deliberately **not** shipped; the genuine non-abelian non-vacuity
+is the already-grounded spine `1≠0`. **§1a NOT triggered, §1b NOT
+triggered** (pure-ring, no new commitment, nothing classical). This
+delimits the project's scope precisely: we hold the **kinematic core +
+the source-free field equation's algebra** of a classical gauge field
+theory; the **dynamics** (full `DF=0` assembly, matrix-Jacobi at a
+non-vanishing witness, the inhomogeneous `D⋆F=J`, action / Hodge /
+matter / quantization) are the **named residuals** — and the *meaning*
+remains the immovable Book-Two model `[PROJECTION]`. The recurring
+theorem, held once more — reported, not faked, not inflated past the
+contract.**

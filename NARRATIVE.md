@@ -384,6 +384,35 @@ pinned. The rest stays a named projection, upright in the open, load
 unmoved. Knowing precisely where the ground ends is its own kind of
 ground.
 
+## Book Three, continued — Is This a Field Theory?
+
+The question came plainly: *are we building a field theory?* The honest
+answer was not yes and not no but a careful inventory, the kind the
+whole project is made of. We had the connection, the field strength,
+the source-free field equation, the gauge law, the non-abelian corner —
+the *shape* of a classical gauge theory, its kinematics, the half of
+the field equations that holds for free. We did not have its motion: no
+action to extremize, no metric to dualize through, no equation with a
+source on the right-hand side, no matter, no quantization. Saying so
+exactly, neither shrinking from "field theory" nor inflating into it,
+was the answer.
+
+And then one more honest brick, with its flaw declared before it was
+laid. The bracket — the thing that measures how badly two operations
+refuse to commute — has an algebra, and that algebra is what the
+non-abelian field equation leans on. But over a world where
+multiplication *does* commute, every bracket is just zero, so the
+famous Jacobi identity there would be a grand `0 + 0 + 0 = 0`: true,
+and worth nothing. That was said out loud, first, and the vacuous
+trophy left unbuilt. What was built instead was real and survives any
+ring: the bracket is antisymmetric, scalars slide through it, the
+inverse of a sum splits — the genuine girders, seven of them,
+kernel-checked, nothing borrowed. The non-empty part of non-abelian
+remained exactly where it had been pinned: the one bone, `1 ≠ 0`,
+already set. The motion of the theory stayed named on the wall, not
+sketched in pencil and called a beam. Knowing the difference between a
+girder and a sketch is the entire craft.
+
 ---
 
 *For the ledger of what is measured, extracted, and still projected,

@@ -742,6 +742,34 @@ ring's consistency, which is precisely *why* the residue is `1≠0`:
 ceremony weaker than the characterization. Knowing precisely where the
 ground ends, and standing exactly there, is its own kind of ground.
 
+## Act XVII — Is This a Field Theory?
+
+The question was asked directly, and the answer was an inventory, not a
+slogan. Connection, field strength, the source-free field equation
+(`∇F=0`, literally one of the two Yang–Mills equations), the gauge law,
+the non-abelian corner — the kinematic skeleton of a classical gauge
+field theory, held and kernel-checked. Absent, and said to be absent:
+the dynamics — no action, no Hodge star, no inhomogeneous equation with
+a source, no matter, no quantization; and the meaning still resting on
+the unchanged heavy model. Naming both halves at their exact weight,
+neither flinching from "field theory" nor inflating into it, was the
+deliverable.
+
+One more wave was laid, its flaw declared before the first brick. The
+bracket algebra is what the non-abelian field equation rests on — but
+over a commutative base every symbolic bracket is identically zero, so a
+symbolic Jacobi there is `0+0+0=0`: true and worthless. That was stated
+up front and the vacuous trophy deliberately not built. What was built
+is genuine in any ring: seven pure-ring theorems — additive-inverse
+uniqueness, the inverse-congruence, involution, inverse-of-a-sum,
+scalars through the inverse both ways, and the headline, bracket
+**antisymmetry** `[a,b]=inv[b,a]`, proven as an inverse-distribution
+identity, not as bracket-collapse. The genuinely non-empty part of
+non-abelian stayed exactly where Act XVI had bolted it: the one bone,
+`1≠0`. The motion of the theory stayed named on the wall, not sketched
+and called a beam. Knowing a girder from a sketch — and shipping only
+the girder — is the whole of the craft, recorded here at that weight.
+
 ## The history, three books in
 
 Three books, one spine. A poll guessed a number; the real discovery was

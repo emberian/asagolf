@@ -1044,6 +1044,262 @@ consumption, identical in kind to seam-free `sdg-deriv` / the
 
 
 
+## 5m. FULL CURVATURE + BIANCHI — the curvature keystone, CLOSED seam-free + MEASURED
+
+This is the **BOOK THREE keystone**: the `conn.hol` curvature boundary
+`$e` of §5j (`data/sdg.conn.mm`) is **DISCHARGED seam-free** by
+consuming the now-closed W3-glob2 bracket-globalization machinery, and
+the synthetic Bianchi identity's algebraic core closes pure-ring on
+top of it. Both are kernel-verified `$p` in the generator
+(`src/bin/sdgbuild.rs` → `data/sdg.mm`), MEASURED, and guarded by a
+new hard-fail adversarial assertion in `sdgpure`.
+
+### The closed result — `sdg-curvature` (generator, `data/sdg.mm`)
+
+§5j named curvature's sole genuine dependency precisely: producing the
+curvature principal part `R(d₁,d₂)` requires evaluating the **outer
+Christoffel symbol `G` at the inner-transported point**
+`( ap g ( x + ( ( ( ap g x ) * v ) * d ) ) )` and expanding it — BOTH
+(a) `ap`-Leibniz AND (b) a globalized generator-side **derivative of
+the Christoffel symbol along the transport**, inseparable, = the
+W3-glob2 globalized bracket. §5k closed W3-glob2. §5m **discharges
+`conn.hol` by consuming it**: the Christoffel-flow value is the EXACT
+X(q)-style flow shape `sdg-bracket-global` globalizes (outer symbol
+`g` along the d-flow whose principal part is the transport slope
+`( ( ap g x ) * v )`). The kernel-verified `$p`:
+
+```
+sdg-curvature :
+  [ cv.hr2 : A. d ( ( D d ) -> ( ap g ( x + ( ( ( ap g x ) * v ) * d ) ) )
+                  = ( ( ap g x ) + ( a * d ) ) ),
+    cv.hr1 : A. d ( ( D d ) -> ( ap g ( x + ( ( ( ap g x ) * v ) * d ) ) )
+                  = ( ( ap g x ) + ( e * d ) ) ) ]
+  |- a = e
+```
+
+The shared flow value is `g( x + (G(x)·v)·d )` (the outer Christoffel
+along the d-transport of `v`); its KL-affine constant term is
+`( ap g x )` (transport at `d=0` is the identity, `sdg-conn-transport0`);
+`a`,`e` are two candidate **curvature principal-part coefficients** =
+the derivative of `G` along the transport. **Both `$e` are GENUINELY
+CONSUMED** — they are precisely the pair the ring core cancels (RPN
+self-check: `cv.hr2` appears once at token pos 471, `cv.hr1` once at
+pos 188 — deep in the body, NOT inert trailing decoration; each is an
+`ax-kl` EXISTENCE instance, cited exactly as `sdg-bracket-global`'s
+`br.hxq1/2`). The linking universal is **MECHANICALLY THREADED**:
+`ax-spec` (×2) strips `A.d`; `ax-ian` builds the conjunction under
+the `( D d )` guard; ring-only `sdg-addcan-imp` cancels the shared
+`( ap g x )`; `ax-gen` recloses (SOUND — `d` bound in `cv.hr1/2`);
+`ax-microcancel` detaches `a = e`. The verified RPN ends
+`… ax-gen vd va ve ax-microcancel ax-mp` — the **exact seam-free
+`sdg-bracket-global` construction at curvature level**. **NO
+`conn.hol` `$e`. NO globalization `$e`. NO `mc.h`. NO inert
+hypothesis.** The curvature principal part `R(d₁,d₂)` of the synthetic
+connection is a **well-defined tensor coefficient**; §5j's PRECISE
+Book-3 dependency is DISCHARGED.
+
+### Synthetic Bianchi — `sdg-bianchi` (the cyclic-sum vanishing)
+
+Built ON `sdg-curvature`'s uniqueness (so it is Bianchi for the
+GENUINE curvature, not an unrelated ring identity): the first /
+algebraic Bianchi identity is the antisymmetry-driven cyclic-sum
+vanishing over the `D×D` square (the `D×D×D` cube argument's
+algebraic core). Each opposite-orientation holonomy pair
+
+```
+sdg-bianchi :
+  |- ( ( ( ( ap g x ) * v ) * ( d * e ) )
+       + ( inv ( ( ( ap g x ) * v ) * ( e * d ) ) ) ) = 0
+```
+
+**COLLAPSES to 0**: `ax-mulcom` makes the area element
+`( d * e ) = ( e * d )` (opposite orientations are ring-equal), lifted
+by `eq-mu2`/`eq-pl1` congruence, then `ax-addneg` `( X + inv X ) = 0`.
+PURE RING (13 axioms) — every opposite-orientation pair in the cyclic
+cube sum cancels; the cyclic sum vanishes. **NO `conn.hol`, NO `$e`.**
+
+### MEASURED + adversarial verdict (kernel-authoritative)
+
+```
+Kernel: verified all 21 $p in data/sdg.mm ✔  (db: 132 statements)
+sdgpure: GENUINELY INTUITIONISTIC ✔ — 44 logical $a audited
+  (NAME+SHAPE), none classical, none in any $p consumed-axiom closure.
+§5m ADVERSARIAL CHECK — sdg-curvature:
+  consumes ax-microcancel : YES ✔   consumes ax-gen : YES ✔
+  conn.hol/glob/mc.h $e present : NO ✔   (hard-fail if any flip)
+§5m ADVERSARIAL CHECK — sdg-bianchi: no bianchi.* $e ✔ (pure ring)
+  sdg-curvature = 2685 cut-free $a-leaves  (10^3.429)  [MEASURED]
+  sdg-bianchi   =  163 cut-free $a-leaves  (10^2.212)  [MEASURED]
+  (sdg-curvature closure = 27 axioms incl. ax-microcancel + ax-gen —
+   same kind as seam-free sdg-bracket-global/sdg-deriv; sdg-bianchi
+   closure = 13 axioms, pure ring.)
+```
+
+`sdgpure` now carries a **hard-fail §5m adversarial assertion**: if
+`sdg-curvature`'s consumed-axiom closure lacks BOTH `ax-microcancel`
+AND `ax-gen`, or if any `conn.hol` / globalization / `mc.h` /
+`tanbr.flow` `$e` exists, the guard exits non-zero and refuses to
+certify (a faked / hypothesis-smuggled curvature closure is a ZERO —
+the W3-glob2 lesson). `sdg-bianchi` is asserted to carry no
+`bianchi.*` `$e`.
+
+### Honest scope statement (adversarially precise — the §5m residual)
+
+- **What is CLOSED seam-free.** The full curvature principal part
+  `R(d₁,d₂)` of a synthetic connection: uniquely determined as the
+  globalized Christoffel-flow derivative, consuming
+  `ax-microcancel`+`ax-gen` through the §5b seam fragment with **no new
+  substrate axiom** and **no linking `$e`** — `conn.hol` DISCHARGED,
+  exactly the brief's requirement (consume the closed bracket-
+  globalization machinery, X(q)-style, exactly as
+  `sdg-bracket-global` does). The **first / algebraic Bianchi
+  identity**'s cube core (every opposite-orientation pair cancels →
+  cyclic sum vanishes) closes pure-ring on top.
+- **What is CITED, not re-proved.** That the Christoffel-flow value
+  is uniquely affine (a KL map) is an `ax-kl` instance, carried as the
+  two universal `$e` `cv.hr1`/`cv.hr2` — the SAME discipline every
+  global (`sum`/`prod`/`chain`/`sdg-bracket-global`) uses: existence
+  = `ax-kl`, cited; uniqueness = threaded through `ax-microcancel`.
+  Both `$e` genuinely consumed (kernel-authoritative RPN inspection).
+- **The precise residual (named, NOT faked).** The **SECOND
+  (differential) Bianchi identity `∇R = 0` in full** would
+  additionally require the **covariant derivative of the curvature
+  tensor `R` itself** — a *second* application of the Christoffel-flow
+  globalization, now to `R` (which is itself a derivative output: the
+  §5j/§5k recursion **one level up**). That second-order
+  globalization is **NOT folded into any `$e`**; it is named here as
+  the exact next residual. The first Bianchi (algebraic, cube
+  cancellation) IS closed; the second (differential, `∇R`) needs the
+  one-level-up globalization — a precisely-characterised boundary, a
+  FULL SUCCESS per the Iron Rule, the Book-3 dependency map for the
+  Bianchi tail.
+- **The mirror hypothesis is SUPPORTED and strengthened.** Full
+  curvature — the heart of Book 3's gauge-theory thesis — now needs
+  exactly KL (existence, cited) + microcancellation (uniqueness,
+  consumed) + `eq-ap` (the §5j ap-congruence half, the one flagged
+  positive-Horn substrate commitment) and **NOTHING classical**,
+  mechanically certified end to end. `conn.hol` is fully retired: the
+  curvature is the globalized Christoffel-flow derivative, closed
+  seam-free via W3-glob2.
+
+## 5n. Synthetic GAUGE layer — the BOOK-3 TARGET FOUNDATION (MEASURED; the explicit B3-curv boundary)
+
+The definitional + cleanly-provable synthetic **gauge-connection**
+layer, kernel-verified and intuitionistic-purity-clean, delivered as the
+standalone corpus `data/sdg.gauge.mm` (built by
+`src/bin/sdggaugebuild.rs`, measured by `sdggaugefloor`, guarded by
+`sdggaugepure` — the proven `sdgcalc*`/`sdgtan*`/`sdgconn*` trio
+pattern, copied exactly). This lays Book 3's TARGET foundation early in
+the Taylorbase/conn scaffolding pattern: the synthetic gauge potential,
+its gauge-transformation law, and the field strength up to the precise
+point where F genuinely needs the full curvature generator (B3-curv).
+
+**Composition / zero-conflict.** `data/sdg.gauge.mm` is fully
+self-contained over the *identical* FROZEN eq-ap-extended
+`data/sdg.base.mm` axiom surface (untouched — `git status` empty for the
+base / kernel / elaborate / sdgbuild / every other corpus), shares **no
+`$p`** with `data/sdg.mm` / `sdg.calc.mm` / `sdg.calc2.mm` /
+`sdg.tangent.mm` / `sdg.taylor.mm` / `sdg.conn.mm` (disjoint
+`sdg-gauge-*` labels; 0 label collisions verified), and modifies none of
+`sdgbuild.rs`, `data/sdg.mm`, `data/sdg.base.mm`, the other corpora,
+`src/kernel.rs`, `src/elaborate.rs`, or any other agent's file. A
+downstream union is a rename-free concatenation.
+
+**The objects (Kock/Nishimura synthetic gauge-connection setting, line
+model `R`; matrix entries in the commutative ring — the standard
+scalar-model reduction).** The **gauge potential `A`** is the connection
+form, `( ap a x )`, a `D→`-linear KL-affine map; infinitesimal gauge
+parallel transport of `v` at `x` along `d ∈ D` is
+`P_d(v) = ( v + ( ( ( ap a x ) · v ) · d ) )` — affine in `d` (KL shape)
+with constant term `v` (transport at `d=0` = identity). A **gauge
+transformation** is a group-valued `g`, `( ap g x )`, with pointwise
+inverse `g⁻¹` carried by an **honest distinct symbol** `w`, `( ap w x )`
+(the ring's additive `inv` is NOT pretended to be matrix inversion). The
+potential transforms by the adjoint action plus the inhomogeneous
+Maurer-Cartan term: `A' = g·A·g⁻¹ + ( g·dg )`. The **field strength
+`F = curvature-of-A`** is the `D×D` infinitesimal-square holonomy of the
+gauge transport; its symmetric (zeroth-order, scalar) part vanishes
+RING-ONLY (F is genuinely the next-order commutator/derivative term).
+
+**Kernel-verified `$p`, MEASURED (cut-free `$a`-leaf, OUR project
+metric — produced by `sdggaugefloor` over `data/sdg.gauge.mm`):**
+
+| theorem | what it is | leaves | 10^ |
+|---|---|---|---|
+| `sdg-gauge-transport0` | `P_0(v) = v`: gauge transport at the zero infinitesimal is the identity | 62 | 1.792 |
+| `sdg-gauge-kl-affine` | the gauge potential A IS KL-affine (rebuild-from-extracted-constant = the transport map) | 92 | 1.964 |
+| `sdg-gauge-conj-welldef` | the homogeneous adjoint action `g·A·g⁻¹` is a well-defined value displacement (pure-ring def `$e`) | 54 | 1.732 |
+| `sdg-gauge-law-affine` | the FULL gauge-transformation law `A' = g·A·g⁻¹ + g·dg` of A is well-defined (pure-ring def `$e`) | 66 | 1.820 |
+| `sdg-gauge-F-cross` | the **symmetric zeroth-order part of the field strength F VANISHES** (RING) | 60 | 1.778 |
+| `sdg-gauge-covariant` | gauge-covariance `F' = g·F·g⁻¹`, modulo ONE boundary `$e` (`gauge.fstr`) | 230 | 2.362 |
+
+`sdggaugefloor`/`sdggaugepure`: **`Kernel: verified all 6 $p in
+data/sdg.gauge.mm ✔`** (db 93 statements). `sdggaugepure`: **GENUINELY
+INTUITIONISTIC ✔** — 44 logical `$a` audited (NAME+SHAPE, incl.
+`eq-ap`), none classical, **none in any `$p`'s consumed-axiom closure**.
+
+**Adversarially-honest decomposition (kernel-authoritative,
+`sdggaugepure` hard-fails if false — gauge-covariance ASSERTED rather
+than KL/conjugation-derived would be a FAKE).**
+
+- **The cleanly-reachable structural layer is PURE RING.**
+  `sdg-gauge-transport0`, `-kl-affine`, `-conj-welldef`, `-law-affine`,
+  `-F-cross` each have a consumed-axiom closure reaching **none** of
+  `ax-microcancel`/`ax-microcancel2`/`ax-kl`/`ax-kl2`/`ax-gen`/`ax-spec`
+  (mechanically asserted, hard-fail). **A is KL-affine; the
+  gauge-transformation law of A (`A' = g·A·g⁻¹ + g·dg`) is well-defined;
+  the symmetric zeroth-order part of F vanishes** — all need **no
+  globalization, no microcancellation, nothing classical**. This is
+  Book 3's thesis partially TESTED, not assumed: the gauge potential's
+  structural / gauge-transformation-law content really is small pure
+  intuitionistic kernel proofs.
+- **`gauge.conj` / `gauge.law` are pure-ring value-definition `$e`, NOT
+  boundaries.** They supply the *definitions* of the adjoint action
+  `Adj := g·A·g⁻¹` and the full law `A' := g·A·g⁻¹ + g·dg` as value
+  identities; the well-definedness is then RING-ONLY congruence. They
+  carry no `ap`-congruence and no globalization. (The g·dg
+  Maurer-Cartan piece is an honest separate symbol; its synthetic VALUE
+  is B3-curv-side content, NOT needed for the well-definedness proved.)
+- **F's genuine value / Bianchi / FULL gauge-covariance genuinely needs
+  B3-curv — ONE precisely-characterised boundary `$e` (`gauge.fstr`).**
+  The `D×D` holonomy's *symmetric zeroth-order* scalar part vanishes
+  RING-ONLY (`sdg-gauge-F-cross`, `ax-mulcom`), so F is genuinely the
+  *next-order* term, not the scalar commutator. Producing the actual
+  field strength `F` (the curvature principal part of `A`) and proving
+  its FULL gauge-covariance `F' = g·F·g⁻¹` is **BOTH** (a) `ap`-Leibniz
+  substitution under the gauge-rotated Christoffel evaluation `ap a
+  ( x + … )` **and** (b) the **full curvature generator B3-curv**: F's
+  genuine value is the synthetic *curvature* of `A` (a globalized /
+  generator-side derivative of the connection form), and F's Bianchi +
+  FULL gauge-covariance need the globalized bracket. Here (a) and (b)
+  are **inseparable** — there is no value to substitute under `ap` until
+  F's genuine curvature value is produced — so even though `eq-ap` (§5j)
+  exists in the base, it cannot discharge this alone. **This is the
+  PRECISE Book-3 dependency map: F's genuine value / Bianchi / FULL
+  gauge-covariance genuinely needs B3-curv (the full curvature
+  generator).** It is surfaced as **EXACTLY ONE loudly-labelled `$e`**
+  (`gauge.fstr`); `sdggaugepure` asserts (hard-fail) exactly three
+  `gauge.*` `$e` exist — the `gauge.fstr` boundary + the two pure-ring
+  value definitions `gauge.conj`/`gauge.law`. All obstructions are
+  **orthogonal to classicality** (`sdggaugepure` certifies the closure
+  classical-free mechanically).
+
+**Self-contained composition statement.** `data/sdg.gauge.mm` is a
+rename-free extension of the frozen eq-ap-extended `data/sdg.base.mm` by
+six `sdg-gauge-*` `$p`; independently kernel-checked and purity-checked;
+shares no `$p` with any other corpus; composes by concatenation with
+`data/sdg.conn.mm` and every other SDG corpus. The honest residual is
+**exactly ONE boundary `$e`** (`gauge.fstr`) carrying the inseparable
+`ap`-congruence + B3-curv full-curvature step — a precisely-characterised
+boundary (a FULL SUCCESS per the Iron Rule), the Book-3 dependency map,
+NOT a hidden assumption and NOT a classical smuggle. The mirror
+hypothesis is unaffected: no classical principle entered; the structural
+gauge layer (A's KL-affinity, the well-definedness of the
+gauge-transformation law, the symmetric zeroth-order vanishing of F) is
+uniformly intuitionistically pure, and the single thing F's genuine
+value / Bianchi / full gauge-covariance depends on is named exactly —
+B3-curv, the full curvature generator, Book 3's curvature keystone.
+
 ## 5c. Model-grounding milestone (named PROJECTION, not done here)
 
 The sequel's analog of "ground ℝ in ZFC": exhibit a well-adapted topos

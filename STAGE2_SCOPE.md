@@ -59,4 +59,17 @@ height 1 over a directly-built ℚ.
 
 - Stage 1: DONE — K=1 MEASURED, construction projection removed
   (commit aed0213).
-- Stage 2: Milestone A dispatched.
+- Stage 2 Milestone A: DONE — native ℚ-from-ZF (ω→ℤ→ℚ, no CCfld /
+  Dedekind / analytic ℝ). `verified all 11 $p in data/qzf.mm ✔`;
+  ordered-field consequences F1 needs MEASURED at **10^2.408**.
+  Honest hedge (same discipline as euclid.mm): the abstract
+  semiring/ring/ordered-field *signature* (`ax-N*/ax-Z*/ax-Q*`) is
+  `$a`-asserted; fully discharging it to bare ZF (quotient
+  well-definedness) is a **labelled PROJECTION ≤10^4**, never merged
+  into the measured number. Even that pessimistic bound is ~40 orders
+  below set.mm's ℚ-through-`CCfld` (10^46.10 EXTRACTED). Confirms the
+  thesis: the irreducible ~10^46 is set.mm's analytic-ℝ routing
+  choice, not a property of ℚ or F1.
+- Stage 2 Milestone B (one quadratic ext, reuses the MEASURED
+  10^2.149 unit) / C (transport to the 13-axiom ZF base): not started.
+  The remaining large number is now localised *entirely* to C.

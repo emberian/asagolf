@@ -65,6 +65,8 @@ narrative — including the wrong turns — is in [`HISTORY.md`](HISTORY.md).
 | same, strict extractable floor | — | 10^25.95 |
 | *satisfiability:* minimal Euclidean model — proof-relativized, **MEASURED** (K=1 distinct un-nested radical) | 141 leaves | **10^2.149** |
 | same, full-F1-schema closure (separate, labelled) | — | [PROJECTION] |
+| *Stage 2A:* native ℚ-from-ZF (no `CCfld`/analytic ℝ), F1 consequences **MEASURED** | 256 leaves | **10^2.408** |
+| same, bare-ZF discharge of asserted signature (labelled) | — | [PROJECTION] ≤10^4 |
 | same, certified *through set.mm* (no cheaper √ to bind) | — | 10^46.10 |
 
 "F0 = 224" is the cheap, vacuous answer (assert the postulates).

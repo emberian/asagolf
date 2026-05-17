@@ -394,6 +394,29 @@ grounding can honestly go, did precisely that part, and named the rest
    here — the exact dual of the prequel's "Suppes/Shoenfield cited,
    hypotheses checked, not re-derived in-kernel".
 
+   **→ SHARPENED (the term-model-grounding thread, attempted and
+   precisely declined).** The honest *weak-level* mechanization this
+   item sought is not "not yet done" — it is **principled-absent,
+   because it already exists as the spine.** The only kernel-internally
+   guaranteed model of the frozen substrate is the trivial/terminal
+   ring (`0=1`); a `data/sdg.tmodel.mm` corpus exhibiting it would have
+   exactly two realizations, **both Iron-Rule-forbidden as a
+   "satisfiability measurement"**: (a) re-deriving each unconditional
+   `$a` axiom (a corpus self-citing its own axioms — a *citation
+   dressed as a measurement*, a ZERO), or (b) the conditional collapse
+   `( 1=0 -> axiom )`, which is the already-true axiom weakened by
+   `ax-1` (zero added content) — and whose one *contentful* piece,
+   "under `1=0` ring terms collapse to `0`", is **already mechanized,
+   MEASURED, kernel-verified** as `data/sdg.spine.mm` (`sdg-spine-b3`,
+   3008 leaves, pure ring, the converse content of the `1≠0`
+   non-vacuity transport, §5r). Per §4c a fresh trivial-ring corpus is
+   *ceremony weaker than this characterization*. So this item is closed
+   **as a named principled-absence**, not an open TODO: the
+   weak-segment mechanization the citation-level claim wanted *is the
+   spine*; no separate artifact is honestly emittable, and attempting
+   one and declining it (no files created) **is** the iron-rule-correct
+   outcome — reported, not faked, not papered.
+
 3. **Quantifying the §4a(i) site reduction.** That `Set^{Weil^op}`
    removes the topology/sheaf rungs is structurally clear; an exact
    ladder-delta for the leaner site is a refinement, not done here.

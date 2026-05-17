@@ -227,13 +227,15 @@
           same fact from ZFC (<code>ax-sqrt&nbsp;↔&nbsp;resqrtth</code>,
           <code>of-recip&nbsp;↔&nbsp;axrrecex</code>, …) — so they <em>are</em>
           modelled by the standard construction, shown by machine. Fully
-          ZFC-grounded the substrate is ≈10<sup>45.7</sup>; an exact
-          occurrence-level split proves that is <em>not</em> completeness and
-          not the completion definitions (0.6%) but ℤ→ℚ construction
-          multiplicity — so with √ a Euclidean-field primitive it drops to
-          ≈10<sup>37.2</sup>, and the proof-theoretic floor (decidable RCF,
-          Tarski QE; consistency ≪ ZFC) is far below that. The one large
-          number is a quantified model-choice artifact, never the geometry.
+          ZFC-grounded against set.mm the substrate is ≈10<sup>45.7</sup> —
+          but that is a <em>routing</em> artifact, and the descent proves it:
+          native ZF model ≈10<sup>17.5</sup>, then (Infinity incidental;
+          arithmetic and order discharged to verified proof) a
+          fully-projection-free floor ≈<strong>10<sup>12.8</sup></strong>.
+          The proof-theoretic strength is an open theory below EFA; the
+          irreducible residue is exactly two order facts. The one large
+          number was always a model-choice artifact, never the geometry —
+          and now it is measured all the way down.
         </p>
       </div>
 
@@ -452,9 +454,11 @@
         checker (the kernel), a hand-and-machine-assembled proof from ordered-ring
         axioms upward, and an exact cut-free step count that the kernel re-verifies.
         The answer is not close to 10<sup>1000</sup> — the geometry is around
-        10<sup>6.9</sup>, and the single genuinely large term, constructing the real
-        numbers inside ZFC, is around 10<sup>45.7</sup>. The claim is high by roughly
-        950 orders of magnitude.
+        10<sup>5.6</sup>, kernel-verified and now <strong>closed</strong> end to
+        end. But the rebuttal turned out to be the least interesting thing here.
+        Chasing the cost all the way to the bottom showed that almost everything
+        below the geometry was <strong>removable scaffolding we had chosen</strong>,
+        not anything the mathematics required.
       </p>
 
       <h3>Derived, not asserted</h3>
@@ -473,24 +477,40 @@
       <p>
         Euclidean-plane geometry, expressed through these definitions, is just
         polynomial identities and order facts over the substrate. SAS — the hardest
-        postulate, needing the law of cosines, square-root-free metric reasoning, and
-        integral-domain cancellation — comes out to about 7.25 million primitive steps
-        when fully expanded with no shared sub-proofs at all. That is large only by
-        everyday standards; it is around 10<sup>6.9</sup>, an astronomical distance
-        below 10<sup>1000</sup>. The geometry is cheap.
+        postulate — was about 7.25 million primitive steps fully expanded; proving
+        the law of cosines once over fresh symbols and instantiating it for free
+        (the generic-lemma template) cut it to <strong>383,606</strong>, about
+        10<sup>5.6</sup>, an astronomical distance below 10<sup>1000</sup>. The
+        geometry is cheap, and ASA′ is closed end to end with no postulate asserted.
       </p>
 
-      <h3>Where the large numbers actually live</h3>
+      <h3>The descent: every floor was a construction choice</h3>
       <p>
-        The only place a genuinely large number appears is in constructing the real
-        numbers from sets. When the substrate axioms are discharged against set.mm's
-        fully constructed real field, the cost is about 10<sup>45.7</sup>, dominated
-        by the existence of square roots routed through analytic completeness
-        machinery. Completeness itself is never used by the geometry; the expense is
-        the construction of the field, not any deep theorem about it. A leaner model
-        in which square roots are a primitive of the field brings the substrate term
-        down to about 10<sup>37</sup>. Either way the result is nowhere near
-        10<sup>1000</sup>: the poll over-estimates by roughly 950 orders of magnitude.
+        The one genuinely large term is exhibiting a model of the substrate in ZFC.
+        Against set.mm's analytically-constructed real field it is ≈10<sup>46</sup>
+        — but each time we got close enough to <em>measure</em> a floor, it turned
+        out to be a thing we had chosen. It was not the real numbers; it was set.mm
+        <em>routing</em> through analysis. Build a native ZF model and the floor
+        drops to ≈10<sup>17.5</sup>; its residual looked like the Axiom of Infinity,
+        but the proof never iterates it — the floor drops again to
+        ≈<strong>10<sup>12.8</sup></strong>, and the substrate is then
+        <strong>fully projection-free</strong>. ℝ, completeness, Infinity, ω, ℚ,
+        even arithmetic — all stripped, measured, shown removable.
+      </p>
+
+      <h3>What would not move</h3>
+      <p>
+        One thing did not dissolve. The inference <code>a²=b² ⟹ a=b</code> is
+        <em>false</em> in ordinary rings (3²≡1² in ℤ/8, 3≠1); no polynomial
+        identity of any degree crosses it — only <em>order</em> does. Three
+        independent measurements — what the proof says, how strong it is, what its
+        model is built from — all terminate on the same irreducible residue:
+        exactly two order facts, <code>∅∈suc∅</code> and <code>suc∅≠∅</code> —
+        <em>there is a next thing, and it is not the first</em>. That is the whole
+        intrinsic cost of metric geometry; everything else, chased to the bottom and
+        measured, was scaffolding. See the
+        <a href="https://github.com/emberian/asagolf/blob/main/COST_STRUCTURE.md">cost-structure ledger</a>
+        and the <a href="https://github.com/emberian/asagolf/blob/main/NARRATIVE.md">novelization</a>.
       </p>
 
       <h3>The same theorem is valid in the real reals</h3>
